@@ -11,38 +11,39 @@ extension String {
 extension NSInputStream {
     public func readBytes(length:Int)->UnsafeMutablePointer<UInt8>{
         let readBuffer = UnsafeMutablePointer<UInt8>.alloc(length + 1)
-        let _ = self.read(readBuffer, maxLength: length)
+        let _          = self.read(readBuffer, maxLength: length)
         return readBuffer
     }
 }
 
-var filePath = [#FileReference(fileReferenceLiteral: "将夜.txt")#]
-var utf8File = [#FileReference(fileReferenceLiteral: "UTF8.txt")#]
-
-func getFileEncoding(file:NSURL)->UInt {
-    var encoding:UInt = 0
-    
-    do {
-        let fileHandler = try NSFileHandle(forReadingFromURL: file)
-        fileHandler.seekToFileOffset(0)
-        let data = fileHandler.readDataOfLength(10)
-        
-        var ins = NSInputStream(URL: file)
-        ins?.open()
-        var buffer = ins?.hasBytesAvailable
-        
-        var bytes = ins?.readBytes(3)
-        var first = 0xa1
-        bytes?[0]
-        bytes?[1]
-        bytes?[2]
-        bytes?[3]
-        
-    } catch _ {
-        
+let ce2ne = {(ce:Any) -> NSStringEncoding in
+    if let _ = ce as? CFIndex {
+        return CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(ce as! CFIndex))
+    } else if let _ = ce as? NSStringEncoding {
+        return ce as! NSStringEncoding
+    } else {
+        return NSUTF8StringEncoding
     }
-    
-    return encoding
 }
 
-getFileEncoding(filePath)
+var supportEncodings:[Any] = [NSUTF8StringEncoding, CFStringEncodings.GB_18030_2000.rawValue]
+
+func getFileEncoding(file:NSURL)->UInt {
+    let ins     = NSInputStream(URL: file)
+    
+    ins?.open()
+    let len     = 6
+    let bytes   = ins?.readBytes(len)
+    
+    ins?.close()
+    
+    let str = String(bytesNoCopy: bytes!, length: len, encoding: ce2ne(supportEncodings[1]), freeWhenDone: true)
+    
+    print(str)
+    
+    return 0
+}
+
+var files  = [[#FileReference(fileReferenceLiteral: "jy_gbk.txt")#], [#FileReference(fileReferenceLiteral: "jy_utf8.txt")#]]
+
+getFileEncoding(files[1])
