@@ -32,12 +32,12 @@ func getFileEncoding(file:NSURL)->UInt {
     let ins     = NSInputStream(URL: file)
     
     ins?.open()
-    let len     = 6
+    let len     = 3
     let bytes   = ins?.readBytes(len)
     
     ins?.close()
     
-    let str = String(bytesNoCopy: bytes!, length: len, encoding: ce2ne(supportEncodings[1]), freeWhenDone: true)
+    let str = String(bytesNoCopy: bytes!, length: len, encoding: ce2ne(supportEncodings[0]), freeWhenDone: true)
     
     print(str)
     
