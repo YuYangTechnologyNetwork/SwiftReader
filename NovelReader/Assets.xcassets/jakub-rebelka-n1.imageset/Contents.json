@@ -1,0 +1,25 @@
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "iphone",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "iphone",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "iphone",
+      "filename" : "jakub-rebelka-n1.jpg",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}

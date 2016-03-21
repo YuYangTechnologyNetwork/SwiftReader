@@ -67,7 +67,6 @@ class PageView: UIView {
     
     override func drawRect(rect: CGRect) {
         if let _ = textFrame {
-            
             let ctx = UIGraphicsGetCurrentContext();
             CGContextSetTextMatrix(ctx, CGAffineTransformIdentity)
             CGContextTranslateCTM(ctx, 0, self.bounds.size.height)

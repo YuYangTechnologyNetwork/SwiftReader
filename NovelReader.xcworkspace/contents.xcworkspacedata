@@ -5,9 +5,6 @@
       location = "group:Playgrounds/Typesetter.playground">
    </FileRef>
    <FileRef
-      location = "group:Playgrounds/FileReader.playground">
-   </FileRef>
-   <FileRef
       location = "container:NovelReader.xcodeproj">
    </FileRef>
 </Workspace>
