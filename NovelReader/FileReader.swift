@@ -20,27 +20,28 @@ class FilerReader {
 
     func guessFileEncoding(file: UnsafeMutablePointer<FILE>) -> String
     {
-        let uchar_handle      = uchardet_new()
-        let cache_buffer      = UnsafeMutablePointer<Int8>.alloc(self.BUFFER_SIZE)
+        // let start        = NSDate().timeIntervalSince1970
+        let uchar_handle = uchardet_new()
+        let cache_buffer = UnsafeMutablePointer<Int8>.alloc(self.BUFFER_SIZE)
 
-        while feof(file) != 0
-        {
+        while feof(file) == 0 {
             let valid_len = fread(cache_buffer, 1, self.BUFFER_SIZE, file)
             let retval    = uchardet_handle_data(uchar_handle, cache_buffer, valid_len)
 
-            if retval != 0
-            {
+            if retval != 0 {
                 return self.UNKNOW_ENCODING
             }
         }
 
         uchardet_data_end(uchar_handle)
 
-        let possible_encoding = uchardet_get_charset(uchar_handle)
+        let possible_encoding = String.fromCString(uchardet_get_charset(uchar_handle))
 
         uchardet_delete(uchar_handle)
 
-        return possible_encoding == nil ? self.UNKNOW_ENCODING : String(possible_encoding)
+        // print("Usage Time: \(NSDate().timeIntervalSince1970 - start)")
+
+        return isSupportEncding(possible_encoding!) ? possible_encoding! : self.UNKNOW_ENCODING
     }
 
     func isSupportEncding(encoding: String) -> Bool

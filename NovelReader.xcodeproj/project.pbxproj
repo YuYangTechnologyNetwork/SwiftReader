@@ -32,7 +32,6 @@
 		112E9CD21C9FF1B400C5E34C /* GB2312Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = 112E9CB81C9FF1B400C5E34C /* GB2312Freq.tab */; };
 		112E9CD31C9FF1B400C5E34C /* JISFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = 112E9CB91C9FF1B400C5E34C /* JISFreq.tab */; };
 		112E9CD51C9FF3A300C5E34C /* FileReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112E9CD41C9FF3A300C5E34C /* FileReader.swift */; };
-		113BF8331CA014E00089B526 /* Books in Resources */ = {isa = PBXBuildFile; fileRef = 113BF8321CA014E00089B526 /* Books */; };
 		11DAD99B1C9FE5D50027F98A /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DAD9991C9FE5D50027F98A /* MainViewController.swift */; };
 		11DAD99C1C9FE5D50027F98A /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11DAD99A1C9FE5D50027F98A /* MainViewController.xib */; };
 		3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C70D1C96F53700DD408F /* AppDelegate.swift */; };
@@ -41,6 +40,8 @@
 		3D49C71E1C96F53700DD408F /* NovelReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C71D1C96F53700DD408F /* NovelReaderTests.swift */; };
 		3D49C7291C96F53700DD408F /* NovelReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7281C96F53700DD408F /* NovelReaderUITests.swift */; };
 		3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7371C96F60900DD408F /* Typesetter.swift */; };
+		3D6A244A1CA0362B00F05D55 /* jy_gbk.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3D6A24481CA0362B00F05D55 /* jy_gbk.txt */; };
+		3D6A244B1CA0362B00F05D55 /* jy_utf8.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3D6A24491CA0362B00F05D55 /* jy_utf8.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,7 +108,6 @@
 		112E9CB81C9FF1B400C5E34C /* GB2312Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GB2312Freq.tab; path = ThirdParty/Uchardet/GB2312Freq.tab; sourceTree = "<group>"; };
 		112E9CB91C9FF1B400C5E34C /* JISFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JISFreq.tab; path = ThirdParty/Uchardet/JISFreq.tab; sourceTree = "<group>"; };
 		112E9CD41C9FF3A300C5E34C /* FileReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileReader.swift; sourceTree = "<group>"; };
-		113BF8321CA014E00089B526 /* Books */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Books; sourceTree = "<group>"; };
 		11DAD9991C9FE5D50027F98A /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		11DAD99A1C9FE5D50027F98A /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 		3D49C70A1C96F53700DD408F /* NovelReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NovelReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +122,8 @@
 		3D49C7281C96F53700DD408F /* NovelReaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovelReaderUITests.swift; sourceTree = "<group>"; };
 		3D49C72A1C96F53700DD408F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D49C7371C96F60900DD408F /* Typesetter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Typesetter.swift; path = Engine/Typesetter.swift; sourceTree = "<group>"; };
+		3D6A24481CA0362B00F05D55 /* jy_gbk.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = jy_gbk.txt; path = Books/jy_gbk.txt; sourceTree = "<group>"; };
+		3D6A24491CA0362B00F05D55 /* jy_utf8.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = jy_utf8.txt; path = Books/jy_utf8.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -238,7 +240,7 @@
 		3D49C70C1C96F53700DD408F /* NovelReader */ = {
 			isa = PBXGroup;
 			children = (
-				113BF8321CA014E00089B526 /* Books */,
+				3D6A24471CA0361F00F05D55 /* Books */,
 				112E9C881C9FF18D00C5E34C /* ThirdParty */,
 				11DAD9981C9FE5A50027F98A /* Reader */,
 				3D49C7361C96F5BF00DD408F /* Engine */,
@@ -278,6 +280,15 @@
 				112E9CD41C9FF3A300C5E34C /* FileReader.swift */,
 			);
 			name = Engine;
+			sourceTree = "<group>";
+		};
+		3D6A24471CA0361F00F05D55 /* Books */ = {
+			isa = PBXGroup;
+			children = (
+				3D6A24481CA0362B00F05D55 /* jy_gbk.txt */,
+				3D6A24491CA0362B00F05D55 /* jy_utf8.txt */,
+			);
+			name = Books;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -387,10 +398,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D6A244A1CA0362B00F05D55 /* jy_gbk.txt in Resources */,
 				112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */,
-				113BF8331CA014E00089B526 /* Books in Resources */,
 				3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */,
 				112E9CD21C9FF1B400C5E34C /* GB2312Freq.tab in Resources */,
+				3D6A244B1CA0362B00F05D55 /* jy_utf8.txt in Resources */,
 				112E9CD11C9FF1B400C5E34C /* EUCTWFreq.tab in Resources */,
 				112E9CD01C9FF1B400C5E34C /* EUCKRFreq.tab in Resources */,
 				112E9CD31C9FF1B400C5E34C /* JISFreq.tab in Resources */,
@@ -577,7 +589,12 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = NovelReader/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libs",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ruikyesoft.app.NovelReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -593,7 +610,12 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = NovelReader/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libs",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ruikyesoft.app.NovelReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
