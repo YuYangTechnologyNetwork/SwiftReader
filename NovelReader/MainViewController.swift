@@ -22,7 +22,13 @@ class MainViewController: UIViewController {
         let file = fopen(filePath!, "r")
 
         if file != nil {
-            print(FilerReader().guessFileEncoding(file))
+            var reader = FilerReader()
+            var encoding = reader.guessFileEncoding(file)
+            let buffer = UnsafeMutablePointer<Int8>.alloc(reader.BUFFER_SIZE)
+            var line =  fgets(buffer, 1, file)
+            var len:fpos_t
+            fgetpos(file, &len)
+            var str = NSData(bytes: line, length: len)
             fclose(file)
         }
     }
