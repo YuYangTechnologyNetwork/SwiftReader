@@ -15,14 +15,27 @@ class MainViewController: UIViewController {
 
         // Do any additional setup after loading the view.
 
-        let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
+        let filePath = NSBundle.mainBundle().pathForResource("jy_utf8", ofType: "txt")
 
         // print(filePath)
 
         let file = fopen(filePath!, "r")
 
         if file != nil {
-            print(FilerReader().guessFileEncoding(file))
+            let reader = FileReader()
+            let encoding = reader.guessFileEncoding(file)
+            let start = reader.getWordBorder(file, fuzzyPos: 11, encoding: FileReader.Encodings[encoding]!)
+            let end = reader.getWordBorder(file, fuzzyPos: 127, encoding: FileReader.Encodings[encoding]!)
+
+            print("Range -> (\(start) - \(end))")
+
+            let len = end - start
+            let buffer = UnsafeMutablePointer<UInt8>.alloc(len)
+            fseek(file, start, SEEK_SET)
+            let _ = fread(buffer, 1, len, file)
+            let data = NSData(bytes: buffer, length: len)
+            print(String(data: data, encoding: NSUTF8StringEncoding))
+
             fclose(file)
         }
     }
