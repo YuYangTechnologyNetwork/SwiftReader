@@ -13,28 +13,27 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-
-        let filePath = NSBundle.mainBundle().pathForResource("jy_utf8", ofType: "txt")
-
-        // print(filePath)
-
-        let file = fopen(filePath!, "r")
+        let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
+        let file     = fopen(filePath!, "r")
 
         if file != nil {
-            let reader = FileReader()
+            let reader   = FileReader()
             let encoding = reader.guessFileEncoding(file)
-            let start = reader.getWordBorder(file, fuzzyPos: 11, encoding: FileReader.Encodings[encoding]!)
-            let end = reader.getWordBorder(file, fuzzyPos: 127, encoding: FileReader.Encodings[encoding]!)
 
-            print("Range -> (\(start) - \(end))")
+            if reader.isSupportEncding(encoding) {
+                let start  = reader.getWordBorder(file, fuzzyPos: 0, encoding: FileReader.Encodings[encoding]!)
+                let end    = reader.getWordBorder(file, fuzzyPos: 2, encoding: FileReader.Encodings[encoding]!)
+                let len    = end - start
+                let buffer = UnsafeMutablePointer<UInt8>.alloc(len)
 
-            let len = end - start
-            let buffer = UnsafeMutablePointer<UInt8>.alloc(len)
-            fseek(file, start, SEEK_SET)
-            let _ = fread(buffer, 1, len, file)
-            let data = NSData(bytes: buffer, length: len)
-            print(String(data: data, encoding: NSUTF8StringEncoding))
+                fseek(file, 0, SEEK_SET)
+                fread(buffer, 1, len, file)
+
+                print("File Size: \(reader.getFileSize(file))")
+                print("Range -> (\(start) - \(end))")
+                print(String(data: NSData(bytes: buffer, length: len), encoding: FileReader.Encodings[encoding]!))
+            }
+
             fclose(file)
         }
     }
@@ -44,15 +43,13 @@ class MainViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
     /*
-    // MARK: - Navigation
+     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    // Get the new view controller using segue.destinationViewController.
-    // Pass the selected object to the new view controller.
-    }
-    */
-    
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
 }

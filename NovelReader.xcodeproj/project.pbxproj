@@ -31,7 +31,7 @@
 		112E9CD11C9FF1B400C5E34C /* EUCTWFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = 112E9CB71C9FF1B400C5E34C /* EUCTWFreq.tab */; };
 		112E9CD21C9FF1B400C5E34C /* GB2312Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = 112E9CB81C9FF1B400C5E34C /* GB2312Freq.tab */; };
 		112E9CD31C9FF1B400C5E34C /* JISFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = 112E9CB91C9FF1B400C5E34C /* JISFreq.tab */; };
-		112E9CD51C9FF3A300C5E34C /* FileReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112E9CD41C9FF3A300C5E34C /* FileReader.swift */; };
+		1156F1871CA3BB88006B5848 /* FileReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1156F1861CA3BB88006B5848 /* FileReader.swift */; };
 		11DAD99B1C9FE5D50027F98A /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DAD9991C9FE5D50027F98A /* MainViewController.swift */; };
 		11DAD99C1C9FE5D50027F98A /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11DAD99A1C9FE5D50027F98A /* MainViewController.xib */; };
 		3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C70D1C96F53700DD408F /* AppDelegate.swift */; };
@@ -107,7 +107,7 @@
 		112E9CB71C9FF1B400C5E34C /* EUCTWFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EUCTWFreq.tab; path = ThirdParty/Uchardet/EUCTWFreq.tab; sourceTree = "<group>"; };
 		112E9CB81C9FF1B400C5E34C /* GB2312Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GB2312Freq.tab; path = ThirdParty/Uchardet/GB2312Freq.tab; sourceTree = "<group>"; };
 		112E9CB91C9FF1B400C5E34C /* JISFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JISFreq.tab; path = ThirdParty/Uchardet/JISFreq.tab; sourceTree = "<group>"; };
-		112E9CD41C9FF3A300C5E34C /* FileReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileReader.swift; sourceTree = "<group>"; };
+		1156F1861CA3BB88006B5848 /* FileReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FileReader.swift; path = Engine/FileReader.swift; sourceTree = "<group>"; };
 		11DAD9991C9FE5D50027F98A /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		11DAD99A1C9FE5D50027F98A /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 		3D49C70A1C96F53700DD408F /* NovelReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NovelReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -277,7 +277,7 @@
 			isa = PBXGroup;
 			children = (
 				3D49C7371C96F60900DD408F /* Typesetter.swift */,
-				112E9CD41C9FF3A300C5E34C /* FileReader.swift */,
+				1156F1861CA3BB88006B5848 /* FileReader.swift */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
@@ -438,7 +438,6 @@
 				112E9CC01C9FF1B400C5E34C /* nsEscSM.cpp in Sources */,
 				112E9CC71C9FF1B400C5E34C /* nsMBCSGroupProber.cpp in Sources */,
 				112E9CCB1C9FF1B400C5E34C /* nsSJISProber.cpp in Sources */,
-				112E9CD51C9FF3A300C5E34C /* FileReader.swift in Sources */,
 				112E9CBD1C9FF1B400C5E34C /* nsBig5Prober.cpp in Sources */,
 				112E9CC81C9FF1B400C5E34C /* nsMBCSSM.cpp in Sources */,
 				3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */,
@@ -450,6 +449,7 @@
 				112E9CC21C9FF1B400C5E34C /* nsEUCKRProber.cpp in Sources */,
 				3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */,
 				112E9CBB1C9FF1B400C5E34C /* CharDistribution.cpp in Sources */,
+				1156F1871CA3BB88006B5848 /* FileReader.swift in Sources */,
 				112E9CCE1C9FF1B400C5E34C /* uchardet.cpp in Sources */,
 				112E9CC61C9FF1B400C5E34C /* nsLatin1Prober.cpp in Sources */,
 				112E9CC31C9FF1B400C5E34C /* nsEUCTWProber.cpp in Sources */,
