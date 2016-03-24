@@ -23,7 +23,6 @@ class FileReader {
 
     func guessFileEncoding(file: UnsafeMutablePointer<FILE>) -> String
     {
-        // let start        = NSDate().timeIntervalSince1970
         let uchar_handle = uchardet_new()
         let cache_buffer = UnsafeMutablePointer<Int8>.alloc(Self.BUFFER_SIZE)
 
@@ -37,9 +36,7 @@ class FileReader {
         }
 
         uchardet_data_end(uchar_handle)
-
         let possible_encoding = String.fromCString(uchardet_get_charset(uchar_handle))
-
         uchardet_delete(uchar_handle)
 
         // print("Usage Time: \(NSDate().timeIntervalSince1970 - start)")

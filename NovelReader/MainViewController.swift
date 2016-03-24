@@ -35,7 +35,6 @@ class MainViewController: UIViewController {
             let _ = fread(buffer, 1, len, file)
             let data = NSData(bytes: buffer, length: len)
             print(String(data: data, encoding: NSUTF8StringEncoding))
-
             fclose(file)
         }
     }
