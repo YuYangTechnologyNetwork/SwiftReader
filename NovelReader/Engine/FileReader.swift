@@ -96,22 +96,22 @@ class FileReader {
 
     private func detectGB18030_2000Border(buffer: UnsafeMutablePointer<UInt8>, len: Int) -> Int {
         var offset = -1
+        
+        let check = { (len: Int) -> Bool in
+            let str = String(
+                data: NSData(bytes: buffer, length: len),
+                encoding: FileReader.Encodings[Self.ENCODING_GB18030]!
+            )
 
-        for i in 0 ..< len {
-            let b = buffer[i]
-            let nb = buffer[i + 1]
-            print(String.init(format: "%x %x", b, nb))
-
-            if 0x81 <= b && b <= 0xFE {
-                if (0x30 <= nb && nb <= 0x39) || (0x40 <= nb && nb <= 0xFE && nb != 0x7F) {
-                    offset = i
-                    break
-                }
-            } else if (0x00 <= b && b <= 0x7F) && (0x00 <= nb && nb <= 0x7f) {
-                offset = i
-                break
-            }
+            return str != nil
         }
+        
+        for i in 0 ..< len {
+            if check(1) {
+            }
+
+        }
+
 
         return offset
     }

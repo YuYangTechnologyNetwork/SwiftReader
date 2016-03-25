@@ -21,12 +21,12 @@ class MainViewController: UIViewController {
             let encoding = reader.guessFileEncoding(file)
 
             if reader.isSupportEncding(encoding) {
-                let start  = reader.getWordBorder(file, fuzzyPos: 0, encoding: FileReader.Encodings[encoding]!)
-                let end    = reader.getWordBorder(file, fuzzyPos: 2, encoding: FileReader.Encodings[encoding]!)
+                let start  = reader.getWordBorder(file, fuzzyPos: 6257902, encoding: FileReader.Encodings[encoding]!)
+                let end    = reader.getWordBorder(file, fuzzyPos: 6258004, encoding: FileReader.Encodings[encoding]!)
                 let len    = end - start
                 let buffer = UnsafeMutablePointer<UInt8>.alloc(len)
 
-                fseek(file, 0, SEEK_SET)
+                fseek(file, start, SEEK_SET)
                 fread(buffer, 1, len, file)
 
                 print("File Size: \(reader.getFileSize(file))")
