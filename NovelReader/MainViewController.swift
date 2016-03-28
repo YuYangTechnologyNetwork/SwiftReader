@@ -21,8 +21,8 @@ class MainViewController: UIViewController {
             let encoding = reader.guessFileEncoding(file)
 
             if reader.isSupportEncding(encoding) {
-                let start  = reader.getWordBorder(file, fuzzyPos: 6257902, encoding: FileReader.Encodings[encoding]!)
-                let end    = reader.getWordBorder(file, fuzzyPos: 6258004, encoding: FileReader.Encodings[encoding]!)
+                let start  = reader.getWordBorder(file, fuzzyPos: 6095302, encoding: FileReader.Encodings[encoding]!)
+                let end    = reader.getWordBorder(file, fuzzyPos: 6218123, encoding: FileReader.Encodings[encoding]!)
                 let len    = end - start
                 let buffer = UnsafeMutablePointer<UInt8>.alloc(len)
 
