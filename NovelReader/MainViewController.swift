@@ -10,31 +10,58 @@ import UIKit
 
 class MainViewController: UIViewController {
 
+    @IBOutlet weak var uiLabel: UILabel!
+    @IBOutlet weak var progressIndicator: UIActivityIndicatorView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
-        let file     = fopen(filePath!, "r")
+        let workingQueue = dispatch_queue_create("my_queue", nil)
+        self.progressIndicator.startAnimating()
 
-        if file != nil {
-            let reader   = FileReader()
-            let encoding = reader.guessFileEncoding(file)
+        // 派发到刚创建的队列中，GCD 会负责进行线程调度
+        dispatch_async(workingQueue) {
+            let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
+            let file     = fopen(filePath!, "r")
 
-            if reader.isSupportEncding(encoding) {
-                let start  = reader.getWordBorder(file, fuzzyPos: 6257902, encoding: FileReader.Encodings[encoding]!)
-                let end    = reader.getWordBorder(file, fuzzyPos: 6258004, encoding: FileReader.Encodings[encoding]!)
-                let len    = end - start
-                let buffer = UnsafeMutablePointer<UInt8>.alloc(len)
+            if file != nil {
+                let reader   = FileReader()
+                let encodingStr = reader.guessFileEncoding(file)
 
-                fseek(file, start, SEEK_SET)
-                fread(buffer, 1, len, file)
+                if reader.isSupportEncding(encodingStr) {
+                    let ecnoding = FileReader.Encodings[encodingStr]!
+                    let fileSize = reader.getFileSize(file)
+                    var location = 0
+                    var rate = 1
+                    repeat {
+                        let start = reader.getWordBorder(file, fuzzyPos: location, encoding: ecnoding)
+                        let end = reader.getWordBorder(file, fuzzyPos: location + FileReader.BUFFER_SIZE * rate, encoding: ecnoding)
+                        let length = end - start
 
-                print("File Size: \(reader.getFileSize(file))")
-                print("Range -> (\(start) - \(end))")
-                print(String(data: NSData(bytes: buffer, length: len), encoding: FileReader.Encodings[encoding]!))
+                        if length > 0 {
+                            let categories = reader.getCategories(file, range: NSMakeRange(location, length), encoding: ecnoding)
+                            if categories.count > 0 {
+                                for category in categories {
+                                    print(category)
+                                }
+                            }
+
+                            location = end
+                            rate = 1
+                        } else {
+                            rate += 1
+                        }
+                    } while (Double(location + FileReader.BUFFER_SIZE * rate) < Double(fileSize) * 0.25)
+                }
+                
+                fclose(file)
             }
 
-            fclose(file)
+            dispatch_async(dispatch_get_main_queue()) {
+                self.progressIndicator.stopAnimating()
+                self.progressIndicator.hidden = true
+                self.uiLabel.hidden = false
+            }
         }
     }
 
