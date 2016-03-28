@@ -179,3 +179,36 @@ class FileReader {
         }
     }
 }
+
+extension FileReader {
+    private var CHAPTER_REGEX: String {
+        return "^\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回].*(\r|\n)"
+    }
+
+    func getCategories(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> [(String, Int)] {
+        let buffer = UnsafeMutablePointer<UInt8>.alloc(range.length)
+
+        fseek(file, range.location, SEEK_SET)
+        fread(buffer, 1, range.length, file)
+
+        let snippet = String(data: NSData(bytes: buffer, length: range.length), encoding: encoding)
+        var title: [(String, Int)] = []
+
+        if snippet != nil {
+            print(snippet)
+            let lines = snippet!.characters.split("\n")
+            var offset = 0
+
+            for line in lines {
+                let str = String(line)
+                if str.regexMatch(self.CHAPTER_REGEX) {
+                    title.append((str, offset))
+                } else {
+                    offset += str.lengthOfBytesUsingEncoding(encoding)
+                }
+            }
+        }
+
+        return title
+    }
+}
