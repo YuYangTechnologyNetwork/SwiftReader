@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		111F8B621CAA58E700090D1A /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111F8B611CAA58E700090D1A /* Book.swift */; };
+		111F8B651CAA61FC00090D1A /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111F8B641CAA61FC00090D1A /* Error.swift */; };
 		112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */ = {isa = PBXBuildFile; fileRef = 112E9C8A1C9FF1B400C5E34C /* LangModels */; };
 		112E9CBB1C9FF1B400C5E34C /* CharDistribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 112E9C8B1C9FF1B400C5E34C /* CharDistribution.cpp */; };
 		112E9CBC1C9FF1B400C5E34C /* JpCntx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 112E9C8D1C9FF1B400C5E34C /* JpCntx.cpp */; };
@@ -63,6 +65,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		111F8B611CAA58E700090D1A /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
+		111F8B641CAA61FC00090D1A /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		112D32471C9FEC0D0083B9A6 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		112E9C8A1C9FF1B400C5E34C /* LangModels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LangModels; path = ThirdParty/Uchardet/LangModels; sourceTree = "<group>"; };
 		112E9C8B1C9FF1B400C5E34C /* CharDistribution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CharDistribution.cpp; path = ThirdParty/Uchardet/CharDistribution.cpp; sourceTree = "<group>"; };
@@ -153,6 +157,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		111F8B601CAA58B900090D1A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				111F8B611CAA58E700090D1A /* Book.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		111F8B631CAA61E400090D1A /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				111F8B641CAA61FC00090D1A /* Error.swift */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
 		112E9C881C9FF18D00C5E34C /* ThirdParty */ = {
 			isa = PBXGroup;
 			children = (
@@ -250,10 +270,12 @@
 		3D49C70C1C96F53700DD408F /* NovelReader */ = {
 			isa = PBXGroup;
 			children = (
+				111F8B631CAA61E400090D1A /* Utils */,
 				1156F1891CA8E3A4006B5848 /* Extentions */,
 				3D6A24471CA0361F00F05D55 /* Books */,
 				112E9C881C9FF18D00C5E34C /* ThirdParty */,
 				11DAD9981C9FE5A50027F98A /* Reader */,
+				111F8B601CAA58B900090D1A /* Models */,
 				3D49C7361C96F5BF00DD408F /* Engine */,
 				3D49C70D1C96F53700DD408F /* AppDelegate.swift */,
 				11DAD9991C9FE5D50027F98A /* MainViewController.swift */,
@@ -452,6 +474,7 @@
 				112E9CBD1C9FF1B400C5E34C /* nsBig5Prober.cpp in Sources */,
 				112E9CC81C9FF1B400C5E34C /* nsMBCSSM.cpp in Sources */,
 				3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */,
+				111F8B621CAA58E700090D1A /* Book.swift in Sources */,
 				112E9CCD1C9FF1B400C5E34C /* nsUTF8Prober.cpp in Sources */,
 				112E9CCC1C9FF1B400C5E34C /* nsUniversalDetector.cpp in Sources */,
 				112E9CC11C9FF1B400C5E34C /* nsEUCJPProber.cpp in Sources */,
@@ -466,6 +489,7 @@
 				112E9CC61C9FF1B400C5E34C /* nsLatin1Prober.cpp in Sources */,
 				112E9CC31C9FF1B400C5E34C /* nsEUCTWProber.cpp in Sources */,
 				112E9CBE1C9FF1B400C5E34C /* nsCharSetProber.cpp in Sources */,
+				111F8B651CAA61FC00090D1A /* Error.swift in Sources */,
 				112E9CBF1C9FF1B400C5E34C /* nsEscCharsetProber.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -549,7 +573,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -587,7 +611,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -603,11 +627,8 @@
 				INFOPLIST_FILE = NovelReader/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Libs",
-				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-liconv";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ruikyesoft.app.NovelReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = NovelReader/BridgingHeader.h;
@@ -624,11 +645,8 @@
 				INFOPLIST_FILE = NovelReader/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Libs",
-				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-liconv";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ruikyesoft.app.NovelReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = NovelReader/BridgingHeader.h;

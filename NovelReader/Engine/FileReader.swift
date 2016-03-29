@@ -28,6 +28,13 @@ class FileReader {
         ENCODING_GB18030: CFStringConvertEncodingToNSStringEncoding(UInt32(CFStringEncodings.GB_18030_2000.rawValue))
     ]
 
+    /*!
+     * Guess the special text file encoding type, use the open-source library `uchardet` by Mozilla.org
+     *
+     * @param file      The file pointer
+     *
+     * @return          The encoding name of the special file, eg: UTF-8, GB18030..
+     */
     func guessFileEncoding(file: UnsafeMutablePointer<FILE>) -> String {
         let uchar_handle = uchardet_new()
         let cache_buffer = UnsafeMutablePointer<Int8>.alloc(Self.BUFFER_SIZE)
@@ -51,11 +58,25 @@ class FileReader {
         return Self.Encodings.indexForKey(encoding) != nil;
     }
 
+    /*!
+     * @param file      The file pointer
+     *
+     * @return          The file size by bytes
+     */
     func getFileSize(file: UnsafeMutablePointer<FILE>) -> Int {
         fseek(file, 0, SEEK_END)
         return ftell(file)
     }
 
+    /*!
+     * @param file      The file pointer
+     *
+     * @param fuzzyPos  The fuzzy file position, mybe it's the word border
+     *
+     * @param encoding  The iOS defined ecnoding, eg: NSUTF8StringEncoding
+     *
+     * @return          If get a word border succes, the correct position will be returned. Failed return -1
+     */
     func getWordBorder(file: UnsafeMutablePointer<FILE>, fuzzyPos: Int, encoding: UInt) -> Int {
         var valid_pos        = -1
         let buffer_size      = 64
@@ -105,15 +126,15 @@ class FileReader {
         var offset = -1
         let MAX_SUCCESS_TIMES = min(len / 2, 24)
 
-        let echo = { (arr: UnsafeMutablePointer<UInt8>, offset: Int, len: Int) in
-            let buf = arr + offset, l = len - offset
-            var str = ""
-            for i in 0 ..< l {
-                str = str.stringByAppendingFormat("%x ", buf[i])
-            }
-
-            print("\(str)=> ", separator: "", terminator: "")
-        }
+        //        let echo = { (arr: UnsafeMutablePointer<UInt8>, offset: Int, len: Int) in
+        //            let buf = arr + offset, l = len - offset
+        //            var str = ""
+        //            for i in 0 ..< l {
+        //                str = str.stringByAppendingFormat("%x ", buf[i])
+        //            }
+        //
+        //            print("\(str)=> ", separator: "", terminator: "")
+        //        }
 
         let check = { (arr:UnsafeMutablePointer<UInt8>, offset: Int, len: Int) -> Bool in
             let buf = arr + offset
@@ -122,8 +143,8 @@ class FileReader {
                 encoding: FileReader.Encodings[Self.ENCODING_GB18030]!
             )
 
-             echo(buf, 0, len)
-             print(str)
+             // echo(buf, 0, len)
+             // print(str)
 
             return str != nil && str?.length == 1
         }
@@ -133,8 +154,8 @@ class FileReader {
 
         while index < len {
             if success_times == 0 {
-                 print("------------------ \(index)")
-                 echo(buffer, index, len - index)
+                // print("------------------ \(index)")
+                // echo(buffer, index, len - index)
                 tmp_buffer = buffer + index
             }
 
@@ -163,17 +184,15 @@ class FileReader {
     }
 
     private func atValidZone(gbkCodeTuple: (UInt8, UInt8)) -> Bool {
-
-         print(String.init(format: "(%x, %x)", gbkCodeTuple.0, gbkCodeTuple.1))
-
+        // print(String.init(format: "(%x, %x)", gbkCodeTuple.0, gbkCodeTuple.1))
         switch gbkCodeTuple {
         case (0x00 ... 0x7f as ClosedInterval, 0x00 ... 0xff as ClosedInterval),
-             (0xa1 ... 0xa3 as ClosedInterval, 0xa1 ... 0xff as ClosedInterval),
-             (0xa8 ... 0xa9 as ClosedInterval, 0x40 ... 0x96 as ClosedInterval),
-             (0xb0 ... 0xf7 as ClosedInterval, 0xa1 ... 0xfe as ClosedInterval),
-             (0x81 ... 0xfd as ClosedInterval, 0x40 ... 0xa0 as ClosedInterval),
-             (0xfe, 0x40 ... 0x4f as ClosedInterval):
-            return !Self.INVALID_SET.contains("\(gbkCodeTuple.0)\(gbkCodeTuple.1)".uppercaseString)
+                (0xa1 ... 0xa3 as ClosedInterval, 0xa1 ... 0xff as ClosedInterval),
+                (0xa8 ... 0xa9 as ClosedInterval, 0x40 ... 0x96 as ClosedInterval),
+                (0xb0 ... 0xf7 as ClosedInterval, 0xa1 ... 0xfe as ClosedInterval),
+                (0x81 ... 0xfd as ClosedInterval, 0x40 ... 0xa0 as ClosedInterval),
+                (0xfe, 0x40 ... 0x4f as ClosedInterval):
+                return !Self.INVALID_SET.contains("\(gbkCodeTuple.0)\(gbkCodeTuple.1)".uppercaseString)
         default:
             return false
         }
@@ -185,40 +204,80 @@ extension FileReader {
         return "^\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回]\\s{0,}.{1,30}$"
     }
 
-    func getCategories(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> [(String, Int)] {
+    /*!
+     * @param file      The file pointer
+     *
+     * @param callback  If open file succes, callback be called when read categories finish
+     *
+     * @return          If open file failure, false will be returned
+     */
+    func asyncGetCategories(file: UnsafeMutablePointer<FILE>, callback: ([(String, Int)]) -> Void) -> Bool {
+        if file != nil {
+            let encodingStr = self.guessFileEncoding(file)
+
+            if isSupportEncding(encodingStr) {
+                let ecnoding = Self.Encodings[encodingStr]!
+                let fileSize = getFileSize(file)
+
+                dispatch_async(dispatch_queue_create("async_get_categories", nil)) {
+                    var location = 0, categories: [(String, Int)] = []
+
+                    repeat {
+                        let head = self.getWordBorder(file, fuzzyPos: location, encoding: ecnoding)
+                        let tail = self.getWordBorder(file, fuzzyPos: head + Self.BUFFER_SIZE, encoding: ecnoding)
+                        let size = tail - head
+
+                        if size > 0 {
+                            categories += self.getCategories(file, range: NSMakeRange(head, size), encoding: ecnoding)
+                            location = tail
+                        }
+                    } while (location < fileSize)
+
+                    dispatch_async(dispatch_get_main_queue()) {
+                        callback(categories)
+                    }
+                }
+
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private func getCategories(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> [(String, Int)] {
         let buffer = UnsafeMutablePointer<UInt8>.alloc(range.length)
 
         fseek(file, range.location, SEEK_SET)
-        var valid_length = fread(buffer, 1, range.length, file)
 
-        valid_length = valid_length > 0 && valid_length < range.length ? valid_length : range.length
-
-        let snippet = String(data: NSData(bytes: buffer, length: valid_length), encoding: encoding)
+        var validLen = fread(buffer, 1, range.length, file)
         var title: [(String, Int)] = []
 
-        if snippet != nil {
-//            print(snippet)
-            let newLineChar = getNewLineCharater(snippet!)
-            let lines = snippet!.characters.split(newLineChar)
-            var offset = 0
+        if validLen > 0 {
+            validLen = min(validLen, range.length)
+            let snippet = String(data: NSData(bytes: buffer, length: validLen), encoding: encoding)
 
-            for line in lines {
-                let str = String(line)
-                if str.regexMatch(self.CHAPTER_REGEX) {
-                    //title.append((str.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()), offset))
-                    title.append((str, offset))
-                } else {
-                    offset += str.lengthOfBytesUsingEncoding(encoding)
+            if snippet != nil {
+                let lines = snippet!.characters.split(getNewLineCharater(snippet!))
+                var locat = range.location
+
+                for line in lines {
+                    let str = String(line)
+                    if str.regexMatch(self.CHAPTER_REGEX) {
+                        let chapter = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
+                        title.append((chapter, locat))
+                        // print(chapter)
+                    } else {
+                        locat += str.lengthOfBytesUsingEncoding(encoding)
+                    }
                 }
             }
-        } else {
-            print("Somthing is nil")
         }
 
         return title
     }
 
-    private func getNewLineCharater(text:String) -> Character {
+    private func getNewLineCharater(text: String) -> Character {
         if text.characters.contains("\r\n") {
             return "\r\n"
         } else if text.characters.contains("\r") {

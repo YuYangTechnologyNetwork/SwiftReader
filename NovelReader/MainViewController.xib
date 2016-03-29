@@ -43,12 +43,12 @@
                     <exclude reference="Ap5-vf-Vwe"/>
                 </mask>
                 <mask key="constraints">
+                    <exclude reference="Z88-qB-XJ3"/>
+                    <exclude reference="b4C-Pd-G5c"/>
                     <exclude reference="29y-bw-IjG"/>
                     <exclude reference="BGa-HF-nmd"/>
                     <exclude reference="fnA-qm-Hbl"/>
                     <exclude reference="pPD-sk-5WQ"/>
-                    <exclude reference="Z88-qB-XJ3"/>
-                    <exclude reference="b4C-Pd-G5c"/>
                 </mask>
             </variation>
             <variation key="heightClass=regular-widthClass=compact">
@@ -57,12 +57,12 @@
                     <include reference="Ap5-vf-Vwe"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="Z88-qB-XJ3"/>
+                    <include reference="b4C-Pd-G5c"/>
                     <include reference="29y-bw-IjG"/>
                     <include reference="BGa-HF-nmd"/>
                     <include reference="fnA-qm-Hbl"/>
                     <include reference="pPD-sk-5WQ"/>
-                    <include reference="Z88-qB-XJ3"/>
-                    <include reference="b4C-Pd-G5c"/>
                 </mask>
             </variation>
         </view>
