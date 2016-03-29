@@ -18,14 +18,13 @@ class MainViewController: UIViewController {
 
         self.progressIndicator.startAnimating()
 
-        let filePath = NSBundle.mainBundle().pathForResource("jy_utf8", ofType: "txt")
+        let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
         let book     = try! Book(fullFilePath: filePath!)
-
-        print(book)
+        uiLabel.text = book.description
 
         let file     = fopen(filePath!, "r")
         let reader   = FileReader()
-        let result   = reader.asyncGetCategories(file){ categories in
+        let result   = reader.asyncGetChapters(file){ categories in
             self.progressIndicator.stopAnimating()
             self.progressIndicator.hidden = true
             self.uiLabel.hidden = false

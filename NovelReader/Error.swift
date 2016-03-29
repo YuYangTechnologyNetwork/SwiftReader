@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum Error:ErrorType {
+enum Error: ErrorType {
     case FileNotExist(String)
     case NotSupportEncoding(String)
 }

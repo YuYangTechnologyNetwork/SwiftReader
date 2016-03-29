@@ -30,7 +30,7 @@ class Book: NSObject {
     /*!
      * @param fullFilePath  Full file path
      *
-     * @throw If can't open file by fullFilePath, throw an Error.FileNotExist(fullFilePath)
+     * @throw If can't open file at fullFilePath, throw an Error.FileNotExist(fullFilePath)
      */
     init(fullFilePath: String) throws {
         let file = fopen(fullFilePath, "r")
