@@ -32,26 +32,22 @@ class MainViewController: UIViewController {
                     let ecnoding = FileReader.Encodings[encodingStr]!
                     let fileSize = reader.getFileSize(file)
                     var location = 0
-                    var rate = 1
                     repeat {
                         let start = reader.getWordBorder(file, fuzzyPos: location, encoding: ecnoding)
-                        let end = reader.getWordBorder(file, fuzzyPos: location + FileReader.BUFFER_SIZE * rate, encoding: ecnoding)
+                        let end = reader.getWordBorder(file, fuzzyPos: start + FileReader.BUFFER_SIZE, encoding: ecnoding)
                         let length = end - start
 
                         if length > 0 {
-                            let categories = reader.getCategories(file, range: NSMakeRange(location, length), encoding: ecnoding)
+                            let categories = reader.getCategories(file, range: NSMakeRange(start, length), encoding: ecnoding)
                             if categories.count > 0 {
                                 for category in categories {
-                                    print(category)
+                                    print(category.0)
                                 }
                             }
 
                             location = end
-                            rate = 1
-                        } else {
-                            rate += 1
                         }
-                    } while (Double(location + FileReader.BUFFER_SIZE * rate) < Double(fileSize) * 0.25)
+                    } while (location < fileSize)
                 }
                 
                 fclose(file)

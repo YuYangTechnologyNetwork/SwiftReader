@@ -15,8 +15,8 @@ extension String {
 
     func regexMatch(regex: String) -> Bool {
         do {
-            let exp = try NSRegularExpression(pattern: regex, options: .CaseInsensitive)
-            return exp.matchesInString(self, options: .Anchored, range: NSMakeRange(0, length)).count > 0
+            let exp = try NSRegularExpression(pattern: regex, options: .AnchorsMatchLines)
+            return exp.matchesInString(self, options: .WithoutAnchoringBounds, range: NSMakeRange(0, length)).count > 0
         } catch _ {
             return false
         }

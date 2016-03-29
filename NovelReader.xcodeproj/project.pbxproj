@@ -212,12 +212,12 @@
 			name = Uchardet;
 			sourceTree = "<group>";
 		};
-		1156F1891CA8E3A4006B5848 /* extentions */ = {
+		1156F1891CA8E3A4006B5848 /* Extentions */ = {
 			isa = PBXGroup;
 			children = (
 				1156F18A1CA8E3C1006B5848 /* MyExtentions.swift */,
 			);
-			name = extentions;
+			name = Extentions;
 			sourceTree = "<group>";
 		};
 		11DAD9981C9FE5A50027F98A /* Reader */ = {
@@ -250,7 +250,7 @@
 		3D49C70C1C96F53700DD408F /* NovelReader */ = {
 			isa = PBXGroup;
 			children = (
-				1156F1891CA8E3A4006B5848 /* extentions */,
+				1156F1891CA8E3A4006B5848 /* Extentions */,
 				3D6A24471CA0361F00F05D55 /* Books */,
 				112E9C881C9FF18D00C5E34C /* ThirdParty */,
 				11DAD9981C9FE5A50027F98A /* Reader */,

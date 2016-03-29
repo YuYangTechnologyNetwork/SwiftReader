@@ -103,17 +103,17 @@ class FileReader {
 
     private func detectGB18030_2000Border(buffer: UnsafeMutablePointer<UInt8>, len: Int) -> Int {
         var offset = -1
-        let MAX_SUCCESS_TIMES = min(len / 4, 24)
+        let MAX_SUCCESS_TIMES = min(len / 2, 24)
 
-        // let echo = { (arr: UnsafeMutablePointer<UInt8>, offset: Int, len: Int) in
-        //      let buf = arr + offset, l = len - offset
-        //      var str = ""
-        //      for i in 0 ..< l {
-        //          str = str.stringByAppendingFormat("%x ", buf[i])
-        //      }
-        //
-        //      print("\(str)=> ", separator: "", terminator: "")
-        // }
+        let echo = { (arr: UnsafeMutablePointer<UInt8>, offset: Int, len: Int) in
+            let buf = arr + offset, l = len - offset
+            var str = ""
+            for i in 0 ..< l {
+                str = str.stringByAppendingFormat("%x ", buf[i])
+            }
+
+            print("\(str)=> ", separator: "", terminator: "")
+        }
 
         let check = { (arr:UnsafeMutablePointer<UInt8>, offset: Int, len: Int) -> Bool in
             let buf = arr + offset
@@ -122,8 +122,8 @@ class FileReader {
                 encoding: FileReader.Encodings[Self.ENCODING_GB18030]!
             )
 
-            // echo(buf, 0, len)
-            // print(str)
+             echo(buf, 0, len)
+             print(str)
 
             return str != nil && str?.length == 1
         }
@@ -133,8 +133,8 @@ class FileReader {
 
         while index < len {
             if success_times == 0 {
-                // print("------------------ \(index)")
-                // echo(buffer, index, len - index)
+                 print("------------------ \(index)")
+                 echo(buffer, index, len - index)
                 tmp_buffer = buffer + index
             }
 
@@ -164,7 +164,7 @@ class FileReader {
 
     private func atValidZone(gbkCodeTuple: (UInt8, UInt8)) -> Bool {
 
-        // print(String.init(format: "(%x, %x)", gbkCodeTuple.0, gbkCodeTuple.1))
+         print(String.init(format: "(%x, %x)", gbkCodeTuple.0, gbkCodeTuple.1))
 
         switch gbkCodeTuple {
         case (0x00 ... 0x7f as ClosedInterval, 0x00 ... 0xff as ClosedInterval),
@@ -182,33 +182,49 @@ class FileReader {
 
 extension FileReader {
     private var CHAPTER_REGEX: String {
-        return "^\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回].*(\r|\n)"
+        return "^\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回]\\s{0,}.{1,30}$"
     }
 
     func getCategories(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> [(String, Int)] {
         let buffer = UnsafeMutablePointer<UInt8>.alloc(range.length)
 
         fseek(file, range.location, SEEK_SET)
-        fread(buffer, 1, range.length, file)
+        var valid_length = fread(buffer, 1, range.length, file)
 
-        let snippet = String(data: NSData(bytes: buffer, length: range.length), encoding: encoding)
+        valid_length = valid_length > 0 && valid_length < range.length ? valid_length : range.length
+
+        let snippet = String(data: NSData(bytes: buffer, length: valid_length), encoding: encoding)
         var title: [(String, Int)] = []
 
         if snippet != nil {
-            print(snippet)
-            let lines = snippet!.characters.split("\n")
+//            print(snippet)
+            let newLineChar = getNewLineCharater(snippet!)
+            let lines = snippet!.characters.split(newLineChar)
             var offset = 0
 
             for line in lines {
                 let str = String(line)
                 if str.regexMatch(self.CHAPTER_REGEX) {
+                    //title.append((str.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()), offset))
                     title.append((str, offset))
                 } else {
                     offset += str.lengthOfBytesUsingEncoding(encoding)
                 }
             }
+        } else {
+            print("Somthing is nil")
         }
 
         return title
+    }
+
+    private func getNewLineCharater(text:String) -> Character {
+        if text.characters.contains("\r\n") {
+            return "\r\n"
+        } else if text.characters.contains("\r") {
+            return "\r"
+        } else {
+            return "\n"
+        }
     }
 }
