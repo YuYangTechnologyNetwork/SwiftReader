@@ -15,7 +15,7 @@ class FileReader {
     static let ENCODING_UTF8    = "UTF-8"
     static let ENCODING_GB18030 = "GB18030"
 
-    // In the set, these code can't be decode to a readable character
+    // In this set, these gbk-code can't be decoded to a readable character
     private static let INVALID_SET:[String] = [
         "A1A0", "A2A0", "A2AB", "A2AC", "A2AD", "A2AE", "A2AF",
         "A2B0", "A2E3", "A2E4", "A2EF", "A2F0", "A2FE", "A2FF",
@@ -34,7 +34,7 @@ class FileReader {
      *
      * @param file      The file pointer
      *
-     * @return          The encoding name of the special file, eg: UTF-8, GB18030..
+     * @return          The encoding name of the file, eg: UTF-8, GB18030.
      */
     func guessFileEncoding(file: UnsafeMutablePointer<FILE>) -> String {
         let uchar_handle = uchardet_new()
@@ -105,6 +105,7 @@ class FileReader {
                 valid_pos = self.detectUTF8Border(buffer, len: valid_len)
             case Self.Encodings[Self.ENCODING_GB18030]!:
                 valid_pos = self.detectGB18030_2000Border(buffer, len: valid_len)
+            // TODO: add new encoding type support
             default: break
             }
 
@@ -150,40 +151,18 @@ class FileReader {
      */
     private func detectGB18030_2000Border(buffer: UnsafeMutablePointer<UInt8>, len: Int) -> Int {
         var offset = -1
-        let MAX_SUCCESS_TIMES = min(len / 2, 24)
+        let MAX_SUCCESS_TIMES = min(len / 4, 24)
 
-        // let echo = { (arr: UnsafeMutablePointer<UInt8>, offset: Int, len: Int) in
-        //     let buf = arr + offset, l = len - offset
-        //     var str = ""
-        //     for i in 0 ..< l {
-        //         str = str.stringByAppendingFormat("%x ", buf[i])
-        //     }
-        //
-        //     print("\(str)=> ", separator: "", terminator: "")
-        // }
-
-        let check = { (arr:UnsafeMutablePointer<UInt8>, offset: Int, len: Int) -> Bool in
+        let check = { (arr: UnsafeMutablePointer<UInt8>, offset: Int, len: Int) -> Bool in
             let buf = arr + offset
-            let str = String(
-                data: NSData(bytes: buf, length: len),
-                encoding: FileReader.Encodings[Self.ENCODING_GB18030]!
-            )
-
-             // echo(buf, 0, len)
-             // print(str)
-
+            let str = String(data: NSData(bytes: buf, length: len), encoding: Self.Encodings[Self.ENCODING_GB18030]!)
             return str != nil && str?.length == 1
         }
-
 
         var index = 0, start = 0, success_times = 0, tmp_buffer = buffer
 
         while index < len {
-            if success_times == 0 {
-                // print("------------------ \(index)")
-                // echo(buffer, index, len - index)
-                tmp_buffer = buffer + index
-            }
+            if success_times == 0 { tmp_buffer = buffer + index }
 
             if check(tmp_buffer, start, 1) && atValidZone((tmp_buffer[start], 0)) {
                 start += 1
@@ -210,17 +189,17 @@ class FileReader {
     }
 
     /*
-     * Check the 2 bytes gbk code in GB18030 Encoding Table
+     * Check the tuple gbk-code in GB18030 Encoding Table
      */
     private func atValidZone(gbkCodeTuple: (UInt8, UInt8)) -> Bool {
         switch gbkCodeTuple {
         case (0x00 ... 0x7f as ClosedInterval, 0x00 ... 0xff as ClosedInterval),
-                (0xa1 ... 0xa3 as ClosedInterval, 0xa1 ... 0xff as ClosedInterval),
-                (0xa8 ... 0xa9 as ClosedInterval, 0x40 ... 0x96 as ClosedInterval),
-                (0xb0 ... 0xf7 as ClosedInterval, 0xa1 ... 0xfe as ClosedInterval),
-                (0x81 ... 0xfd as ClosedInterval, 0x40 ... 0xa0 as ClosedInterval),
-                (0xfe, 0x40 ... 0x4f as ClosedInterval):
-                return !Self.INVALID_SET.contains("\(gbkCodeTuple.0)\(gbkCodeTuple.1)".uppercaseString)
+             (0xa1 ... 0xa3 as ClosedInterval, 0xa1 ... 0xff as ClosedInterval),
+             (0xa8 ... 0xa9 as ClosedInterval, 0x40 ... 0x96 as ClosedInterval),
+             (0xb0 ... 0xf7 as ClosedInterval, 0xa1 ... 0xfe as ClosedInterval),
+             (0x81 ... 0xfd as ClosedInterval, 0x40 ... 0xa0 as ClosedInterval),
+             (0xfe, 0x40 ... 0x4f as ClosedInterval):
+            return !Self.INVALID_SET.contains("\(gbkCodeTuple.0)\(gbkCodeTuple.1)".uppercaseString)
         default:
             return false
         }
@@ -235,9 +214,9 @@ extension FileReader {
     /*!
      * @param file      The file pointer
      *
-     * @param callback  If open file succes, callback be called when reading categories finish
+     * @param callback  If open file success, callback be called when reading chapters finish
      *
-     * @return          If open file failure, false will be returned
+     * @return          If open file failed, false will be returned
      */
     func asyncGetChapters(file: UnsafeMutablePointer<FILE>, callback: ([(String, Int)]) -> Void) -> Bool {
         if file != nil {
@@ -248,7 +227,7 @@ extension FileReader {
                 let fileSize = getFileSize(file)
 
                 dispatch_async(dispatch_queue_create("async_get_categories", nil)) {
-                    var location = 0, categories: [(String, Int)] = []
+                    var location = 0, chapters: [(String, Int)] = []
 
                     repeat {
                         let head = self.getWordBorder(file, fuzzyPos: location, encoding: ecnoding)
@@ -256,13 +235,13 @@ extension FileReader {
                         let size = tail - head
 
                         if size > 0 {
-                            categories += self.chaptersInRange(file, range: NSMakeRange(head, size), encoding: ecnoding)
+                            chapters += self.chaptersInRange(file, range: NSMakeRange(head, size), encoding: ecnoding)
                             location = tail
                         }
                     } while (location < fileSize)
 
                     dispatch_async(dispatch_get_main_queue()) {
-                        callback(categories)
+                        callback(chapters)
                     }
                 }
 
@@ -278,7 +257,7 @@ extension FileReader {
      *
      * @param file      The file pointer
      *
-     * @param range     The spical range, [0 ... filesize]
+     * @param range     The special range, [0 ... filesize]
      *
      * @param ecnoding  The iOS defined ecnoding, eg: NSUTF8StringEncoding
      *
@@ -286,9 +265,9 @@ extension FileReader {
      */
     func readRange(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> String? {
         /*
-         * Try read a prefect snippet in range
+         * Try read a prefect snippet for range
          */
-        let snippetDetour = { (head: Int, tail: Int) -> (Bool, String?) in
+        let detector = { (head: Int, tail: Int) -> (Bool, String?) in
             let loc = range.location - head
             let len = range.length + head + tail
             let buf = UnsafeMutablePointer<UInt8>.alloc(len)
@@ -311,7 +290,7 @@ extension FileReader {
 
         /*
          * If the range start and end not a word border, try to repair it.
-         * The looper mybe like below:
+         * Loops mybe like below:
          *   Loop 0:     range.loc ... range.loc + range.len + 1
          *   Loop 1: range.loc - 1 ... range.loc + range.len
          *   Loop 2: range.loc - 1 ... range.loc + range.len + 1
@@ -319,7 +298,7 @@ extension FileReader {
          *   ...
          */
         repeat {
-            snippet = snippetDetour(dir % 2 == 0 ? offset : 0, dir > 0 ? offset : 0)
+            snippet = detector(dir % 2 == 0 ? offset : 0, dir > 0 ? offset : 0)
             
             if (snippet.1 == nil) {
                 offset += dir == 0 ? 1 : 0
@@ -332,11 +311,11 @@ extension FileReader {
     }
 
     /*
-     * Read a chapters of file in range
+     * Read chapters of file in range
      *
-     * @param file                  he file pointer
+     * @param file                  The file pointer
      *
-     * @param range                 The spical range, [0 ... filesize]
+     * @param range                 The special range, [0 ... filesize]
      *
      * @param ecnoding              The iOS defined ecnoding, eg: NSUTF8StringEncoding
      *
@@ -352,10 +331,11 @@ extension FileReader {
             
             for line in lines {
                 let str = String(line)
+
                 if str.regexMatch(self.CHAPTER_REGEX) {
                     let chapter = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
                     title.append((chapter, locat))
-                    print(chapter)
+                    // print(chapter)
                 } else {
                     locat += str.lengthOfBytesUsingEncoding(encoding)
                 }
@@ -366,7 +346,7 @@ extension FileReader {
     }
 
     /*
-     * Get the spical text newline charater
+     * Get the special text newline character
      * \r\n, \r:    Mybe for Windows
      *       \n:    Mybe for Linux/Unix, Mac, Windows
      */

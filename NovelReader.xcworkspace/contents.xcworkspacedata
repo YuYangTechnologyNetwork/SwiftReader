@@ -5,6 +5,9 @@
       location = "group:Playgrounds/Test.playground">
    </FileRef>
    <FileRef
-      location = "container:NovelReader.xcodeproj">
+      location = "group:NovelReader.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
    </FileRef>
 </Workspace>
