@@ -30,24 +30,32 @@ class MainViewController: UIViewController {
         let file     = fopen(filePath!, "r")
         let reader   = FileReader()
         let result   = reader.asyncGetChaptersInRange(file, range: NSMakeRange(0, 30960)){ categories in
-            self.progressIndicator.stopAnimating()
+            FontManager.asyncDownloadFont(FontManager.SupportFonts.LanTing) {
+                (success: Bool, fontName: String, msg: String) in
+                print("Message: \(msg)")
+                if success {
+                    self.progressIndicator.stopAnimating()
 
-            self.progressIndicator.hidden = true
-            self.yyLabel.hidden           = false
-            let content                   = reader.readRange(file, range: NSMakeRange(0, 2048),
-                                                             encoding: FileReader.Encodings[book.encoding]!)
+                    self.progressIndicator.hidden = true
+                    self.yyLabel.hidden           = false
+                    let content                   = reader.readRange(file, range: NSMakeRange(512, 3096),
+                                                                     encoding: FileReader.Encodings[book.encoding]!)
 
-            let attrText                  = Typesetter().typesettingText(content!)
-            self.yyLabel.attributedText   = attrText
-            let visibleRange              = self.yyLabel.textLayout.visibleRange
+                    let attrText                  = Typesetter(fontName: fontName).typesettingText(content!)
+                    self.yyLabel.attributedText   = attrText
+                    /*let visibleRange              = self.yyLabel.textLayout.visibleRange
 
-            print(visibleRange)
+                     print(visibleRange)
 
-            let visibAttr = attrText.attributedSubstringFromRange(visibleRange).string
-
-            print(visibAttr)
-
-            fclose(file)
+                     let visibAttr = attrText.attributedSubstringFromRange(visibleRange).string
+                     
+                     print(visibAttr)*/
+                    
+                    fclose(file)
+                    
+                    /*print(FontManager.listSystemFonts())*/
+                }
+            }
         }
 
         if !result {

@@ -121,6 +121,10 @@
 		11DAD9991C9FE5D50027F98A /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		11DAD99A1C9FE5D50027F98A /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 		2C29CF4B14E4A37B75632830 /* libPods-NovelReader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovelReader.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D05DA151CAC20EA0059DBDF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		3D05DA171CAC20F90059DBDF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		3D05DA191CAC21050059DBDF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		3D05DA1B1CAC21150059DBDF /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		3D49C70A1C96F53700DD408F /* NovelReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NovelReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D49C70D1C96F53700DD408F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3D49C70F1C96F53700DD408F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -339,6 +343,10 @@
 		8B5E1BFFFD6BF47811135B89 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3D05DA1B1CAC21150059DBDF /* CoreText.framework */,
+				3D05DA191CAC21050059DBDF /* CoreGraphics.framework */,
+				3D05DA171CAC20F90059DBDF /* Foundation.framework */,
+				3D05DA151CAC20EA0059DBDF /* UIKit.framework */,
 				2C29CF4B14E4A37B75632830 /* libPods-NovelReader.a */,
 			);
 			name = Frameworks;
