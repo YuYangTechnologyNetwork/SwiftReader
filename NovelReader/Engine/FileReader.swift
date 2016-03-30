@@ -253,6 +253,38 @@ extension FileReader {
     }
 
     /*
+     * @param file      The file pointer
+     *
+     * @param callback  If open file success, callback be called when reading chapters finish
+     *
+     * @param range     The special range, [0 ... filesize]
+     *
+     * @return          If open file failed, false will be returned
+     */
+    func asyncGetChaptersInRange(file: UnsafeMutablePointer<FILE>, range: NSRange, callback: ([(String, Int)]) -> Void) -> Bool {
+        if file != nil {
+            let encodingStr = self.guessFileEncoding(file)
+
+            if isSupportEncding(encodingStr) {
+                let ecnoding = Self.Encodings[encodingStr]!, fileSize = getFileSize(file)
+
+                if range.location < 0 || range.location + range.length > fileSize { return false }
+
+                dispatch_async(dispatch_queue_create("async_get_categories", nil)) {
+                    let chapters = self.chaptersInRange(file, range: range, encoding: ecnoding)
+                    dispatch_async(dispatch_get_main_queue()) {
+                        callback(chapters)
+                    }
+                }
+
+                return true
+            }
+        }
+
+        return false
+    }
+
+    /*
      * Read a snippet of file in range
      *
      * @param file      The file pointer
@@ -335,7 +367,7 @@ extension FileReader {
                 if str.regexMatch(self.CHAPTER_REGEX) {
                     let chapter = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
                     title.append((chapter, locat))
-                    // print(chapter)
+                    NSLog(chapter)
                 } else {
                     locat += str.lengthOfBytesUsingEncoding(encoding)
                 }

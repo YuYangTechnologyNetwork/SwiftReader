@@ -10,7 +10,7 @@ import UIKit
 
 class MainViewController: UIViewController {
 
-    @IBOutlet weak var uiLabel: UILabel!
+    @IBOutlet weak var yyLabel: YYLabel!
     @IBOutlet weak var progressIndicator: UIActivityIndicatorView!
 
     override func viewDidLoad() {
@@ -18,16 +18,35 @@ class MainViewController: UIViewController {
 
         self.progressIndicator.startAnimating()
 
-        let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
-        let book     = try! Book(fullFilePath: filePath!)
-        uiLabel.text = book.description
+        let filePath            = NSBundle.mainBundle().pathForResource("jy_utf8", ofType: "txt")
+        let book                = try! Book(fullFilePath: filePath!)
+
+        yyLabel.numberOfLines      = 0
+        yyLabel.textColor          = UIColor.blackColor()
+        yyLabel.truncationToken    = NSAttributedString(string: "")
+        yyLabel.lineBreakMode      = .ByWordWrapping
+        yyLabel.textContainerInset = UIEdgeInsetsMake(10, 10, 10, 10)
 
         let file     = fopen(filePath!, "r")
         let reader   = FileReader()
-        let result   = reader.asyncGetChapters(file){ categories in
+        let result   = reader.asyncGetChaptersInRange(file, range: NSMakeRange(0, 30960)){ categories in
             self.progressIndicator.stopAnimating()
+
             self.progressIndicator.hidden = true
-            self.uiLabel.hidden = false
+            self.yyLabel.hidden           = false
+            let content                   = reader.readRange(file, range: NSMakeRange(0, 2048),
+                                                             encoding: FileReader.Encodings[book.encoding]!)
+
+            let attrText                  = Typesetter().typesettingText(content!)
+            self.yyLabel.attributedText   = attrText
+            let visibleRange              = self.yyLabel.textLayout.visibleRange
+
+            print(visibleRange)
+
+            let visibAttr = attrText.attributedSubstringFromRange(visibleRange).string
+
+            print(visibAttr)
+
             fclose(file)
         }
 

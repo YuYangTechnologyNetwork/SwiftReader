@@ -28,7 +28,7 @@ extension String {
     }
 }
 
-func makeFrame(content: String, var bounds: CGRect, font: UIFont, margin: Margin)->CTFrameRef {
+func makeFrame(content: String, bounds: CGRect, font: UIFont, margin: Margin)->CTFrameRef {
     var aligment        = CTTextAlignment.Justified
     var lineSpace       = 8.0
     var paraSpace       = 12.0
@@ -52,13 +52,15 @@ func makeFrame(content: String, var bounds: CGRect, font: UIFont, margin: Margin
     
     let frameSetter = CTFramesetterCreateWithAttributedString(attrContent as CFAttributedStringRef)
     let path        = CGPathCreateMutable()
+    let container   = CGRectMake(
+        bounds.origin.x + margin.left,
+        bounds.origin.y + margin.top,
+        bounds.size.width - margin.left - margin.right,
+        bounds.size.height - margin.top - margin.bottom
+    )
+
     
-    bounds.origin.x    += margin.left
-    bounds.origin.y    += margin.top
-    bounds.size.width  -= margin.left + margin.right
-    bounds.size.height -= margin.top + margin.bottom
-    
-    CGPathAddRect(path, nil, bounds)
+    CGPathAddRect(path, nil, container)
     return CTFramesetterCreateFrame(frameSetter, CFRangeMake(0, range.length), path, nil)
 }
 
