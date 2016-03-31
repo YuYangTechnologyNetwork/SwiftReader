@@ -7,9 +7,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MainViewController" customModule="NovelReader" customModuleProvider="target">
             <connections>
-                <outlet property="paperContainer" destination="Owc-4T-7Lo" id="zvX-1C-0bZ"/>
                 <outlet property="progressIndicator" destination="Ap5-vf-Vwe" id="viv-Gm-mmF"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="yyLabel" destination="Owc-4T-7Lo" id="rP7-Rk-oJ6"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -17,7 +17,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Owc-4T-7Lo">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Owc-4T-7Lo" customClass="YYLabel">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>

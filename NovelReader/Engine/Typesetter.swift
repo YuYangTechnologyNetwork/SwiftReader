@@ -18,10 +18,16 @@ class Typesetter {
     private typealias `Self` = Typesetter
 
     /*Default font size*/
-    static let DEFAULT_FONT_SIZE: CGFloat = 20.0
+    static let DEFAULT_FONT_SIZE: CGFloat = 20
 
-    /*Default margin: (left, top, right, bottom)*/
-    static let DEFAULT_MARGIN = (10, 8, 10, 8)
+    /*Default margin: (top, left, bottom, right)*/
+    static let DEFAULT_MARGIN: (CGFloat, CGFloat, CGFloat, CGFloat) = (8, 10, 8, 10)
+
+    /*Default line space*/
+    static let DEFAULT_LINE_SPACE: CGFloat = 0
+
+    /*Default font*/
+    static let DEFAULT_FONT = FontManager.SupportFonts.KaiTi
 
     /*Singleton*/
     static let Ins = Typesetter()
@@ -31,7 +37,7 @@ class Typesetter {
     private var listeners: [String: (_: String) -> Void] = [:]
 
     /*Font name code, see FontManager.SupportFonts*/
-    var font: FontManager.SupportFonts = FontManager.SupportFonts.System {
+    var font: FontManager.SupportFonts = Self.DEFAULT_FONT {
         didSet { for l in listeners.values { l("FontName") } }
     }
 
@@ -41,12 +47,12 @@ class Typesetter {
     }
 
     /*Line space, for CGFloat type*/
-    var line_space: CGFloat = 8.0 {
+    var line_space: CGFloat = Self.DEFAULT_LINE_SPACE {
         didSet { for l in listeners.values { l("LineSpace") } }
     }
 
     /*Paper border margin: (left, top, right, bottom)*/
-    var margin: (CGFloat, CGFloat, CGFloat, CGFloat) = (8, 8, 8, 8) {
+    var margin: (CGFloat, CGFloat, CGFloat, CGFloat) = Self.DEFAULT_MARGIN {
         didSet { for l in listeners.values { l("BorderMargin") } }
     }
 
@@ -92,13 +98,12 @@ class Typesetter {
      */
     func typeset(text: String) -> NSMutableAttributedString {
         let attrt = NSMutableAttributedString(string: text)
-        let style = NSMutableParagraphStyle()
 
-        attrt.yy_font = UIFont(name: FontManager.getFontName(font), size: self.fontSize)
-        style.alignment = .Justified
-        style.lineSpacing = line_space
-
-        attrt.yy_setParagraphStyle(style, range: NSMakeRange(0, attrt.length))
+        attrt.yy_font          = UIFont(name: FontManager.getFontName(font), size: self.fontSize)
+        attrt.yy_color         = UIColor.blackColor()
+        attrt.yy_lineBreakMode = .ByWordWrapping
+        attrt.yy_alignment     = .Justified
+        attrt.yy_lineSpacing   = line_space
 
         return attrt
     }

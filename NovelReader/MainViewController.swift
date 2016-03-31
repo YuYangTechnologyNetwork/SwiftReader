@@ -9,48 +9,49 @@
 import UIKit
 
 class MainViewController: UIViewController {
-
-    @IBOutlet weak var paperContainer: UIView!
+    
+    @IBOutlet weak var yyLabel: YYLabel!
     @IBOutlet weak var progressIndicator: UIActivityIndicatorView!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.progressIndicator.startAnimating()
 
+        Typesetter.Ins.font       = FontManager.SupportFonts.KaiTi
+        Typesetter.Ins.fontSize   = 18
+        Typesetter.Ins.line_space = 4
+        
         FontManager.asyncDownloadFont(Typesetter.Ins.font) { (_: Bool, _: String, _: String) in
             // Async load book content
             dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
-                let filePath     = NSBundle.mainBundle().pathForResource("jy_utf8", ofType: "txt")
-                let book         = try! Book(fullFilePath: filePath!)
-                let file         = fopen(filePath!, "r")
-                let reader       = FileReader()
-                let content      = reader.readRange(file, range: NSMakeRange(512, 3096),
-                                               encoding: FileReader.Encodings[book.encoding]!)
+                let filePath = NSBundle.mainBundle().pathForResource("jy_utf8", ofType: "txt")
+                let book     = try! Book(fullFilePath: filePath!)
+                let file     = fopen(filePath!, "r")
+                let reader   = FileReader()
+                let content  = reader.readRange(file, range: NSMakeRange(0, 3096),
+                                                encoding: FileReader.Encodings[book.encoding]!)
 
-                let paper        = Paper(size: self.paperContainer.frame)
-                let visibleRange = paper.attachText(content!)
-
-                let visibAttr = paper.text!.attributedSubstringFromRange(visibleRange).string
-
-                print(visibAttr)
-
+                let paper    = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
+                let vtext    = paper.werittingText(content!).text
+                
+                print(vtext)
+                
                 fclose(file)
-
+                
                 dispatch_async(dispatch_get_main_queue()) {
-                    self.paperContainer.addSubview(paper.getView())
-                    self.paperContainer.setNeedsDisplay()
+                    paper.attachToView(self.yyLabel)
                     self.progressIndicator.stopAnimating()
                     self.progressIndicator.hidden = true
                 }
             }
         }
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     /*
      // MARK: - Navigation
 

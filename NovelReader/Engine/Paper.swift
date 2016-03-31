@@ -9,34 +9,56 @@
 import Foundation
 
 class Paper {
-    var view: YYLabel!
-    var text: NSMutableAttributedString? = nil
 
-    init(size: CGRect) {
-        self.view = YYLabel(frame: size)
+    /*Visible text*/
+    var text: String!
 
-        // Base
-        view.numberOfLines = 0
-        view.textColor = UIColor.blackColor()
-        view.truncationToken = NSAttributedString(string: "")
-        view.lineBreakMode = .ByWordWrapping
+    /*For YYLabel*/
+    private var textLayout: YYTextLayout!
 
-        let tys = Typesetter.Ins
-
-        // Paper bound margin
-        view.textContainerInset = UIEdgeInsetsMake(tys.margin.0, tys.margin.1, tys.margin.2, tys.margin.3)
-
-        // Text direction
-        view.verticalForm = tys.textOrentation == Typesetter.TextOrentation.Vertical
+    /*For YYLabel*/
+    private let textContainer: YYTextContainer!
+    
+    init(size: CGSize) {
+        let insets = UIEdgeInsetsMake(Typesetter.Ins.margin.0, Typesetter.Ins.margin.1,
+            Typesetter.Ins.margin.2, Typesetter.Ins.margin.3)
+        
+        self.textContainer                     = YYTextContainer(size: size, insets: insets)
+        self.textContainer.maximumNumberOfRows = 0
+        self.textContainer.truncationToken     = NSMutableAttributedString(string: "")
+        self.textContainer.truncationType      = .None
+        self.textContainer.verticalForm        = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
     }
 
-    func attachText(text: String) -> NSRange {
-        self.text = Typesetter.Ins.typeset(text)
-        self.view.attributedText = self.text
-        return self.view.textLayout.visibleRange
+    /*
+     * Use typesetter to write text to this paper
+     * 
+     * @param text          A long String, Paper's text will be setted, len(Paper.text) <= text
+     *
+     * @return Paper        For the call chains
+     */
+    func werittingText(text: String) -> Paper {
+        let attrt = Typesetter.Ins.typeset(text)
+        self.textLayout = YYTextLayout(container: self.textContainer, text: attrt)
+        self.text =  attrt.attributedSubstringFromRange(textLayout.visibleRange).string
+        return self
     }
 
-    func getView() -> UIView {
-        return self.view
+    /*
+     * Attach this paper to a YYLabel to show
+     *
+     * @param           View to show paper
+     *
+     * @return Bool     If paper not call writtingText, false will be returned
+     */
+    func attachToView(yyLabel: YYLabel) -> Bool {
+        if self.textLayout != nil {
+            yyLabel.displaysAsynchronously = true
+            yyLabel.ignoreCommonProperties = true
+            yyLabel.textLayout             = self.textLayout;
+            return true
+        }
+        
+        return false
     }
 }
