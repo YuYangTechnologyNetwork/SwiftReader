@@ -46,7 +46,7 @@ class Typesetter {
     }
 
     /*Paper border margin: (left, top, right, bottom)*/
-    var margin: (Int, Int, Int, Int) = (8, 8, 8, 8) {
+    var margin: (CGFloat, CGFloat, CGFloat, CGFloat) = (8, 8, 8, 8) {
         didSet { for l in listeners.values { l("BorderMargin") } }
     }
 

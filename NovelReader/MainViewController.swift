@@ -10,66 +10,39 @@ import UIKit
 
 class MainViewController: UIViewController {
 
-    @IBOutlet weak var yyLabel: YYLabel!
+    @IBOutlet weak var paperContainer: UIView!
     @IBOutlet weak var progressIndicator: UIActivityIndicatorView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.progressIndicator.startAnimating()
 
-        let filePath            = NSBundle.mainBundle().pathForResource("jy_utf8", ofType: "txt")
-        let book                = try! Book(fullFilePath: filePath!)
+        FontManager.asyncDownloadFont(Typesetter.Ins.font) { (_: Bool, _: String, _: String) in
+            // Async load book content
+            dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
+                let filePath     = NSBundle.mainBundle().pathForResource("jy_utf8", ofType: "txt")
+                let book         = try! Book(fullFilePath: filePath!)
+                let file         = fopen(filePath!, "r")
+                let reader       = FileReader()
+                let content      = reader.readRange(file, range: NSMakeRange(512, 3096),
+                                               encoding: FileReader.Encodings[book.encoding]!)
 
-        yyLabel.numberOfLines      = 0
-        yyLabel.textColor          = UIColor.blackColor()
-        yyLabel.truncationToken    = NSAttributedString(string: "")
-        yyLabel.lineBreakMode      = .ByWordWrapping
-        yyLabel.textContainerInset = UIEdgeInsetsMake(10, 10, 10, 10)
-        //yyLabel.verticalForm       = true
+                let paper        = Paper(size: self.paperContainer.frame)
+                let visibleRange = paper.attachText(content!)
 
-        Typesetter.Ins.addListener("text") { (path: String) in
-            print("Typesetter changed(\(path))")
-        }.font = FontManager.SupportFonts.LanTing
+                let visibAttr = paper.text!.attributedSubstringFromRange(visibleRange).string
 
-        let file     = fopen(filePath!, "r")
-        let reader   = FileReader()
-        let result   = reader.asyncGetChaptersInRange(file, range: NSMakeRange(0, 30960)){ categories in
+                print(visibAttr)
 
-            FontManager.asyncDownloadFont(Typesetter.Ins.font) { (success: Bool, fontName: String, msg: String) in
+                fclose(file)
 
-                print("Message: \(msg)")
-
-                if success {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.paperContainer.addSubview(paper.getView())
+                    self.paperContainer.setNeedsDisplay()
                     self.progressIndicator.stopAnimating()
                     self.progressIndicator.hidden = true
-
-                    let content                   = reader.readRange(file, range: NSMakeRange(512, 3096),
-                                                                     encoding: FileReader.Encodings[book.encoding]!)
-
-                    let attrText                  = Typesetter.Ins.typeset(content!)
-                    self.yyLabel.attributedText   = attrText
-
-                    Typesetter.Ins.line_space     = 10.0
-
-
-                    /*let visibleRange              = self.yyLabel.textLayout.visibleRange
-
-                     print(visibleRange)
-
-                     let visibAttr = attrText.attributedSubstringFromRange(visibleRange).string
-                     
-                     print(visibAttr)*/
-                    
-                    fclose(file)
-                    
-                    /*print(FontManager.listSystemFonts())*/
                 }
             }
-        }
-
-        if !result {
-            fclose(file)
         }
     }
 
