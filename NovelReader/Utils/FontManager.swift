@@ -22,7 +22,7 @@ final class FontManager {
 
     // Define support fonts properties:  [Index : (PostScript Name, Chinese Name)]
     private static let PostScriptNameTable = [
-        SupportFonts.System  : ("Helvetica", "系统字体"),
+        SupportFonts.System  : (UIFont.systemFontOfSize(8).fontName, "系统字体"),
         SupportFonts.LanTing : ("FZLTXHK--GBK1-0", "兰亭黑"),
         SupportFonts.Heiti   : ("STHeitiTC-Light", "华文黑体"),
         SupportFonts.KaiTi   : ("STKaiti-SC-Regular", "楷体"),
@@ -74,9 +74,11 @@ final class FontManager {
     }
 
     /*
-     * Download apple listed support fonts. [Ref]: http://developer.applae.com/.../DownloadFont
+     * Download apple listed support fonts.
+     * [Ref]: http://developer.applae.com/.../DownloadFont
+     * [Ref]: https://support.apple.com/en-us/HT202771
      *
-     * @param fontName      The font postscript name. What's the postscript? Searching with Google
+     * @param fontName      The font postscript name. What's the postscript name? Searching with Google
      *
      * @param callback      The downloading callback, will be called on main-thread
      */

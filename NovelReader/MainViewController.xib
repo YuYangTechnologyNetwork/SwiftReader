@@ -17,7 +17,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Owc-4T-7Lo" customClass="YYLabel">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Owc-4T-7Lo" customClass="YYLabel">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
@@ -28,7 +28,7 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="Owc-4T-7Lo" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="40" id="HYB-Rv-piL">
-                    <variation key="heightClass=regular-widthClass=compact" constant="62"/>
+                    <variation key="heightClass=regular-widthClass=compact" constant="20"/>
                 </constraint>
                 <constraint firstItem="Ap5-vf-Vwe" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Z88-qB-XJ3"/>
                 <constraint firstItem="Ap5-vf-Vwe" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="b4C-Pd-G5c"/>

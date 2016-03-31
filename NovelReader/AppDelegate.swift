@@ -12,11 +12,10 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var typesetter = Typesetter()
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         self.window                     = UIWindow(frame: UIScreen.mainScreen().bounds)
-        self.window?.rootViewController = UINavigationController(rootViewController: MainViewController())
+        self.window?.rootViewController = MainViewController()
         self.window!.backgroundColor    = UIColor.whiteColor()
         self.window!.makeKeyAndVisible()
         return true

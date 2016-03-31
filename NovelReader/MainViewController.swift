@@ -26,23 +26,33 @@ class MainViewController: UIViewController {
         yyLabel.truncationToken    = NSAttributedString(string: "")
         yyLabel.lineBreakMode      = .ByWordWrapping
         yyLabel.textContainerInset = UIEdgeInsetsMake(10, 10, 10, 10)
+        //yyLabel.verticalForm       = true
+
+        Typesetter.Ins.addListener("text") { (path: String) in
+            print("Typesetter changed(\(path))")
+        }.font = FontManager.SupportFonts.LanTing
 
         let file     = fopen(filePath!, "r")
         let reader   = FileReader()
         let result   = reader.asyncGetChaptersInRange(file, range: NSMakeRange(0, 30960)){ categories in
-            FontManager.asyncDownloadFont(FontManager.SupportFonts.LanTing) {
-                (success: Bool, fontName: String, msg: String) in
+
+            FontManager.asyncDownloadFont(Typesetter.Ins.font) { (success: Bool, fontName: String, msg: String) in
+
                 print("Message: \(msg)")
+
                 if success {
                     self.progressIndicator.stopAnimating()
-
                     self.progressIndicator.hidden = true
-                    self.yyLabel.hidden           = false
+
                     let content                   = reader.readRange(file, range: NSMakeRange(512, 3096),
                                                                      encoding: FileReader.Encodings[book.encoding]!)
 
-                    let attrText                  = Typesetter(fontName: fontName).typesettingText(content!)
+                    let attrText                  = Typesetter.Ins.typeset(content!)
                     self.yyLabel.attributedText   = attrText
+
+                    Typesetter.Ins.line_space     = 10.0
+
+
                     /*let visibleRange              = self.yyLabel.textLayout.visibleRange
 
                      print(visibleRange)

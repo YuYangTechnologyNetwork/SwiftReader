@@ -8,44 +8,98 @@
 
 import UIKit
 
-public class Typesetter: NSObject {
-    
-    static let DEFAULT_FONT_SIZE: CGFloat = 18.0
-    
-    struct Margin {
-        var top: Int?, left: Int?, right: Int?, bottom: Int?
+class Typesetter {
+    /*Text draw direction*/
+    enum TextOrentation {
+        case Horizontal
+        case Vertical
     }
-    
-    var font: UIFont?
-    var line_space: CGFloat?
-    
-    override init()
-    {
-        font = UIFont.systemFontOfSize(Typesetter.DEFAULT_FONT_SIZE)
-        line_space = 8.0
+
+    private typealias `Self` = Typesetter
+
+    /*Default font size*/
+    static let DEFAULT_FONT_SIZE: CGFloat = 20.0
+
+    /*Default margin: (left, top, right, bottom)*/
+    static let DEFAULT_MARGIN = (10, 8, 10, 8)
+
+    /*Singleton*/
+    static let Ins = Typesetter()
+    private init() { }
+
+    /*Property changed callbacks*/
+    private var listeners: [String: (_: String) -> Void] = [:]
+
+    /*Font name code, see FontManager.SupportFonts*/
+    var font: FontManager.SupportFonts = FontManager.SupportFonts.System {
+        didSet { for l in listeners.values { l("FontName") } }
     }
-    
-    init(fontName: String)
-    {
-        font = UIFont(name: fontName, size: Typesetter.DEFAULT_FONT_SIZE)
-        font = font ?? UIFont.systemFontOfSize(Typesetter.DEFAULT_FONT_SIZE)
-        line_space = 8.0
+
+    /*Font size, for CGFloat type*/
+    var fontSize: CGFloat = Self.DEFAULT_FONT_SIZE {
+        didSet { for l in listeners.values { l("FontSize") } }
     }
-    
-    func buildParagraphStyle() -> NSParagraphStyle {
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .Justified
-        paragraphStyle.lineSpacing = line_space!
-        
-        return paragraphStyle
+
+    /*Line space, for CGFloat type*/
+    var line_space: CGFloat = 8.0 {
+        didSet { for l in listeners.values { l("LineSpace") } }
     }
-    
-    func typesettingText(text: String) -> NSMutableAttributedString {
-        let attrText = NSMutableAttributedString(string: text)
-        attrText.yy_font = font
-        
-        attrText.yy_setParagraphStyle(buildParagraphStyle(), range: NSMakeRange(0, attrText.length))
-        
-        return attrText
+
+    /*Paper border margin: (left, top, right, bottom)*/
+    var margin: (Int, Int, Int, Int) = (8, 8, 8, 8) {
+        didSet { for l in listeners.values { l("BorderMargin") } }
+    }
+
+    /*Text draw direction, see Typesetter.TextOrentation*/
+    var textOrentation: TextOrentation = .Horizontal {
+        didSet { for l in listeners.values { l("TextOrentation") } }
+    }
+
+    /*
+     * Add the listener to observe Typesetter properties changed
+     *
+     * @param name          The added listener name, remove need it
+     *
+     * @param listener      Any property changed, listener will be called
+     */
+    func addListener(name: String, listener: (_: String) -> Void) -> Typesetter {
+        if listeners.indexForKey(name) == nil {
+            listeners[name] = listener
+        }
+
+        return self
+    }
+
+    /*
+     * Remove listener by name
+
+     * @param name          The name is setted via addListener func
+     **/
+    func removeListener(name: String) -> Typesetter {
+        if listeners.indexForKey(name) != nil {
+            listeners.removeValueForKey(name)
+        }
+
+        return self
+    }
+
+    /*
+     * Typeset the text, return a attribute string
+     *
+     * @param text          The need typeset text
+     *
+     * @return NSMutableAttributedString the typesetted text
+     */
+    func typeset(text: String) -> NSMutableAttributedString {
+        let attrt = NSMutableAttributedString(string: text)
+        let style = NSMutableParagraphStyle()
+
+        attrt.yy_font = UIFont(name: FontManager.getFontName(font), size: self.fontSize)
+        style.alignment = .Justified
+        style.lineSpacing = line_space
+
+        attrt.yy_setParagraphStyle(style, range: NSMakeRange(0, attrt.length))
+
+        return attrt
     }
 }
