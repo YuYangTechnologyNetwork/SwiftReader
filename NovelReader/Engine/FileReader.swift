@@ -367,11 +367,15 @@ extension FileReader {
                 if str.regexMatch(self.CHAPTER_REGEX) {
                     let chapter = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
                     title.append((chapter, locat))
-                    NSLog(chapter)
+                    NSLog("\(chapter), (\(locat))")
                 } else {
                     locat += str.lengthOfBytesUsingEncoding(encoding)
                 }
             }
+        }
+
+        if title[0].1 > range.location {
+            title.insert(("", range.location), atIndex: 0)
         }
         
         return title

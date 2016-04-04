@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PageViewController" customModule="NovelReader" customModuleProvider="target">
+            <connections>
+                <outlet property="containerView" destination="bL5-ea-QSS" id="MTB-T1-a1p"/>
+                <outlet property="view" destination="iN0-l3-epB" id="Kms-cZ-xyd"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reading_parchment_border" translatesAutoresizingMaskIntoConstraints="NO" id="qNB-Ci-6Ff">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                </imageView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bL5-ea-QSS" customClass="YYLabel">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                        <rect key="frame" x="80" y="322" width="240" height="128"/>
+                    </variation>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="qNB-Ci-6Ff" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="B60-OK-ObH"/>
+                <constraint firstItem="bL5-ea-QSS" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="Feb-Qu-zRD"/>
+                <constraint firstItem="bL5-ea-QSS" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="MYK-V9-3sF"/>
+                <constraint firstItem="qNB-Ci-6Ff" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="OZo-6W-oXl"/>
+                <constraint firstItem="bL5-ea-QSS" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="Q0w-fh-mlH"/>
+                <constraint firstItem="qNB-Ci-6Ff" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="RcB-53-RuK"/>
+                <constraint firstItem="bL5-ea-QSS" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="hkW-fw-cHb"/>
+                <constraint firstAttribute="bottom" secondItem="bL5-ea-QSS" secondAttribute="bottom" id="iMZ-1Q-7l5"/>
+                <constraint firstItem="qNB-Ci-6Ff" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="rgn-3c-JDQ"/>
+                <constraint firstAttribute="trailing" secondItem="bL5-ea-QSS" secondAttribute="trailing" id="vRy-tL-3Ey"/>
+            </constraints>
+            <variation key="default">
+                <mask key="subviews">
+                    <exclude reference="qNB-Ci-6Ff"/>
+                    <exclude reference="bL5-ea-QSS"/>
+                </mask>
+                <mask key="constraints">
+                    <exclude reference="Feb-Qu-zRD"/>
+                    <exclude reference="MYK-V9-3sF"/>
+                    <exclude reference="Q0w-fh-mlH"/>
+                    <exclude reference="hkW-fw-cHb"/>
+                    <exclude reference="iMZ-1Q-7l5"/>
+                    <exclude reference="vRy-tL-3Ey"/>
+                    <exclude reference="B60-OK-ObH"/>
+                    <exclude reference="OZo-6W-oXl"/>
+                    <exclude reference="RcB-53-RuK"/>
+                    <exclude reference="rgn-3c-JDQ"/>
+                </mask>
+            </variation>
+            <variation key="heightClass=regular-widthClass=compact">
+                <mask key="subviews">
+                    <include reference="qNB-Ci-6Ff"/>
+                    <include reference="bL5-ea-QSS"/>
+                </mask>
+                <mask key="constraints">
+                    <include reference="Feb-Qu-zRD"/>
+                    <include reference="MYK-V9-3sF"/>
+                    <include reference="Q0w-fh-mlH"/>
+                    <include reference="hkW-fw-cHb"/>
+                    <include reference="iMZ-1Q-7l5"/>
+                    <include reference="vRy-tL-3Ey"/>
+                    <include reference="B60-OK-ObH"/>
+                    <include reference="OZo-6W-oXl"/>
+                    <include reference="RcB-53-RuK"/>
+                    <include reference="rgn-3c-JDQ"/>
+                </mask>
+            </variation>
+        </view>
+    </objects>
+    <resources>
+        <image name="reading_parchment_border" width="1080" height="1920"/>
+    </resources>
+</document>

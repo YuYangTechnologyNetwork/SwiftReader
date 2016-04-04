@@ -48,6 +48,11 @@
 		3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7371C96F60900DD408F /* Typesetter.swift */; };
 		3D6A244A1CA0362B00F05D55 /* jy_gbk.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3D6A24481CA0362B00F05D55 /* jy_gbk.txt */; };
 		3D6A244B1CA0362B00F05D55 /* jy_utf8.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3D6A24491CA0362B00F05D55 /* jy_utf8.txt */; };
+		3D833A981CAFC09700D31925 /* ReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D833A971CAFC09700D31925 /* ReaderViewController.swift */; };
+		3D833A9A1CAFD45100D31925 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D833A991CAFD45100D31925 /* PageViewController.swift */; };
+		3D833A9C1CAFD7EF00D31925 /* ReaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */; };
+		3D833A9E1CAFDB7B00D31925 /* PageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D833A9D1CAFDB7B00D31925 /* PageViewController.xib */; };
+		3D833AA01CAFE44900D31925 /* ReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D833A9F1CAFE44900D31925 /* ReaderViewController.xib */; };
 		AEDBF832CB827DE1BB6146E9 /* libPods-NovelReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C29CF4B14E4A37B75632830 /* libPods-NovelReader.a */; };
 /* End PBXBuildFile section */
 
@@ -143,6 +148,11 @@
 		3D49C7371C96F60900DD408F /* Typesetter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Typesetter.swift; path = Engine/Typesetter.swift; sourceTree = "<group>"; };
 		3D6A24481CA0362B00F05D55 /* jy_gbk.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = jy_gbk.txt; path = Books/jy_gbk.txt; sourceTree = "<group>"; };
 		3D6A24491CA0362B00F05D55 /* jy_utf8.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = jy_utf8.txt; path = Books/jy_utf8.txt; sourceTree = "<group>"; };
+		3D833A971CAFC09700D31925 /* ReaderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaderViewController.swift; sourceTree = "<group>"; };
+		3D833A991CAFD45100D31925 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
+		3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaderManager.swift; sourceTree = "<group>"; };
+		3D833A9D1CAFDB7B00D31925 /* PageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PageViewController.xib; path = Reader/PageViewController.xib; sourceTree = "<group>"; };
+		3D833A9F1CAFE44900D31925 /* ReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReaderViewController.xib; sourceTree = "<group>"; };
 		5D86706A83D49EB45C6AA878 /* Pods-NovelReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.debug.xcconfig"; sourceTree = "<group>"; };
 		BA06C410D81CC3AB39D968E4 /* Pods-NovelReader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.release.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -261,6 +271,11 @@
 		11DAD9981C9FE5A50027F98A /* Reader */ = {
 			isa = PBXGroup;
 			children = (
+				3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */,
+				3D833A9D1CAFDB7B00D31925 /* PageViewController.xib */,
+				3D833A991CAFD45100D31925 /* PageViewController.swift */,
+				3D833A9F1CAFE44900D31925 /* ReaderViewController.xib */,
+				3D833A971CAFC09700D31925 /* ReaderViewController.swift */,
 			);
 			name = Reader;
 			sourceTree = "<group>";
@@ -480,7 +495,9 @@
 				3D6A244A1CA0362B00F05D55 /* jy_gbk.txt in Resources */,
 				112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */,
 				3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */,
+				3D833A9E1CAFDB7B00D31925 /* PageViewController.xib in Resources */,
 				112E9CD21C9FF1B400C5E34C /* GB2312Freq.tab in Resources */,
+				3D833AA01CAFE44900D31925 /* ReaderViewController.xib in Resources */,
 				3D6A244B1CA0362B00F05D55 /* jy_utf8.txt in Resources */,
 				112E9CD11C9FF1B400C5E34C /* EUCTWFreq.tab in Resources */,
 				112E9CD01C9FF1B400C5E34C /* EUCKRFreq.tab in Resources */,
@@ -561,8 +578,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				11DAD99B1C9FE5D50027F98A /* MainViewController.swift in Sources */,
+				3D833A981CAFC09700D31925 /* ReaderViewController.swift in Sources */,
 				112E9CC41C9FF1B400C5E34C /* nsGB2312Prober.cpp in Sources */,
 				112E9CC01C9FF1B400C5E34C /* nsEscSM.cpp in Sources */,
+				3D833A9C1CAFD7EF00D31925 /* ReaderManager.swift in Sources */,
 				112E9CC71C9FF1B400C5E34C /* nsMBCSGroupProber.cpp in Sources */,
 				112E9CCB1C9FF1B400C5E34C /* nsSJISProber.cpp in Sources */,
 				112B9D791CAD4AF200D0F9AB /* Paper.swift in Sources */,
@@ -580,6 +599,7 @@
 				3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */,
 				111B55C41CABD6C700070E9C /* Constants.swift in Sources */,
 				112E9CBB1C9FF1B400C5E34C /* CharDistribution.cpp in Sources */,
+				3D833A9A1CAFD45100D31925 /* PageViewController.swift in Sources */,
 				1156F1871CA3BB88006B5848 /* FileReader.swift in Sources */,
 				112E9CCE1C9FF1B400C5E34C /* uchardet.cpp in Sources */,
 				112E9CC61C9FF1B400C5E34C /* nsLatin1Prober.cpp in Sources */,
