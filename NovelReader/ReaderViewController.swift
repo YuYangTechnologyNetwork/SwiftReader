@@ -66,9 +66,9 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     }
     
     private func initliaze() {
-        Typesetter.Ins.font = FontManager.SupportFonts.System
-        Typesetter.Ins.fontSize = 20
-        Typesetter.Ins.line_space = 4
+        Typesetter.Ins.font = FontManager.SupportFonts.SongTi
+        Typesetter.Ins.fontSize = 19
+        Typesetter.Ins.line_space = 10
         
         FontManager.asyncDownloadFont(Typesetter.Ins.font) { (_: Bool, _: String, _: String) in
             // Async load book content
@@ -140,7 +140,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
                 return nil
             }
             
-            return controllers[prevIndex(currIndex)]
+            return controllers[prevIndex(currIndex)].bindPaper(ReaderManager.Ins.prevPaper())
     }
     
     /*UIPageViewControllerDataSource*/
@@ -150,30 +150,33 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
                 return nil
             }
             
-            return controllers[nextIndex(currIndex)]
+            return controllers[nextIndex(currIndex)].bindPaper(ReaderManager.Ins.nextPaper())
     }
     
     /*UIPageViewControllerDelegate*/
     func pageViewController(pageViewController: UIPageViewController,
-        willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
-            lastIndex = currIndex
-            currIndex = controllers.indexOf(pendingViewControllers[0] as! PageViewController)!
-            
-            if lastIndex == prevIndex(currIndex) {
-                ReaderManager.Ins.swipToNext()
-            } else {
-                ReaderManager.Ins.swipToPrev()
-            }
-    }
+        willTransitionToViewControllers pendingViewControllers: [UIViewController]) { }
     
     /*UIPageViewControllerDelegate*/
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool,
         previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
             if completed {
+                lastIndex = currIndex
+                currIndex = controllers.indexOf(pageViewController.viewControllers![0] as! PageViewController)!
+                
                 if lastIndex == prevIndex(currIndex) {
-                    controllers[nextIndex(currIndex)].bindPaper(ReaderManager.Ins.nextPaper())
-                } else {
-                    controllers[prevIndex(currIndex)].bindPaper(ReaderManager.Ins.prevPaper())
+                    ReaderManager.Ins.swipToNext()
+                } else if lastIndex == nextIndex(currIndex) {
+                    ReaderManager.Ins.swipToPrev()
+                }
+                
+                for v in pageViewController.view.subviews {
+                    if v.isKindOfClass(UIScrollView) {
+                        let scrollView = v as! UIScrollView
+                        if scrollView.contentOffset.x % pageViewController.view.bounds.width == 0 {
+                            // TODO: load buffer
+                        }
+                    }
                 }
             }
     }

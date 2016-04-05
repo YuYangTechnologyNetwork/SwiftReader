@@ -17,6 +17,8 @@ class PageViewController: UIViewController {
     override func viewDidLoad() {
         containerView.frame = view.bounds
         containerView.textVerticalAlignment = .Top
+        containerView.displaysAsynchronously = true
+        containerView.ignoreCommonProperties = true
 
         let patch1 = UIImage(named: "reading_parchment1")
         let patch2 = UIImage(named: "reading_parchment2")
@@ -36,13 +38,12 @@ class PageViewController: UIViewController {
         
         view.backgroundColor = UIColor(patternImage: resultingImage)
         view.addSubview(containerView)
-
-        if paper != nil {
-            paper?.attachToView(containerView)
-        }
     }
     
     override func viewWillAppear(animated: Bool) {
+        if paper != nil {
+            paper?.attachToView(containerView)
+        }
     }
     
     func bindPaper(paper: Paper?) -> PageViewController {
@@ -53,5 +54,9 @@ class PageViewController: UIViewController {
         }
 
         return self
+    }
+
+    override var description: String {
+        return paper != nil ? (paper?.text.substringToIndex((paper?.text.startIndex.advancedBy(4))!))! : super.description
     }
 }

@@ -21,7 +21,7 @@ class Typesetter {
     static let DEFAULT_FONT_SIZE: CGFloat = 20
 
     /*Default margin: (top, left, bottom, right)*/
-    static let DEFAULT_MARGIN: (CGFloat, CGFloat, CGFloat, CGFloat) = (20, 15, 20, 15)
+    static let DEFAULT_MARGIN: (CGFloat, CGFloat, CGFloat, CGFloat) = (40, 30, 40, 30)
 
     /*Default line space*/
     static let DEFAULT_LINE_SPACE: CGFloat = 0
