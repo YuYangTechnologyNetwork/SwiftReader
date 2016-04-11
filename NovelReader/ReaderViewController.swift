@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate {
     private var currIndex: Int = 0
     private var lastIndex: Int = 0
     private var controllers: [PageViewController] = [PageViewController(), PageViewController(), PageViewController()]
@@ -34,6 +34,12 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         addChildViewController(pageViewCtrler)
         view.addSubview(pageViewCtrler.view)
         view.sendSubviewToBack(pageViewCtrler.view)
+        
+        for v in pageViewCtrler.view.subviews {
+            if v.isKindOfClass(UIScrollView) {
+                (v as! UIScrollView).delegate = self
+            }
+        }
         
         let patch1 = UIImage(named: "reading_parchment1")
         let patch2 = UIImage(named: "reading_parchment2")
@@ -66,20 +72,14 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     }
     
     private func initliaze() {
-        Typesetter.Ins.font = FontManager.SupportFonts.SongTi
-        Typesetter.Ins.fontSize = 19
-        Typesetter.Ins.line_space = 10
-        
-        FontManager.asyncDownloadFont(Typesetter.Ins.font) { (_: Bool, _: String, _: String) in
-            // Async load book content
-            dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
-                let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
-                let book = try! Book(fullFilePath: filePath!)
-                ReaderManager.Ins.initalize(book, paperSize: self.view.frame.size)
-                dispatch_async(dispatch_get_main_queue()) {
-                    ReaderManager.Ins.asyncLoad() { (_: Bool) in
-                        self.setPages()
-                    }
+        // Async load book content
+        dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
+            let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
+            let book = try! Book(fullFilePath: filePath!)
+            ReaderManager.Ins.initalize(book, paperSize: self.view.frame.size)
+            dispatch_async(dispatch_get_main_queue()) {
+                ReaderManager.Ins.asyncLoad() { (_: Bool) in
+                    self.setPages()
                 }
             }
         }
@@ -168,15 +168,6 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
                     ReaderManager.Ins.swipToNext()
                 } else if lastIndex == nextIndex(currIndex) {
                     ReaderManager.Ins.swipToPrev()
-                }
-                
-                for v in pageViewController.view.subviews {
-                    if v.isKindOfClass(UIScrollView) {
-                        let scrollView = v as! UIScrollView
-                        if scrollView.contentOffset.x % pageViewController.view.bounds.width == 0 {
-                            // TODO: load buffer
-                        }
-                    }
                 }
             }
     }

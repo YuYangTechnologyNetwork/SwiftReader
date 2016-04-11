@@ -25,7 +25,27 @@ class ReaderManager {
         self.book = book
         self.paperSize = paperSize
     }
-    
+
+    func asyncPrepare(callback: (success: Bool) -> Void) {
+        // Async prepare chapters
+        dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
+            let file     = fopen((self.book?.fullFilePath)!, "r")
+            let encoding = FileReader.Encodings[(self.book?.encoding)!]
+            let reader   = FileReader()
+            let chapters = reader.chaptersInRange(file, range: NSMakeRange(0, 20480), encoding: encoding!)
+            let ready    = chapters.count > 0
+
+            if ready {
+                let content      = reader.readRange(file, range: chapters[0].range, encoding: encoding!)
+                self.currChapter = self.papersWithContent(content!)
+            }
+
+            dispatch_async(dispatch_get_main_queue()) {
+                callback(success: ready)
+            }
+        }
+    }
+
     func asyncLoad(callback: (success: Bool) -> Void) -> Bool {
         // Async load book content
         dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
@@ -33,8 +53,10 @@ class ReaderManager {
             let encoding = FileReader.Encodings[(self.book?.encoding)!]
             let reader = FileReader()
             
-            let chapters = reader.chaptersInRange(file, range: NSMakeRange(0, 65536), encoding: encoding!)
-            let content = reader.readRange(file, range: NSMakeRange(chapters[0].1, chapters[1].1), encoding: encoding!)
+            let chapters = reader.chaptersInRange(file, range: NSMakeRange(0, 20480), encoding: encoding!)
+            let content = reader.readRange(file, range: chapters[1].range, encoding: encoding!)
+
+            print(chapters)
             
             self.currChapter = self.papersWithContent(content!)
             
@@ -47,13 +69,11 @@ class ReaderManager {
     }
     
     private func papersWithContent(content: String) -> [Paper] {
-        let len = content.length
         var index = 0, tmpStr = content, papers: [Paper] = []
         
         repeat {
             let paper = Paper(size: paperSize)
             tmpStr = content.substringFromIndex(content.startIndex.advancedBy(index))
-            
             paper.werittingText(tmpStr)
             
             if tmpStr.length > paper.text.length {
@@ -61,11 +81,8 @@ class ReaderManager {
             }
             
             index += paper.text.length
-
-            print("\(index), \(len)")
-            
             papers.append(paper)
-        } while (index < len)
+        } while (index < content.length)
         
         return papers
     }

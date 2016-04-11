@@ -18,16 +18,16 @@ class Typesetter {
     private typealias `Self` = Typesetter
 
     /*Default font size*/
-    static let DEFAULT_FONT_SIZE: CGFloat = 20
+    static let DEFAULT_FONT_SIZE: CGFloat = UIFont.buttonFontSize()
 
     /*Default margin: (top, left, bottom, right)*/
-    static let DEFAULT_MARGIN: (CGFloat, CGFloat, CGFloat, CGFloat) = (40, 30, 40, 30)
+    static let DEFAULT_MARGIN: (CGFloat, CGFloat, CGFloat, CGFloat) = (30, 20, 30, 20)
 
     /*Default line space*/
-    static let DEFAULT_LINE_SPACE: CGFloat = 0
+    static let DEFAULT_LINE_SPACE: CGFloat = 10
 
     /*Default font*/
-    static let DEFAULT_FONT = FontManager.SupportFonts.KaiTi
+    static let DEFAULT_FONT = FontManager.SupportFonts.System
 
     /*Singleton*/
     static let Ins = Typesetter()

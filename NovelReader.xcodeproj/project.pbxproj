@@ -53,6 +53,7 @@
 		3D833A9C1CAFD7EF00D31925 /* ReaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */; };
 		3D833A9E1CAFDB7B00D31925 /* PageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D833A9D1CAFDB7B00D31925 /* PageViewController.xib */; };
 		3D833AA01CAFE44900D31925 /* ReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D833A9F1CAFE44900D31925 /* ReaderViewController.xib */; };
+		3DBCA1931CB9F42C00C4A37F /* BookMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DBCA1921CB9F42C00C4A37F /* BookMark.swift */; };
 		AEDBF832CB827DE1BB6146E9 /* libPods-NovelReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C29CF4B14E4A37B75632830 /* libPods-NovelReader.a */; };
 /* End PBXBuildFile section */
 
@@ -153,6 +154,7 @@
 		3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaderManager.swift; sourceTree = "<group>"; };
 		3D833A9D1CAFDB7B00D31925 /* PageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PageViewController.xib; path = Reader/PageViewController.xib; sourceTree = "<group>"; };
 		3D833A9F1CAFE44900D31925 /* ReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReaderViewController.xib; sourceTree = "<group>"; };
+		3DBCA1921CB9F42C00C4A37F /* BookMark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookMark.swift; sourceTree = "<group>"; };
 		5D86706A83D49EB45C6AA878 /* Pods-NovelReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.debug.xcconfig"; sourceTree = "<group>"; };
 		BA06C410D81CC3AB39D968E4 /* Pods-NovelReader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.release.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -187,6 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				111B55C71CABD77600070E9C /* Book.swift */,
+				3DBCA1921CB9F42C00C4A37F /* BookMark.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -608,6 +611,7 @@
 				111B55C51CABD6C700070E9C /* Extentions.swift in Sources */,
 				111B55C81CABD77600070E9C /* Book.swift in Sources */,
 				112E9CBF1C9FF1B400C5E34C /* nsEscCharsetProber.cpp in Sources */,
+				3DBCA1931CB9F42C00C4A37F /* BookMark.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

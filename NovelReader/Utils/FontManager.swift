@@ -22,7 +22,7 @@ final class FontManager {
 
     // Define support fonts properties:  [Index : (PostScript Name, Chinese Name)]
     private static let PostScriptNameTable = [
-        SupportFonts.System  : (UIFont.systemFontOfSize(8).fontName, "系统字体"),
+        SupportFonts.System  : ("Helvetica-Light", "系统字体"),
         SupportFonts.LanTing : ("FZLTXHK--GBK1-0", "兰亭黑"),
         SupportFonts.Heiti   : ("STHeitiTC-Light", "华文黑体"),
         SupportFonts.KaiTi   : ("STKaiti-SC-Regular", "楷体"),
