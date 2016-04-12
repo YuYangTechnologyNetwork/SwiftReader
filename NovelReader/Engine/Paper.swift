@@ -20,10 +20,7 @@ class Paper {
     private let textContainer: YYTextContainer!
     
     init(size: CGSize) {
-        let insets = UIEdgeInsetsMake(Typesetter.Ins.margin.0, Typesetter.Ins.margin.1,
-            Typesetter.Ins.margin.2, Typesetter.Ins.margin.3)
-        
-        self.textContainer                     = YYTextContainer(size: size, insets: insets)
+        self.textContainer                     = YYTextContainer(size: size, insets: Typesetter.Ins.margin)
         self.textContainer.maximumNumberOfRows = 0
         self.textContainer.truncationToken     = NSMutableAttributedString(string: "")
         self.textContainer.truncationType      = .None
@@ -37,8 +34,8 @@ class Paper {
      *
      * @return Paper        For the call chains
      */
-    func werittingText(text: String) -> Paper {
-        let attrt = Typesetter.Ins.typeset(text)
+    func werittingText(text: String, firstLineIsTitle: Bool = false) -> Paper {
+        let attrt = Typesetter.Ins.typeset(text, firstLineIsTitle: firstLineIsTitle, paperWidth: textContainer.size.width)
         self.textLayout = YYTextLayout(container: self.textContainer, text: attrt)
         self.text =  attrt.attributedSubstringFromRange(textLayout.visibleRange).string
         return self

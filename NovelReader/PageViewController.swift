@@ -16,11 +16,10 @@ class PageViewController: UIViewController {
     private var needRefresh: Bool = true
     
     override func viewDidLoad() {
-        containerView.frame = view.bounds
         containerView.textVerticalAlignment = .Top
         containerView.displaysAsynchronously = true
         containerView.ignoreCommonProperties = true
-        
+
         let patch1 = UIImage(named: "reading_parchment1")
         let patch2 = UIImage(named: "reading_parchment2")
         let patch3 = UIImage(named: "reading_parchment3")
@@ -51,7 +50,7 @@ class PageViewController: UIViewController {
             needRefresh = false
         }
     }
-    
+
     func bindPaper(paper: Paper?) -> PageViewController {
         if paper != nil {
             self.needRefresh = self.paper?.text != paper?.text

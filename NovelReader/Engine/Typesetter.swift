@@ -14,53 +14,57 @@ class Typesetter {
         case Horizontal
         case Vertical
     }
-
+    
     private typealias `Self` = Typesetter
-
+    
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = UIFont.buttonFontSize()
-
-    /*Default margin: (top, left, bottom, right)*/
-    static let DEFAULT_MARGIN: (CGFloat, CGFloat, CGFloat, CGFloat) = (30, 20, 30, 20)
-
+    
+    /**
+     * Default margin: (top, left, bottom, right)
+     */
+    static let DEFAULT_MARGIN: UIEdgeInsets = UIEdgeInsetsMake(30, 25, 30, 25)
+    
     /*Default line space*/
     static let DEFAULT_LINE_SPACE: CGFloat = 10
-
+    
     /*Default font*/
     static let DEFAULT_FONT = FontManager.SupportFonts.System
-
+    
     /*Singleton*/
     static let Ins = Typesetter()
     private init() { }
-
+    
     /*Property changed callbacks*/
     private var listeners: [String: (_: String) -> Void] = [:]
-
+    
     /*Font name code, see FontManager.SupportFonts*/
     var font: FontManager.SupportFonts = Self.DEFAULT_FONT {
         didSet { for l in listeners.values { l("FontName") } }
     }
-
+    
     /*Font size, for CGFloat type*/
     var fontSize: CGFloat = Self.DEFAULT_FONT_SIZE {
         didSet { for l in listeners.values { l("FontSize") } }
     }
-
+    
     /*Line space, for CGFloat type*/
     var line_space: CGFloat = Self.DEFAULT_LINE_SPACE {
         didSet { for l in listeners.values { l("LineSpace") } }
     }
-
-    /*Paper border margin: (left, top, right, bottom)*/
-    var margin: (CGFloat, CGFloat, CGFloat, CGFloat) = Self.DEFAULT_MARGIN {
+    
+    /**
+     * Paper border margin: (left, top, right, bottom)
+     */
+    var margin: UIEdgeInsets = Self.DEFAULT_MARGIN {
         didSet { for l in listeners.values { l("BorderMargin") } }
     }
-
+    
     /*Text draw direction, see Typesetter.TextOrentation*/
     var textOrentation: TextOrentation = .Horizontal {
         didSet { for l in listeners.values { l("TextOrentation") } }
     }
-
+    
     /*
      * Add the listener to observe Typesetter properties changed
      *
@@ -72,10 +76,10 @@ class Typesetter {
         if listeners.indexForKey(name) == nil {
             listeners[name] = listener
         }
-
+        
         return self
     }
-
+    
     /*
      * Remove listener by name
 
@@ -85,10 +89,10 @@ class Typesetter {
         if listeners.indexForKey(name) != nil {
             listeners.removeValueForKey(name)
         }
-
+        
         return self
     }
-
+    
     /*
      * Typeset the text, return a attribute string
      *
@@ -96,15 +100,41 @@ class Typesetter {
      *
      * @return NSMutableAttributedString the typesetted text
      */
-    func typeset(text: String) -> NSMutableAttributedString {
+    func typeset(text: String, firstLineIsTitle: Bool = false, paperWidth: CGFloat = 0) -> NSMutableAttributedString {
         let attrt = NSMutableAttributedString(string: text)
+        let yyFont = UIFont(name: FontManager.getFontName(font), size: self.fontSize)
+        var start: Int = 0
+        
+        if firstLineIsTitle {
+            let range = text.rangeOfString(FileReader.getNewLineCharater(text))
+            
+            if let r = range {
+                let titleFont = UIFont(name: FontManager.getFontName(font), size: self.fontSize + 10)
+                start = text.substringToIndex(r.startIndex).length
+                
+                attrt.yy_setFont(titleFont, range: NSMakeRange(0, start))
+                attrt.yy_setAlignment(.Natural, range: NSMakeRange(0, start))
 
-        attrt.yy_font          = UIFont(name: FontManager.getFontName(font), size: self.fontSize)
-        attrt.yy_color         = UIColor.blackColor()
+                let line = UIView(frame: CGRectMake(0, 0, paperWidth - margin.left - margin.right, 1))
+                line.backgroundColor = UIColor.blackColor()
+                
+                let lineStr = NSMutableAttributedString.yy_attachmentStringWithContent(
+                    line,
+                    contentMode: .Center,
+                    attachmentSize: line.bounds.size,
+                    alignToFont: yyFont, alignment: .Center)
+                
+                attrt.insertAttributedString(lineStr, atIndex: start)
+            }
+        }
+        
+        attrt.yy_setFont(yyFont, range: NSMakeRange(start, attrt.length - start))
+        attrt.yy_setAlignment(.Justified, range: NSMakeRange(start, attrt.length - start))
+        
+        attrt.yy_color = UIColor.blackColor()
+        attrt.yy_lineSpacing = line_space
         attrt.yy_lineBreakMode = .ByWordWrapping
-        attrt.yy_alignment     = .Justified
-        attrt.yy_lineSpacing   = line_space
-
+        
         return attrt
     }
 }
