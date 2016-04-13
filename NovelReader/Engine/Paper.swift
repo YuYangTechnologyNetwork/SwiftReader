@@ -18,12 +18,17 @@ class Paper {
 
     /*For YYLabel*/
     private let textContainer: YYTextContainer!
+
+    var textFrame: CTFrameRef!
+
+    private var size: CGSize!
     
     init(size: CGSize) {
+        self.size = size
         self.textContainer                     = YYTextContainer(size: size, insets: Typesetter.Ins.margin)
         self.textContainer.maximumNumberOfRows = 0
-        self.textContainer.truncationToken     = NSMutableAttributedString(string: "")
-        self.textContainer.truncationType      = .None
+        /*self.textContainer.truncationToken     = NSMutableAttributedString(string: "")
+        self.textContainer.truncationType      = .End*/
         self.textContainer.verticalForm        = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
     }
 
@@ -34,7 +39,7 @@ class Paper {
      *
      * @return Paper        For the call chains
      */
-    func werittingText(text: String, firstLineIsTitle: Bool = false) -> Paper {
+    func writting(text: String, firstLineIsTitle: Bool = false) -> Paper {
         let attrt = Typesetter.Ins.typeset(text, firstLineIsTitle: firstLineIsTitle, paperWidth: textContainer.size.width)
         self.textLayout = YYTextLayout(container: self.textContainer, text: attrt)
         self.text =  attrt.attributedSubstringFromRange(textLayout.visibleRange).string

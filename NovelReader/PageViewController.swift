@@ -14,7 +14,7 @@ class PageViewController: UIViewController {
     
     private var paper: Paper?
     private var needRefresh: Bool = true
-    
+
     override func viewDidLoad() {
         containerView.textVerticalAlignment = .Top
         containerView.displaysAsynchronously = true
@@ -37,30 +37,28 @@ class PageViewController: UIViewController {
         let resultingImage = UIGraphicsGetImageFromCurrentImageContext();
         
         view.backgroundColor = UIColor(patternImage: resultingImage)
-        view.addSubview(containerView)
         
-        if self.paper != nil {
-            self.paper?.attachToView(containerView)
+        if let p = self.paper {
+            p.attachToView(containerView)
         }
     }
     
     override func viewWillAppear(animated: Bool) {
         if self.needRefresh {
-            paper?.attachToView(containerView)
-            needRefresh = false
+            if let p = self.paper {
+                p.attachToView(containerView)
+                needRefresh = false
+            }
+
         }
     }
 
     func bindPaper(paper: Paper?) -> PageViewController {
-        if paper != nil {
-            self.needRefresh = self.paper?.text != paper?.text
-            self.paper = paper
-            
-            if containerView != nil {
-                self.paper?.attachToView(containerView)
-            }
+        if let p = paper {
+            self.needRefresh = self.paper == nil || self.paper?.text != p.text
+            self.paper = p
         }
-        
+
         return self
     }
     

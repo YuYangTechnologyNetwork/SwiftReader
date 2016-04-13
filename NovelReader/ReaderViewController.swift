@@ -64,7 +64,17 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     
     override func viewWillAppear(animated: Bool) {
         loadingIndicator.startAnimating()
-        initliaze()
+        
+        Typesetter.Ins.font = FontManager.SupportFonts.SongTi
+        
+        FontManager.asyncDownloadFont(Typesetter.Ins.font) {
+            (success: Bool, fontName: String, msg: String) in
+            if !success {
+                Typesetter.Ins.font = FontManager.SupportFonts.System
+            }
+            
+            self.initliaze()
+        }
     }
     
     override func prefersStatusBarHidden() -> Bool {

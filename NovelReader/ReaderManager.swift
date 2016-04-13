@@ -73,11 +73,15 @@ class ReaderManager {
         
         repeat {
             let paper = Paper(size: paperSize)
-            tmpStr = content.substringFromIndex(content.startIndex.advancedBy(index))
-            paper.werittingText(tmpStr, firstLineIsTitle: index == 0)
+            let flit  = index == 0
+            tmpStr    = content.substringFromIndex(content.startIndex.advancedBy(index))
+
+            paper.writting(tmpStr, firstLineIsTitle: flit)
             
             if tmpStr.length > paper.text.length {
-                paper.werittingText(tmpStr.substringToIndex(tmpStr.startIndex.advancedBy(paper.text.length)), firstLineIsTitle: index == 0)
+                paper.writting(
+                    tmpStr.substringToIndex(tmpStr.startIndex.advancedBy(paper.text.length)),
+                    firstLineIsTitle: flit)
             }
             
             index += paper.text.length

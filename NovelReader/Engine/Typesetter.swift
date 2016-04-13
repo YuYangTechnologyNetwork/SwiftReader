@@ -18,7 +18,7 @@ class Typesetter {
     private typealias `Self` = Typesetter
     
     /*Default font size*/
-    static let DEFAULT_FONT_SIZE: CGFloat = UIFont.buttonFontSize()
+    static let DEFAULT_FONT_SIZE: CGFloat = 20.0
     
     /**
      * Default margin: (top, left, bottom, right)
@@ -130,11 +130,43 @@ class Typesetter {
         
         attrt.yy_setFont(yyFont, range: NSMakeRange(start, attrt.length - start))
         attrt.yy_setAlignment(.Justified, range: NSMakeRange(start, attrt.length - start))
-        
+
         attrt.yy_color = UIColor.blackColor()
         attrt.yy_lineSpacing = line_space
-        attrt.yy_lineBreakMode = .ByWordWrapping
-        
+
         return attrt
+    }
+
+    func makeFrame(content: String, bounds: CGRect)->CTFrameRef {
+        var aligment        = CTTextAlignment.Justified
+        var lineSpace       = line_space
+        var paraSpace       = 0.0
+        var lineBreak       = CTLineBreakMode.ByWordWrapping
+        let settings        = [
+            CTParagraphStyleSetting(spec: .Alignment, valueSize: sizeofValue(aligment), value: &aligment),
+            CTParagraphStyleSetting(spec: .LineSpacing, valueSize: sizeofValue(lineSpace), value: &lineSpace),
+            CTParagraphStyleSetting(spec: .LineBreakMode, valueSize: sizeofValue(lineBreak), value: &lineBreak),
+            CTParagraphStyleSetting(spec: .ParagraphSpacing, valueSize: sizeofValue(paraSpace), value: &paraSpace),
+        ]
+
+        let attrContent = NSMutableAttributedString(string: content)
+        let range       = NSMakeRange(0, attrContent.length)
+        let style       = CTParagraphStyleCreate(settings, 5)
+
+        attrContent.addAttribute(NSFontAttributeName, value: UIFont(name: FontManager.getFontName(font), size: self.fontSize)!, range: range)
+        attrContent.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: range)
+        CFAttributedStringSetAttribute(attrContent, CFRangeMake(0, range.length), kCTParagraphStyleAttributeName, style)
+
+        let frameSetter = CTFramesetterCreateWithAttributedString(attrContent as CFAttributedStringRef)
+        let path        = CGPathCreateMutable()
+        let container   = CGRectMake(
+            bounds.origin.x + margin.left,
+            bounds.origin.y + margin.top,
+            bounds.size.width - margin.left - margin.right,
+            bounds.size.height - margin.top - margin.bottom
+        )
+
+        CGPathAddRect(path, nil, container)
+        return CTFramesetterCreateFrame(frameSetter, CFRangeMake(0, range.length), path, nil)
     }
 }

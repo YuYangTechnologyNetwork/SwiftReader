@@ -32,7 +32,7 @@ class MainViewController: UIViewController {
                                                 encoding: FileReader.Encodings[book.encoding]!)
 
                 let paper    = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
-                let vtext    = paper.werittingText(content!).text
+                let vtext    = paper.writting(content!).text
                 
                 print(vtext)
                 
