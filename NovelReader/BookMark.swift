@@ -9,8 +9,9 @@
 import Foundation
 
 class BookMark: NSObject {
-    var title: String = Constants.NO_TITLE
+    var title: String  = Constants.NO_TITLE
     var range: NSRange = Constants.EMPTY_RANGE
+    var offset: UInt   = 0
 
     init(title: String, range: NSRange) {
         self.title = title
