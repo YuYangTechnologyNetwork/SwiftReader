@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Paper {
+class Paper: NSObject, YYTextLinePositionModifier {
 
     /*Visible text*/
     var text: String!
@@ -19,17 +19,14 @@ class Paper {
     /*For YYLabel*/
     private let textContainer: YYTextContainer!
 
-    var textFrame: CTFrameRef!
-
+    /*Paper text bounds*/
     private var size: CGSize!
     
     init(size: CGSize) {
-        self.size = size
-        self.textContainer                     = YYTextContainer(size: size, insets: Typesetter.Ins.margin)
-        self.textContainer.maximumNumberOfRows = 0
-        /*self.textContainer.truncationToken     = NSMutableAttributedString(string: "")
-        self.textContainer.truncationType      = .End*/
-        self.textContainer.verticalForm        = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
+        self.size                               = size
+        self.textContainer                      = YYTextContainer(size: size, insets: Typesetter.Ins.margin)
+        self.textContainer.maximumNumberOfRows  = 0
+        self.textContainer.verticalForm         = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
     }
 
     /*
@@ -40,7 +37,8 @@ class Paper {
      * @return Paper        For the call chains
      */
     func writting(text: String, firstLineIsTitle: Bool = false) -> Paper {
-        let attrt = Typesetter.Ins.typeset(text, firstLineIsTitle: firstLineIsTitle, paperWidth: textContainer.size.width)
+        let attrt = Typesetter.Ins.typeset(text, firstLineIsTitle: firstLineIsTitle, paperWidth: size.width)
+        self.textContainer.linePositionModifier = self
         self.textLayout = YYTextLayout(container: self.textContainer, text: attrt)
         self.text =  attrt.attributedSubstringFromRange(textLayout.visibleRange).string
         return self
@@ -62,5 +60,12 @@ class Paper {
         }
         
         return false
+    }
+
+    @objc func modifyLines(lines: [AnyObject]!, fromText text: NSAttributedString!, inContainer container: YYTextContainer!) {
+    }
+
+    @objc func copyWithZone(zone: NSZone) -> AnyObject {
+        return Paper(size: size)
     }
 }
