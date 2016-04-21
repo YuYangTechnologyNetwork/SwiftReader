@@ -70,4 +70,8 @@ class Book: NSObject {
     override var hashValue: Int {
         return description.hashValue
     }
+
+    func bookMark() -> BookMark? {
+        return nil
+    }
 }

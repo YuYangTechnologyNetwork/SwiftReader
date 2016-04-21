@@ -38,6 +38,7 @@
 		112E9CD21C9FF1B400C5E34C /* GB2312Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = 112E9CB81C9FF1B400C5E34C /* GB2312Freq.tab */; };
 		112E9CD31C9FF1B400C5E34C /* JISFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = 112E9CB91C9FF1B400C5E34C /* JISFreq.tab */; };
 		1156F1871CA3BB88006B5848 /* FileReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1156F1861CA3BB88006B5848 /* FileReader.swift */; };
+		11C7433F1CC78A1800384FFB /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7433E1CC78A1800384FFB /* Chapter.swift */; };
 		11DAD99B1C9FE5D50027F98A /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DAD9991C9FE5D50027F98A /* MainViewController.swift */; };
 		11DAD99C1C9FE5D50027F98A /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11DAD99A1C9FE5D50027F98A /* MainViewController.xib */; };
 		3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C70D1C96F53700DD408F /* AppDelegate.swift */; };
@@ -127,7 +128,8 @@
 		112E9CB81C9FF1B400C5E34C /* GB2312Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GB2312Freq.tab; path = ThirdParty/Uchardet/GB2312Freq.tab; sourceTree = "<group>"; };
 		112E9CB91C9FF1B400C5E34C /* JISFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JISFreq.tab; path = ThirdParty/Uchardet/JISFreq.tab; sourceTree = "<group>"; };
 		1156F1861CA3BB88006B5848 /* FileReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FileReader.swift; path = Engine/FileReader.swift; sourceTree = "<group>"; };
-		11A992141CAB873500BC62B0 /* Build.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Build.h; path = Build/Build.h; sourceTree = "<group>"; };
+		11A992141CAB873500BC62B0 /* Build.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Build.swift; path = Build/Build.swift; sourceTree = "<group>"; };
+		11C7433E1CC78A1800384FFB /* Chapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Chapter.swift; path = Models/Chapter.swift; sourceTree = "<group>"; };
 		11DAD9991C9FE5D50027F98A /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		11DAD99A1C9FE5D50027F98A /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 		2C29CF4B14E4A37B75632830 /* libPods-NovelReader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovelReader.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				111B55C71CABD77600070E9C /* Book.swift */,
+				11C7433E1CC78A1800384FFB /* Chapter.swift */,
 				3DBCA1921CB9F42C00C4A37F /* BookMark.swift */,
 			);
 			name = Models;
@@ -266,7 +269,7 @@
 		11A992111CAB86C400BC62B0 /* Build */ = {
 			isa = PBXGroup;
 			children = (
-				11A992141CAB873500BC62B0 /* Build.h */,
+				11A992141CAB873500BC62B0 /* Build.swift */,
 			);
 			name = Build;
 			sourceTree = "<group>";
@@ -348,6 +351,7 @@
 			isa = PBXGroup;
 			children = (
 				112B9D781CAD4AF200D0F9AB /* Paper.swift */,
+				112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */,
 				3D49C7371C96F60900DD408F /* Typesetter.swift */,
 				1156F1861CA3BB88006B5848 /* FileReader.swift */,
 				112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */,
@@ -580,6 +584,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11C7433F1CC78A1800384FFB /* Chapter.swift in Sources */,
 				11DAD99B1C9FE5D50027F98A /* MainViewController.swift in Sources */,
 				3D833A981CAFC09700D31925 /* ReaderViewController.swift in Sources */,
 				112E9CC41C9FF1B400C5E34C /* nsGB2312Prober.cpp in Sources */,

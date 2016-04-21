@@ -9,7 +9,6 @@
 #ifndef BridgingHeader_h
 #define BridgingHeader_h
 
-#include "Build.h"
 #include "uchardet.h"
 
 #import <YYText/YYText.h>

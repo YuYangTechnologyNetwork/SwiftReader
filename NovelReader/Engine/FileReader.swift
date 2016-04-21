@@ -208,7 +208,7 @@ class FileReader {
 
 extension FileReader {
     private var CHAPTER_REGEX: String {
-        return "^\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回]\\s{0,}.{0,30}$"
+        return "^\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回]\\s{1,}.{0,30}$"
     }
     
     /*!
@@ -226,7 +226,7 @@ extension FileReader {
                 let ecnoding = Self.Encodings[encodingStr]!
                 let fileSize = getFileSize(file)
                 
-                dispatch_async(dispatch_queue_create(Constants.GLOBAL_ASYNC_QUEUE_NAME, nil)) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
                     var location = 0, chapters: [BookMark] = []
                     
                     repeat {
@@ -270,7 +270,7 @@ extension FileReader {
                 
                 if range.location < 0 || range.location + range.length > fileSize { return false }
                 
-                dispatch_async(dispatch_queue_create(Constants.GLOBAL_ASYNC_QUEUE_NAME, nil)) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
                     let chapters = self.chaptersInRange(file, range: range, encoding: ecnoding)
                     dispatch_async(dispatch_get_main_queue()) {
                         callback(chapters)
@@ -372,15 +372,22 @@ extension FileReader {
                         range: Range<String.CharacterView.Index>(index ..< (snippet?.endIndex)!),
                         locale: nil)
 
-                    loc = (snippet?.substringToIndex((tr?.startIndex)!).lengthOfBytesUsingEncoding(encoding))!
+                    loc = range.location + (snippet?.substringToIndex((tr?.startIndex)!).length(encoding))!
                     index = (tr?.endIndex)!
 
                     let t = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
                     let range = NSMakeRange(loc, 0)
 
                     if title.count > 0 {
-                        let lastest = title[title.count - 1]
-                        title[title.count - 1].range = NSMakeRange(lastest.range.location, loc - lastest.range.location)
+                        let l = title[title.count - 1]
+                        let r = NSMakeRange(l.range.loc, loc - l.range.loc)
+
+                        if l.title.length(encoding) >= r.length - 10 {
+                            print(l.title)
+                            title.removeLast()
+                        } else {
+                            title[title.count - 1].range = r
+                        }
                     }
                     
                     title.append(BookMark(title: t, range: range))
@@ -388,14 +395,14 @@ extension FileReader {
             }
             
             if title.count == 0 {
-                title.append(BookMark(title: Constants.NO_TITLE, range: NSMakeRange(range.location, loc)))
+                title.append(BookMark(title: NO_TITLE, range: range))
             } else {
-                let lastest = title[title.count - 1]
-                title[title.count - 1].range = NSMakeRange(lastest.range.location, snippet!.lengthOfBytesUsingEncoding(encoding) - lastest.range.location)
+                let l = title.last!
+                title.last!.range = NSMakeRange(l.range.loc, range.loc + snippet!.length(encoding) - l.range.loc)
             }
 
             if title[0].range.location > range.location {
-                title.insert(BookMark(title: Constants.NO_TITLE, range: NSMakeRange(0, title[0].range.location)), atIndex: 0)
+                title.insert(BookMark(title: NO_TITLE, range: NSMakeRange(range.loc, title[0].range.loc)), atIndex: 0)
             }
         }
         

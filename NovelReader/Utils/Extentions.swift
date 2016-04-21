@@ -21,4 +21,22 @@ extension String {
             return false
         }
     }
+
+    func length(encoding: UInt) -> Int {
+        return lengthOfBytesUsingEncoding(encoding)
+    }
+}
+
+extension NSRange {
+    var end: Int {
+        return location + length
+    }
+
+    var loc: Int {
+        return location
+    }
+
+    var len: Int {
+        return length
+    }
 }
