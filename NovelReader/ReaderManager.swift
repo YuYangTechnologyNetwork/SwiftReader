@@ -9,126 +9,119 @@
 import Foundation
 
 class ReaderManager {
-
     private var book: Book!
     private var encoding: UInt!
+    private var paperSize: CGSize = EMPTY_SIZE
+    private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
+    private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
+    private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
 
-    private var paperSize: CGSize = CGSizeMake(0, 0)
+    var currPaper: Paper? {
+        return currChapter.currPage!
+    }
 
-    private var prevChapter: (Bool, [Paper]) = (true, [])
-    private var currChapter: (Bool, [Paper]) = (true, [])
-    private var nextChapter: (Bool, [Paper]) = (true, [])
+    var nextPaper: Paper? {
+        if currChapter.isTail {
+            return !nextChapter.isEmpty ? nextChapter.headPage : nil
+        } else {
+            return currChapter.nextPage
+        }
+    }
 
-    var paperIndex = 0
+    var prevPaper: Paper? {
+        if currChapter.isHead {
+            return !prevChapter.isEmpty ? prevChapter.tailPage : nil
+        } else {
+            return currChapter.prevPage
+        }
+    }
+
+    var isHead: Bool {
+        return currChapter.isHead && currChapter.range.location <= 0
+    }
+
+    var isTail: Bool {
+        return currChapter.isTail && currChapter.range.end >= book.size
+    }
 
     init(b: Book, size: CGSize) {
-        book      = b
+        book = b
         paperSize = size
-        encoding  = FileReader.Encodings[self.book.encoding]
+        encoding = FileReader.Encodings[self.book.encoding]
     }
-    
-    func asyncPrepare(callback: (success: Bool) -> Void) {
-        // Async prepare chapters
-        dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
-            let file     = fopen((self.book.fullFilePath), "r")
-            let reader   = FileReader()
-            let chapters = reader.chaptersInRange(file, range: NSMakeRange(0, 20480), encoding: self.encoding)
-            let ready    = chapters.count > 0
 
-            if ready {
-                let content      = reader.readRange(file, range: chapters[0].range, encoding: self.encoding)
-                self.currChapter.1 = self.papersWithContent(content!,
-                                                          firstListIsTitle: chapters[0].title != Constants.NO_TITLE)
-            }
+    func asyncPrepare(callback: (_: Chapter.Status) -> Void) {
+        if let bm = book.bookMark() {
+            currChapter = Chapter(title: bm.title, range: bm.range)
+        } else {
+            currChapter = Chapter(range: NSMakeRange(0, CHAPTER_SIZE))
+        }
 
-            fclose(file)
-            dispatch_async(dispatch_get_main_queue()) {
-                callback(success: ready)
-            }
+        currChapter.asyncLoadInRange(self, reverse: false, book: book) { (s: Chapter.Status) in
+            callback(s)
         }
     }
 
-    private func asyncPagingChapter(chapter: BookMark, callback: (papers: [Paper]) -> Void) {
-        dispatch_async(dispatch_queue_create(Constants.GLOBAL_ASYNC_QUEUE_NAME, nil)) {
-            let file    = fopen((self.book.fullFilePath), "r")
-            let content = FileReader().readRange(file, range: chapter.range, encoding: self.encoding)
-            let papers  = self.papersWithContent(content!, firstListIsTitle: chapter.title != Constants.NO_TITLE)
-            fclose(file)
-
-            // Back to main thread
-            dispatch_async(dispatch_get_main_queue()) {
-                callback(papers: papers)
-            }
-        }
-    }
-
-    private func asyncLoadChapterInRange(range: NSRange, callback: (papers : [Paper]) -> Void) {
-
-    }
-
-     func papersWithContent(content: String, firstListIsTitle: Bool = false) -> [Paper] {
+    func paging(content: String, firstListIsTitle: Bool = false) -> [Paper] {
         var index = 0, tmpStr = content, papers: [Paper] = []
-        
-        repeat { 
-            let paper = Paper(size: paperSize)
-            let flit  = firstListIsTitle && index == 0
-            tmpStr    = content.substringFromIndex(content.startIndex.advancedBy(index))
+
+        repeat {
+            let paper = Paper(size: paperSize), flit = firstListIsTitle && index == 0
+            tmpStr = content.substringFromIndex(content.startIndex.advancedBy(index))
 
             paper.writting(tmpStr, firstLineIsTitle: flit)
-            
+
             if tmpStr.length > paper.text.length {
-                paper.writting(
-                    tmpStr.substringToIndex(tmpStr.startIndex.advancedBy(paper.text.length)),
-                    firstLineIsTitle: flit)
+                let len = min(tmpStr.length, paper.text.length)
+                paper.writting(tmpStr.substringToIndex(tmpStr.startIndex.advancedBy(len)), firstLineIsTitle: flit)
             }
-            
+
             index += paper.text.length
             papers.append(paper)
         } while (index < content.length)
-        
+
         return papers
     }
-    
-    func isHeader() -> Bool {
-        return paperIndex == 0
-    }
-    
-    func isTail() -> Bool {
-        return currChapter.0 || paperIndex == currChapter.1.count - 1
-    }
-    
-    func swipToNext() {
-        paperIndex = min(paperIndex + 1, currChapter.1.count - 1)
 
-        if paperIndex == currChapter.1.count - 1 {
-            paperIndex = 0
+    func swipToNext() {
+        if currChapter.isTail {
             prevChapter = currChapter
             currChapter = nextChapter
-            nextChapter = (true, [])
+            nextChapter = Chapter.EMPTY_CHAPTER
+        } else {
+            currChapter.next()
+        }
+
+        if nextChapter.isEmpty && !isTail {
+            let loc = currChapter.range.end
+            let len = min(CHAPTER_SIZE, book.size - loc)
+            nextChapter = Chapter(range: NSMakeRange(loc, len))
+            nextChapter.asyncLoadInRange(self, reverse: false, book: book, callback: { (s: Chapter.Status) in
+                if s == Chapter.Status.Success {
+                    self.nextChapter.setHead()
+                }
+            })
         }
     }
-    
+
     func swipToPrev() {
-        paperIndex = max(paperIndex - 1, 0)
-    }
-    
-    func currPaper() -> Paper? {
-        return currChapter.1[paperIndex]
-    }
-    
-    func nextPaper() -> Paper? {
-        if paperIndex == currChapter.1.count - 1 {
-            return nil
+        if currChapter.isHead {
+            nextChapter = currChapter
+            currChapter = prevChapter
+            prevChapter = Chapter.EMPTY_CHAPTER
+        } else {
+            currChapter.prev()
         }
-        
-        return currChapter.1[paperIndex + 1]
-    }
-    
-    func prevPaper() -> Paper? {
-        if paperIndex == 0 {
-            return nil
+
+        if prevChapter.isEmpty && !isHead {
+            let loc = max(currChapter.range.location - CHAPTER_SIZE, 0)
+            let len = currChapter.range.location - loc
+            prevChapter = Chapter(range: NSMakeRange(loc, len))
+            prevChapter.asyncLoadInRange(self, reverse: true, book: book, callback: { (s: Chapter.Status) in
+                if s == Chapter.Status.Success {
+                    self.prevChapter.setTail()
+                }
+            })
         }
-        
-        return currChapter.1[paperIndex - 1]
     }
 }

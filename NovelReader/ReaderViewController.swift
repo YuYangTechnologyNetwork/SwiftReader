@@ -44,7 +44,7 @@ class ReaderViewController: UIViewController,
             }
         }
 
-        UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .None)
+        // UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .None)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -62,9 +62,9 @@ class ReaderViewController: UIViewController,
         }
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    /*override func prefersStatusBarHidden() -> Bool {
         return true
-    }
+    }*/
     
     private func initliaze() {
         swipeCtrls = [PageViewController(), PageViewController(), PageViewController()]
@@ -75,23 +75,25 @@ class ReaderViewController: UIViewController,
             let book = try! Book(fullFilePath: filePath!)
             dispatch_async(dispatch_get_main_queue()) {
                 self.readerMgr = ReaderManager(b: book, size: self.view.frame.size)
-                self.readerMgr.asyncPrepare() { (_: Bool) in
-                    self.setPages()
-                }
+                self.readerMgr.asyncPrepare({ (s: Chapter.Status) in
+                    if s == Chapter.Status.Success {
+                        self.setPages()
+                    }
+                })
             }
         }
     }
     
     private func setPages() {
-        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper())
+        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper)
         
-        if readerMgr.isHeader() {
-            swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper())
-        } else if readerMgr.isTail() {
-            swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper())
+        if readerMgr.isHead {
+            swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+        } else if readerMgr.isTail {
+            swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
         } else {
-            swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper())
-            swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper())
+            swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+            swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
         }
         
         pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false, completion: nil)
@@ -101,23 +103,23 @@ class ReaderViewController: UIViewController,
     }
     
     func snapToPrevPage(view: UIView) {
-        if !readerMgr.isHeader() {
+        if !readerMgr.isHead {
             currIndex = prevIndex(currIndex)
             readerMgr.swipToPrev()
             pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Reverse, animated: true) {
                 (_: Bool) in
-                self.swipeCtrls[self.prevIndex(self.currIndex)].bindPaper(self.readerMgr.prevPaper())
+                self.swipeCtrls[self.prevIndex(self.currIndex)].bindPaper(self.readerMgr.prevPaper)
             }
         }
     }
     
     func snapToNextPage(view: UIView) {
-        if !readerMgr.isTail() {
+        if !readerMgr.isTail {
             currIndex = nextIndex(currIndex)
             self.readerMgr.swipToNext()
             pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: true) {
                 (_: Bool) in
-                self.swipeCtrls[self.nextIndex(self.currIndex)].bindPaper(self.readerMgr.nextPaper())
+                self.swipeCtrls[self.nextIndex(self.currIndex)].bindPaper(self.readerMgr.nextPaper)
             }
         }
     }
@@ -133,21 +135,21 @@ class ReaderViewController: UIViewController,
     /*UIPageViewControllerDataSource*/
     func pageViewController(pageViewController: UIPageViewController,
         viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
-            if self.readerMgr.isHeader() {
+            if self.readerMgr.isHead {
                 return nil
             }
             
-            return swipeCtrls[prevIndex(currIndex)].bindPaper(self.readerMgr.prevPaper())
+            return swipeCtrls[prevIndex(currIndex)].bindPaper(self.readerMgr.prevPaper)
     }
     
     /*UIPageViewControllerDataSource*/
     func pageViewController(pageViewController: UIPageViewController,
         viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-            if self.readerMgr.isTail() {
+            if self.readerMgr.isTail {
                 return nil
             }
             
-            return swipeCtrls[nextIndex(currIndex)].bindPaper(self.readerMgr.nextPaper())
+            return swipeCtrls[nextIndex(currIndex)].bindPaper(self.readerMgr.nextPaper)
     }
     
     /*UIPageViewControllerDelegate*/
