@@ -31,12 +31,16 @@ extension NSRange {
     var end: Int {
         return location + length
     }
-
+    
     var loc: Int {
         return location
     }
-
+    
     var len: Int {
         return length
+    }
+    
+    var desc: String {
+        return String("\(loc)\(len)".hash)
     }
 }

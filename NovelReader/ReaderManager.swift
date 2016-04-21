@@ -85,6 +85,7 @@ class ReaderManager {
 
     func swipToNext() {
         if currChapter.isTail {
+            prevChapter.trash()
             prevChapter = currChapter
             currChapter = nextChapter
             nextChapter = Chapter.EMPTY_CHAPTER
@@ -106,6 +107,7 @@ class ReaderManager {
 
     func swipToPrev() {
         if currChapter.isHead {
+            nextChapter.trash()
             nextChapter = currChapter
             currChapter = prevChapter
             prevChapter = Chapter.EMPTY_CHAPTER

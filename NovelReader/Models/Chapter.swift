@@ -31,7 +31,7 @@ class Chapter: BookMark {
     }
 
     var isEmpty: Bool {
-        return _papers.count == 0
+        return _papers.count == 0 && status != .Loading
     }
 
     var currPage: Paper? {
@@ -58,22 +58,26 @@ class Chapter: BookMark {
     private var _papers: [Paper] = []
 
     private(set) var status: Status = .Blank
+    
+    private var asyncTask: dispatch_block_t? = nil
 
     override init(title: String = NO_TITLE, range: NSRange = EMPTY_RANGE) {
         super.init(title: title, range: range)
     }
 
     func asyncLoadInRange(readerMgr: ReaderManager, reverse: Bool, book: Book, callback: (_: Status) -> Void) {
-        // Show System StatusBar Network Indicator
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-
-        // Filte illegal range
+        // Filter illegal range
         if range.end <= range.location {
             callback(.Failure)
             return
         }
 
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+        let task = {
+            // Show System StatusBar Network Indicator
+            dispatch_async(dispatch_get_main_queue()) {
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+            }
+
             self.status = .Loading
 
             // Open file
@@ -104,13 +108,28 @@ class Chapter: BookMark {
 
             // Back to main thread
             dispatch_async(dispatch_get_main_queue()) {
+                // Reset async task
+                self.asyncTask = nil
+
                 // Hide System StatusBar Network Indicator
                 UIApplication.sharedApplication().networkActivityIndicatorVisible = false
 
-                print("Aft: \(self)")
-
                 // Callback
                 callback(self.status)
+
+                print("Aft: \(self)")
+            }
+        }
+
+        asyncTask = task
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), task)
+    }
+
+    func trash() {
+        if let t = asyncTask {
+            if dispatch_block_testcancel(t) == 0 {
+                dispatch_block_cancel(t)
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = false
             }
         }
     }

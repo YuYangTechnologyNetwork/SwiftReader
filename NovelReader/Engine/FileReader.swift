@@ -356,7 +356,7 @@ extension FileReader {
     func chaptersInRange(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> [BookMark] {
         let snippet = self.readRange(file, range: range, encoding: encoding)
         var title: [BookMark] = []
-
+        
         if snippet != nil {
             let lines = snippet!.componentsSeparatedByString(Self.getNewLineCharater(snippet!))
             var loc = range.location
@@ -364,30 +364,23 @@ extension FileReader {
             
             for line in lines {
                 let str = String(line)
-
+                
                 if str.regexMatch(self.CHAPTER_REGEX) {
                     let tr = snippet!.rangeOfString(
                         str,
                         options: .CaseInsensitiveSearch,
                         range: Range<String.CharacterView.Index>(index ..< (snippet?.endIndex)!),
                         locale: nil)
-
+                    
                     loc = range.location + (snippet?.substringToIndex((tr?.startIndex)!).length(encoding))!
                     index = (tr?.endIndex)!
-
+                    
                     let t = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
                     let range = NSMakeRange(loc, 0)
-
+                    
                     if title.count > 0 {
                         let l = title[title.count - 1]
-                        let r = NSMakeRange(l.range.loc, loc - l.range.loc)
-
-                        if l.title.length(encoding) >= r.length - 10 {
-                            print(l.title)
-                            title.removeLast()
-                        } else {
-                            title[title.count - 1].range = r
-                        }
+                        title[title.count - 1].range = NSMakeRange(l.range.loc, loc - l.range.loc)
                     }
                     
                     title.append(BookMark(title: t, range: range))
@@ -400,13 +393,47 @@ extension FileReader {
                 let l = title.last!
                 title.last!.range = NSMakeRange(l.range.loc, range.loc + snippet!.length(encoding) - l.range.loc)
             }
-
+            
             if title[0].range.location > range.location {
                 title.insert(BookMark(title: NO_TITLE, range: NSMakeRange(range.loc, title[0].range.loc)), atIndex: 0)
             }
         }
         
-        return title
+        return merge(title, encoding: encoding)
+    }
+    
+    private func merge(chapters: [BookMark], encoding: NSStringEncoding) -> [BookMark] {
+        if chapters.count < 2 {
+            return chapters
+        }
+        
+        var merged: [BookMark] = [], i = 0
+        let count = chapters.count
+        
+        repeat {
+            let ccp = chapters[i]
+            
+            if ccp.title.length(encoding) >= ccp.range.len / 2 {
+                let ncp = chapters[i + 1]
+                
+                if i == 0 || ccp.title == ncp.title {
+                    merged.append(BookMark(title: ccp.title,
+                        range: NSMakeRange(ccp.range.loc, ccp.range.len + ncp.range.len)))
+                    i += 1
+                } else {
+                    let end = merged.count - 1
+                    let endE = merged[end]
+                    merged[end] = BookMark(title: endE.title,
+                        range: NSMakeRange(endE.range.loc, endE.range.len + ccp.range.len))
+                }
+            } else {
+                merged.append(ccp)
+            }
+
+            i += 1
+        } while (i < count - 1)
+        
+        return merged
     }
     
     /*

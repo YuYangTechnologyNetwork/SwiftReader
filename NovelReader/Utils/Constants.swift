@@ -19,4 +19,4 @@ let EMPTY_STR = ""
 let EMPTY_SIZE = CGSizeMake(0, 0)
 let EMPTY_RANGE = NSMakeRange(0, 0)
 
-let CHAPTER_SIZE = 20480
+let CHAPTER_SIZE = 15360
