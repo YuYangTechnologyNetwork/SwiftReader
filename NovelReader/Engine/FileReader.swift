@@ -301,7 +301,7 @@ extension FileReader {
          */
         let detector = { (head: Int, tail: Int) -> (Bool, String?) in
             let loc = range.location - head
-            let len = range.length + head + tail
+            let len = range.length - head + tail
             let buf = UnsafeMutablePointer<UInt8>.alloc(len)
             
             fseek(file, loc, SEEK_SET)
@@ -323,10 +323,10 @@ extension FileReader {
         /*
          * If the range start and end not a word border, try to repair it.
          * Loops mybe like below:
-         *   Loop 0:     range.loc ... range.loc + range.len + 1
+         *   Loop 0:     range.loc ... range.loc + range.len - 1
          *   Loop 1: range.loc - 1 ... range.loc + range.len
-         *   Loop 2: range.loc - 1 ... range.loc + range.len + 1
-         *   Loop 3:     range.loc ... range.loc + range.len + 2
+         *   Loop 2: range.loc - 1 ... range.loc + range.len - 1
+         *   Loop 3:     range.loc ... range.loc + range.len - 2
          *   ...
          */
         repeat {

@@ -44,7 +44,7 @@ class ReaderViewController: UIViewController,
             }
         }
 
-        // UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .None)
+        UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .None)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -62,9 +62,9 @@ class ReaderViewController: UIViewController,
         }
     }
     
-    /*override func prefersStatusBarHidden() -> Bool {
+    override func prefersStatusBarHidden() -> Bool {
         return true
-    }*/
+    }
     
     private func initliaze() {
         swipeCtrls = [PageViewController(), PageViewController(), PageViewController()]

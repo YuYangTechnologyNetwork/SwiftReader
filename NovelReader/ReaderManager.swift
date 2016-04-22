@@ -64,19 +64,22 @@ class ReaderManager {
 
     func paging(content: String, firstListIsTitle: Bool = false) -> [Paper] {
         var index = 0, tmpStr = content, papers: [Paper] = []
+        var lastEndWithNewLine:Bool = !firstListIsTitle
 
         repeat {
             let paper = Paper(size: paperSize), flit = firstListIsTitle && index == 0
-            tmpStr = content.substringFromIndex(content.startIndex.advancedBy(index))
+            tmpStr    = content.substringFromIndex(content.startIndex.advancedBy(index))
 
-            paper.writting(tmpStr, firstLineIsTitle: flit)
+            paper.writtingLineByLine(tmpStr, firstLineIsTitle: flit, startWithNewLine: lastEndWithNewLine)
 
-            if tmpStr.length > paper.text.length {
-                let len = min(tmpStr.length, paper.text.length)
-                paper.writting(tmpStr.substringToIndex(tmpStr.startIndex.advancedBy(len)), firstLineIsTitle: flit)
+            // Skip empty paper
+            if paper.realLen == 0 {
+                break
             }
 
-            index += paper.text.length
+            lastEndWithNewLine = paper.endWithNewLine
+            index              = paper.realLen + index
+
             papers.append(paper)
         } while (index < content.length)
 
@@ -117,7 +120,7 @@ class ReaderManager {
 
         if prevChapter.isEmpty && !isHead {
             let loc = max(currChapter.range.location - CHAPTER_SIZE, 0)
-            let len = currChapter.range.location - loc
+            let len = max(currChapter.range.location - loc - 1, 0)
             prevChapter = Chapter(range: NSMakeRange(loc, len))
             prevChapter.asyncLoadInRange(self, reverse: true, book: book, callback: { (s: Chapter.Status) in
                 if s == Chapter.Status.Success {
