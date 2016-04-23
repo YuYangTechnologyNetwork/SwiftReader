@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ReaderManager {
+class ReaderManager: NSObject {
     private var book: Book!
     private var encoding: UInt!
     private var paperSize: CGSize = EMPTY_SIZE
@@ -37,11 +37,15 @@ class ReaderManager {
     }
 
     var isHead: Bool {
-        return currChapter.isHead && currChapter.range.location <= 0
+        return currChapter.isHead && currChapter.range.loc <= 0
     }
 
     var isTail: Bool {
-        return currChapter.isTail && currChapter.range.end >= book.size
+        return currChapter.isTail && currChapter.range.loc >= book.size
+    }
+    
+    override var description: String {
+        return "Prev: \(prevChapter)\nCurr: \(currChapter)\nNext: \(nextChapter)"
     }
 
     init(b: Book, size: CGSize) {
@@ -87,46 +91,52 @@ class ReaderManager {
     }
 
     func swipToNext() {
-        if currChapter.isTail {
-            prevChapter.trash()
-            prevChapter = currChapter
-            currChapter = nextChapter
-            nextChapter = Chapter.EMPTY_CHAPTER
-        } else {
-            currChapter.next()
-        }
-
-        if nextChapter.isEmpty && !isTail {
-            let loc = currChapter.range.end
-            let len = min(CHAPTER_SIZE, book.size - loc)
-            nextChapter = Chapter(range: NSMakeRange(loc, len))
-            nextChapter.asyncLoadInRange(self, reverse: false, book: book, callback: { (s: Chapter.Status) in
-                if s == Chapter.Status.Success {
-                    self.nextChapter.setHead()
-                }
-            })
+        if !isTail {
+            if currChapter.isTail {
+                prevChapter.trash()
+                prevChapter = currChapter
+                currChapter = nextChapter
+                nextChapter = Chapter.EMPTY_CHAPTER
+            } else {
+                currChapter.next()
+            }
+            
+            if nextChapter.isEmpty {
+                let loc = currChapter.range.end
+                let len = min(CHAPTER_SIZE, book.size - loc)
+                nextChapter = Chapter(range: NSMakeRange(loc, len))
+                nextChapter.asyncLoadInRange(self, reverse: false, book: book, callback: { (s: Chapter.Status) in
+                    if s == Chapter.Status.Success {
+                        self.nextChapter.setHead()
+                        print("\n--->\n\(self)")
+                    }
+                })
+            }
         }
     }
 
     func swipToPrev() {
-        if currChapter.isHead {
-            nextChapter.trash()
-            nextChapter = currChapter
-            currChapter = prevChapter
-            prevChapter = Chapter.EMPTY_CHAPTER
-        } else {
-            currChapter.prev()
-        }
-
-        if prevChapter.isEmpty && !isHead {
-            let loc = max(currChapter.range.location - CHAPTER_SIZE, 0)
-            let len = max(currChapter.range.location - loc - 1, 0)
-            prevChapter = Chapter(range: NSMakeRange(loc, len))
-            prevChapter.asyncLoadInRange(self, reverse: true, book: book, callback: { (s: Chapter.Status) in
-                if s == Chapter.Status.Success {
-                    self.prevChapter.setTail()
-                }
-            })
+        if !isHead {
+            if currChapter.isHead {
+                nextChapter.trash()
+                nextChapter = currChapter
+                currChapter = prevChapter
+                prevChapter = Chapter.EMPTY_CHAPTER
+            } else {
+                currChapter.prev()
+            }
+            
+            if prevChapter.isEmpty {
+                let loc = max(currChapter.range.loc - CHAPTER_SIZE, 0)
+                let len = min(currChapter.range.loc - loc, CHAPTER_SIZE)
+                prevChapter = Chapter(range: NSMakeRange(loc, len))
+                prevChapter.asyncLoadInRange(self, reverse: true, book: book, callback: { (s: Chapter.Status) in
+                    if s == Chapter.Status.Success {
+                        self.prevChapter.setTail()
+                        print("\n--->\n\(self)")
+                    }
+                })
+            }
         }
     }
 }

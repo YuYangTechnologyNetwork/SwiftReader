@@ -19,7 +19,7 @@ class BookMark: NSObject {
     }
     
     override var description: String {
-        return "\(title)\(range)"
+        return "\(title)(\(range.loc),\(range.end))"
     }
     
     override func isEqual(object: AnyObject?) -> Bool {

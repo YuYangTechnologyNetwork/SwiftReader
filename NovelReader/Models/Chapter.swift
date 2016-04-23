@@ -53,6 +53,10 @@ class Chapter: BookMark {
     var tailPage: Paper? {
         return isEmpty ? nil : _papers[_papers.count - 1]
     }
+    
+    override var description: String {
+        return isEmpty ? "Blank" : super.description
+    }
 
     private var _offset = 0
     private var _papers: [Paper] = []
@@ -117,7 +121,7 @@ class Chapter: BookMark {
                 // Callback
                 callback(self.status)
 
-                print("Aft: \(self)")
+                print("Loaded: \(self)")
             }
         }
 
@@ -128,6 +132,7 @@ class Chapter: BookMark {
     func trash() {
         if let t = asyncTask {
             if dispatch_block_testcancel(t) == 0 {
+                print("Canceled: \(self)")
                 dispatch_block_cancel(t)
                 UIApplication.sharedApplication().networkActivityIndicatorVisible = false
             }

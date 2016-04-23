@@ -8,17 +8,12 @@
 
 import UIKit
 
-class ReaderViewController: UIViewController,
-                            UIPageViewControllerDataSource,
-                            UIPageViewControllerDelegate,
-                            UIScrollViewDelegate {
+class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate {
     private var currIndex: Int = 0
     private var lastIndex: Int = 0
     private var readerMgr: ReaderManager!
     private var swipeCtrls: [PageViewController]!
     private var pageViewCtrl: UIPageViewController!
-    
-    private var theBackPageCtrler = PageViewController()
     
     @IBOutlet weak var prevBtn: UIButton!
     @IBOutlet weak var nextBtn: UIButton!
@@ -168,6 +163,7 @@ class ReaderViewController: UIViewController,
                 } else if lastIndex == nextIndex(currIndex) {
                     self.readerMgr.swipToPrev()
                 }
+                
             }
     }
 }

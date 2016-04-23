@@ -208,7 +208,7 @@ class FileReader {
 
 extension FileReader {
     private var CHAPTER_REGEX: String {
-        return "^\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回]\\s{1,}.{0,30}$"
+        return "^(\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回]\\s{0,}.{0,30}[^\\)]){1,}$"
     }
     
     /*!
@@ -297,7 +297,7 @@ extension FileReader {
      */
     func readRange(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> String? {
         /*
-         * Try read a prefect snippet for range
+         * Try read a prefect snippet in range
          */
         let detector = { (head: Int, tail: Int) -> (Bool, String?) in
             let loc = range.location - head
@@ -398,10 +398,19 @@ extension FileReader {
                 title.insert(BookMark(title: NO_TITLE, range: NSMakeRange(range.loc, title[0].range.loc)), atIndex: 0)
             }
         }
-        
+
         return merge(title, encoding: encoding)
     }
     
+    /*
+     * Merge short and repeated chapter
+     *
+     * @param chapters        Chapters genarate by chaptersInRange
+     *
+     * @param encoding        The iOS defined ecnoding, eg: NSUTF8StringEncoding
+     *
+     * @return merged chapters
+     */
     private func merge(chapters: [BookMark], encoding: NSStringEncoding) -> [BookMark] {
         if chapters.count < 2 {
             return chapters
@@ -414,11 +423,11 @@ extension FileReader {
             let ccp = chapters[i]
             
             if ccp.title.length(encoding) >= ccp.range.len / 2 {
-                let ncp = chapters[i + 1]
+                let ncp: BookMark? = i < count - 1 ? chapters[i + 1]: nil
                 
-                if i == 0 || ccp.title == ncp.title {
+                if i == 0 || (ncp != nil && ccp.title == ncp!.title) {
                     merged.append(BookMark(title: ccp.title,
-                        range: NSMakeRange(ccp.range.loc, ccp.range.len + ncp.range.len)))
+                        range: NSMakeRange(ccp.range.loc, ccp.range.len + ncp!.range.len)))
                     i += 1
                 } else {
                     let end = merged.count - 1
@@ -429,9 +438,9 @@ extension FileReader {
             } else {
                 merged.append(ccp)
             }
-
+            
             i += 1
-        } while (i < count - 1)
+        } while (i < count)
         
         return merged
     }
