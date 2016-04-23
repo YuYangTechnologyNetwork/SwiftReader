@@ -45,7 +45,7 @@ class ReaderManager: NSObject {
     }
     
     override var description: String {
-        return "Prev: \(prevChapter)\nCurr: \(currChapter)\nNext: \(nextChapter)"
+        return "\nPrev: \(prevChapter)\nCurr: \(currChapter)\nNext: \(nextChapter)"
     }
 
     init(b: Book, size: CGSize) {
@@ -54,6 +54,11 @@ class ReaderManager: NSObject {
         encoding = FileReader.Encodings[self.book.encoding]
     }
 
+    /**
+     Aysnc prepare the book and the papers
+     
+     - parameter callback: Will be call on prepare finish or error
+     */
     func asyncPrepare(callback: (_: Chapter.Status) -> Void) {
         if let bm = book.bookMark() {
             currChapter = Chapter(title: bm.title, range: bm.range)
@@ -66,6 +71,14 @@ class ReaderManager: NSObject {
         }
     }
 
+    /**
+     Paging the content
+     
+     - parameter content:          chapter content
+     - parameter firstListIsTitle: Is the first paper?
+     
+     - returns: array wrapped chapter's papers
+     */
     func paging(content: String, firstListIsTitle: Bool = false) -> [Paper] {
         var index = 0, tmpStr = content, papers: [Paper] = []
         var lastEndWithNewLine:Bool = !firstListIsTitle
@@ -108,7 +121,7 @@ class ReaderManager: NSObject {
                 nextChapter.asyncLoadInRange(self, reverse: false, book: book, callback: { (s: Chapter.Status) in
                     if s == Chapter.Status.Success {
                         self.nextChapter.setHead()
-                        print("\n--->\n\(self)")
+                        Utils.Log(self)
                     }
                 })
             }
@@ -133,7 +146,7 @@ class ReaderManager: NSObject {
                 prevChapter.asyncLoadInRange(self, reverse: true, book: book, callback: { (s: Chapter.Status) in
                     if s == Chapter.Status.Success {
                         self.prevChapter.setTail()
-                        print("\n--->\n\(self)")
+                        Utils.Log(self)
                     }
                 })
             }

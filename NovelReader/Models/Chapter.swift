@@ -69,6 +69,14 @@ class Chapter: BookMark {
         super.init(title: title, range: range)
     }
 
+    /**
+     Async load the chapter and paging
+     
+     - parameter readerMgr: ReaderManager
+     - parameter reverse:   The chapter in the range chapters head or tail
+     - parameter book:      The novel book
+     - parameter callback:  Will be on load finish
+     */
     func asyncLoadInRange(readerMgr: ReaderManager, reverse: Bool, book: Book, callback: (_: Status) -> Void) {
         // Filter illegal range
         if range.end <= range.location {
@@ -112,6 +120,9 @@ class Chapter: BookMark {
 
             // Back to main thread
             dispatch_async(dispatch_get_main_queue()) {
+                // Logging
+                Utils.Log("Loaded: \(self)")
+                
                 // Reset async task
                 self.asyncTask = nil
 
@@ -120,8 +131,6 @@ class Chapter: BookMark {
 
                 // Callback
                 callback(self.status)
-
-                print("Loaded: \(self)")
             }
         }
 
@@ -132,7 +141,8 @@ class Chapter: BookMark {
     func trash() {
         if let t = asyncTask {
             if dispatch_block_testcancel(t) == 0 {
-                print("Canceled: \(self)")
+                // Logging
+                Utils.Log("Canceled: \(self)")
                 dispatch_block_cancel(t)
                 UIApplication.sharedApplication().networkActivityIndicatorVisible = false
             }

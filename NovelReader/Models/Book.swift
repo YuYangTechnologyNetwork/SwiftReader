@@ -63,7 +63,7 @@ class Book: NSObject {
     }
 
     override var description: String {
-        return "Name: \(self.name)\nSize: \(self.size)\n" +
+        return "\nName: \(self.name)\nSize: \(self.size)\n" +
             "Type: \(self.type)\nPath:\(self.fullFilePath)\nEncoding: \(self.encoding)"
     }
 

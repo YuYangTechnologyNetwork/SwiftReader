@@ -98,21 +98,21 @@ final class FontManager {
 
             switch state {
             case .DidBegin:
-                print("Begin Matching")
+                Utils.Log("Begin Matching")
             case .DidFailWithError:
                 runInUIThread(true, pname, "Download \(pname) failed!")
             case .WillBeginDownloading:
-                print("Begin dowloading")
+                Utils.Log("Begin dowloading")
             case .DidFinishDownloading:
-                print("Finish downloading")
+                Utils.Log("Finish downloading")
             case .WillBeginQuerying:
-                print("Begin querying")
+                Utils.Log("Begin querying")
             case .Stalled:
-                print("Stalled")
+                Utils.Log("Stalled")
             case .Downloading:
-                print("Downloading")
+                Utils.Log("Downloading")
             case .DidMatch:
-                print("Finish Matching")
+                Utils.Log("Finish Matching")
             case .DidFinish:
                 runInUIThread(true, pname, pname)
             }

@@ -57,14 +57,14 @@ class Paper: NSObject {
         return self
     }
 
-    /*
-     * Use typesetter to write text to this paper line by line
-     *
-     * @param text          A long String, Paper's text will be setted, len(Paper.text) <= text
-     *
-     * @return Paper        For the call chains
+    /**
+     Use typesetter to write text to this paper line by line
+     
+     - parameter text:             Need writted to this paper
+     - parameter firstLineIsTitle: First line is the chapter title?
+     - parameter startWithNewLine: If started with new line, indent needed
      */
-    func writtingLineByLine(text: String, firstLineIsTitle: Bool = false, startWithNewLine: Bool = false) -> Paper {
+    func writtingLineByLine(text: String, firstLineIsTitle: Bool = false, startWithNewLine: Bool = false) {
         let newLineChar = FileReader.getNewLineCharater(text)
         let lines       = text.componentsSeparatedByString(newLineChar)
 
@@ -79,7 +79,7 @@ class Paper: NSObject {
 
         // Ignore empty paper
         if reIndentText.length == 0 {
-            return self
+            return
         }
 
         // Get the visible text
@@ -114,8 +114,6 @@ class Paper: NSObject {
 
         self.textLayout = tmpTxtLy
         self.text       = attrText.attributedSubstringFromRange(textLayout.visibleRange).string
-
-        return self
     }
 
     /*

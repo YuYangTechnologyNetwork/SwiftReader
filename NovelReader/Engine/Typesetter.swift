@@ -93,14 +93,18 @@ class Typesetter {
         return self
     }
     
-    /*
-     * Typeset the text, return a attribute string
-     *
-     * @param text          The need typeset text
-     *
-     * @return NSMutableAttributedString the typesetted text
+    /**
+     Typeset the text, return a attribute string
+     
+     - parameter text:             The need typeset text
+     - parameter firstLineIsTitle: First line is chapter title?
+     - parameter paperWidth:       Paper size
+     - parameter startWithNewLine: If start with newline, indent is needed
+     
+     - returns: NSMutableAttributedString wrapped the typesetted text
      */
-    func typeset(text: String, firstLineIsTitle: Bool = false, paperWidth: CGFloat = 0, startWithNewLine: Bool = false) -> NSMutableAttributedString {
+    func typeset(text: String, firstLineIsTitle: Bool = false, paperWidth: CGFloat = 0, 
+                 startWithNewLine: Bool = false) -> NSMutableAttributedString {
         let attrt  = NSMutableAttributedString(string: text)
         let yyFont = UIFont(name: FontManager.getFontName(font), size: self.fontSize)
         var start  = 0

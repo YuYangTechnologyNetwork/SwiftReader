@@ -54,6 +54,7 @@
 		3D833A9C1CAFD7EF00D31925 /* ReaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */; };
 		3D833A9E1CAFDB7B00D31925 /* PageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D833A9D1CAFDB7B00D31925 /* PageViewController.xib */; };
 		3D833AA01CAFE44900D31925 /* ReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D833A9F1CAFE44900D31925 /* ReaderViewController.xib */; };
+		3DA7F7661CCB48140078CBE8 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DA7F7651CCB48140078CBE8 /* Utils.swift */; };
 		3DBCA1931CB9F42C00C4A37F /* BookMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DBCA1921CB9F42C00C4A37F /* BookMark.swift */; };
 		AEDBF832CB827DE1BB6146E9 /* libPods-NovelReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C29CF4B14E4A37B75632830 /* libPods-NovelReader.a */; };
 /* End PBXBuildFile section */
@@ -128,7 +129,6 @@
 		112E9CB81C9FF1B400C5E34C /* GB2312Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GB2312Freq.tab; path = ThirdParty/Uchardet/GB2312Freq.tab; sourceTree = "<group>"; };
 		112E9CB91C9FF1B400C5E34C /* JISFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JISFreq.tab; path = ThirdParty/Uchardet/JISFreq.tab; sourceTree = "<group>"; };
 		1156F1861CA3BB88006B5848 /* FileReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FileReader.swift; path = Engine/FileReader.swift; sourceTree = "<group>"; };
-		11A992141CAB873500BC62B0 /* Build.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Build.swift; path = Build/Build.swift; sourceTree = "<group>"; };
 		11C7433E1CC78A1800384FFB /* Chapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Chapter.swift; path = Models/Chapter.swift; sourceTree = "<group>"; };
 		11DAD9991C9FE5D50027F98A /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		11DAD99A1C9FE5D50027F98A /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
@@ -156,6 +156,7 @@
 		3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaderManager.swift; sourceTree = "<group>"; };
 		3D833A9D1CAFDB7B00D31925 /* PageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PageViewController.xib; path = Reader/PageViewController.xib; sourceTree = "<group>"; };
 		3D833A9F1CAFE44900D31925 /* ReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReaderViewController.xib; sourceTree = "<group>"; };
+		3DA7F7651CCB48140078CBE8 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		3DBCA1921CB9F42C00C4A37F /* BookMark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookMark.swift; sourceTree = "<group>"; };
 		5D86706A83D49EB45C6AA878 /* Pods-NovelReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.debug.xcconfig"; sourceTree = "<group>"; };
 		BA06C410D81CC3AB39D968E4 /* Pods-NovelReader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.release.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.release.xcconfig"; sourceTree = "<group>"; };
@@ -203,6 +204,7 @@
 				111B55C21CABD6C700070E9C /* Constants.swift */,
 				111B55C31CABD6C700070E9C /* Extentions.swift */,
 				111B55BF1CABD64900070E9C /* FontManager.swift */,
+				3DA7F7651CCB48140078CBE8 /* Utils.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -266,14 +268,6 @@
 			name = Uchardet;
 			sourceTree = "<group>";
 		};
-		11A992111CAB86C400BC62B0 /* Build */ = {
-			isa = PBXGroup;
-			children = (
-				11A992141CAB873500BC62B0 /* Build.swift */,
-			);
-			name = Build;
-			sourceTree = "<group>";
-		};
 		11DAD9981C9FE5A50027F98A /* Reader */ = {
 			isa = PBXGroup;
 			children = (
@@ -311,7 +305,6 @@
 		3D49C70C1C96F53700DD408F /* NovelReader */ = {
 			isa = PBXGroup;
 			children = (
-				11A992111CAB86C400BC62B0 /* Build */,
 				111F8B631CAA61E400090D1A /* Utils */,
 				3D6A24471CA0361F00F05D55 /* Books */,
 				112E9C881C9FF18D00C5E34C /* ThirdParty */,
@@ -351,7 +344,6 @@
 			isa = PBXGroup;
 			children = (
 				112B9D781CAD4AF200D0F9AB /* Paper.swift */,
-				112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */,
 				3D49C7371C96F60900DD408F /* Typesetter.swift */,
 				1156F1861CA3BB88006B5848 /* FileReader.swift */,
 				112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */,
@@ -593,6 +585,7 @@
 				112E9CC71C9FF1B400C5E34C /* nsMBCSGroupProber.cpp in Sources */,
 				112E9CCB1C9FF1B400C5E34C /* nsSJISProber.cpp in Sources */,
 				112B9D791CAD4AF200D0F9AB /* Paper.swift in Sources */,
+				3DA7F7661CCB48140078CBE8 /* Utils.swift in Sources */,
 				112E9CBD1C9FF1B400C5E34C /* nsBig5Prober.cpp in Sources */,
 				112E9CC81C9FF1B400C5E34C /* nsMBCSSM.cpp in Sources */,
 				3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */,
@@ -757,6 +750,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ruikyesoft.app.NovelReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
