@@ -72,6 +72,6 @@ class Book: NSObject {
     }
 
     func bookMark() -> BookMark? {
-        return nil
+        return BookMark(title: NO_TITLE, range: NSMakeRange(size - CHAPTER_SIZE, CHAPTER_SIZE))
     }
 }

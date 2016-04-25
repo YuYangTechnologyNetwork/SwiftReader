@@ -163,7 +163,13 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
                 } else if lastIndex == nextIndex(currIndex) {
                     self.readerMgr.swipToPrev()
                 }
-                
             }
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        if readerMgr.isTail || readerMgr.isHead {
+            let xOffset = scrollView.contentOffset.x - view.frame.width
+            Utils.Log(xOffset)
+        }
     }
 }

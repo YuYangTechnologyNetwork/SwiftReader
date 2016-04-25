@@ -99,7 +99,7 @@ class Chapter: BookMark {
             let chapters = reader.chaptersInRange(file, range: self.range, encoding: encoding!)
             let ready = chapters.count > 0
 
-            // Got chapter
+            // Get chapter
             if ready {
                 if reverse {
                     self.range = (chapters.last?.range)!
