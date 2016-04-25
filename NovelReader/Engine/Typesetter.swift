@@ -125,6 +125,7 @@ class Typesetter {
                 attrt.yy_setFont(titleFont, range: NSMakeRange(0, start))
                 attrt.yy_setAlignment(.Natural, range: NSMakeRange(0, start))
 
+                // Draw title and content split line
                 let line = UIView(frame: CGRectMake(0, 0, paperWidth - margin.left - margin.right, 1))
                 line.backgroundColor = theme.foregroundColor
                 

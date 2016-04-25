@@ -29,12 +29,12 @@ class MainViewController: UIViewController {
                 let file     = fopen(filePath!, "r")
                 let reader   = FileReader()
 
-                let chapters = reader.chaptersInRange(file, range: NSMakeRange(0, book.size), encoding: FileReader.Encodings[book.encoding]!)
+                let _ = reader.chaptersInRange(file, range: NSMakeRange(0, book.size), encoding: FileReader.Encodings[book.encoding]!)
 
                 let paper    = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
-                let vtext    = paper.writting(book.description).text
+                paper.writtingLineByLine(book.description, firstLineIsTitle: false, startWithNewLine: false)
                 
-                print(vtext)
+                print(book)
                 
                 fclose(file)
                 

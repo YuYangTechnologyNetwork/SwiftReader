@@ -42,21 +42,6 @@ class Paper: NSObject {
         self.textContainer.verticalForm         = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
     }
 
-    /*
-     * Use typesetter to write text to this paper
-     * 
-     * @param text          A long String, Paper's text will be setted, len(Paper.text) <= text
-     *
-     * @return Paper        For the call chains
-     */
-    func writting(text: String, firstLineIsTitle: Bool = false) -> Paper {
-        let attrt = Typesetter.Ins.typeset(text, firstLineIsTitle: firstLineIsTitle, paperWidth: size.width)
-        self.textLayout = YYTextLayout(container: self.textContainer, text: attrt)
-        self.text =  attrt.attributedSubstringFromRange(textLayout.visibleRange).string
-        self.realLen = self.text.length
-        return self
-    }
-
     /**
      Use typesetter to write text to this paper line by line
      
@@ -83,37 +68,47 @@ class Paper: NSObject {
         }
 
         // Get the visible text
-        var attrText = Typesetter.Ins.typeset(reIndentText, firstLineIsTitle: firstLineIsTitle,
+        var attrText   = Typesetter.Ins.typeset(reIndentText, firstLineIsTitle: firstLineIsTitle,
                                               paperWidth: size.width, startWithNewLine: startWithNewLine)
-        var tmpTxtLy = YYTextLayout(container: self.textContainer, text: attrText)
-        let vRange   = tmpTxtLy.visibleRange
-        let vText    = attrText.attributedSubstringFromRange(vRange).string
-        let vLines   = vText.componentsSeparatedByString(newLineChar)
-        var lastT    = vLines.last!
-        var endLen   = vLines.last!.length
-
-        if endLen == 0 {
-            lastT = vLines[vLines.count - 2]
-            endLen += lastT.length
-            endWithNewLine = true
-        }
-
-        let r = text.rangeOfString(lastT, options: .CaseInsensitiveSearch,
-            range: Range<String.CharacterView.Index>(text.startIndex ..< text.endIndex), locale: nil)
-
-        self.realLen = text.substringToIndex((r?.startIndex)!).length + endLen
+        var tmpTxtLy   = YYTextLayout(container: self.textContainer, text: attrText)
+        let vRange     = tmpTxtLy.visibleRange
+        let vText      = attrText.attributedSubstringFromRange(vRange).string
+        let vLines     = vText.componentsSeparatedByString(newLineChar)
+        endWithNewLine = (vLines.last?.isEmpty)!
+        self.realLen   = visibleLengthInOriginalText(text, visibleLines: vLines)
 
         if reIndentText.length > vText.length {
             let looseRange = NSMakeRange(vRange.loc, min(vRange.length + 20, reIndentText.length - vRange.loc))
             attrText       = Typesetter.Ins.typeset(attrText.attributedSubstringFromRange(looseRange).string,
                                               firstLineIsTitle: firstLineIsTitle,
                                               paperWidth: size.width, startWithNewLine: startWithNewLine)
-
             tmpTxtLy       = YYTextLayout(container: self.textContainer, text: attrText)
         }
 
         self.textLayout = tmpTxtLy
         self.text       = attrText.attributedSubstringFromRange(textLayout.visibleRange).string
+    }
+    
+    /**
+     Get the visible text end position in original text
+     
+     - parameter text:         The original text
+     - parameter visibleLines: Visbile lines
+     
+     - returns: Int, the visible end position
+     */
+    private func visibleLengthInOriginalText(text: String, visibleLines: [String]) -> Int {
+        var startIndex = text.startIndex
+        for line in visibleLines {
+            let range = text.rangeOfString(line, options: .CaseInsensitiveSearch,
+                range: Range<String.Index>(startIndex ..< text.endIndex), locale: nil)
+            
+            if let r = range {
+                startIndex = r.endIndex
+            }
+        }
+        
+        return text.substringToIndex(startIndex).length
     }
 
     /*
