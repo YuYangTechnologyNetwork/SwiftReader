@@ -18,6 +18,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     @IBOutlet weak var prevBtn: UIButton!
     @IBOutlet weak var nextBtn: UIButton!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var overScrollView: UIView!
     
     override func viewDidLoad() {
         prevBtn.addTarget(self, action: #selector(ReaderViewController.snapToPrevPage), forControlEvents: .TouchUpInside)
@@ -44,6 +45,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     }
     
     override func viewWillAppear(animated: Bool) {
+        loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
         loadingIndicator.startAnimating()
         FontManager.asyncDownloadFont(Typesetter.Ins.font) {
             (success: Bool, fontName: String, msg: String) in
@@ -53,6 +55,8 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
             
             self.initliaze()
         }
+        
+        overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
     }
     
     override func prefersStatusBarHidden() -> Bool {
@@ -90,9 +94,13 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         }
         
         pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false, completion: nil)
-        
         loadingIndicator.stopAnimating()
         loadingIndicator.hidden = true
+        
+        UIView.animateWithDuration(0.3) {
+            self.pageViewCtrl.view.alpha = 0.0
+            self.pageViewCtrl.view.alpha = 1.0
+        }
     }
     
     func snapToPrevPage(view: UIView) {
@@ -138,7 +146,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     /*UIPageViewControllerDataSource*/
     func pageViewController(pageViewController: UIPageViewController,
         viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-            if self.readerMgr.isTail || self.readerMgr.nextPaper == nil {
+        if self.readerMgr.isTail || self.readerMgr.nextPaper == nil {
                 return nil
             }
             
@@ -161,13 +169,30 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
                 } else if lastIndex == nextIndex(currIndex) {
                     self.readerMgr.swipToPrev()
                 }
+                
+                overScrollView.hidden = true
             }
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        if readerMgr.isTail || readerMgr.isHead {
-            let xOffset = scrollView.contentOffset.x - view.frame.width
-            Utils.Log(xOffset)
+        if Typesetter.Ins.theme.name == Theme.PARCHMENT {
+            if (readerMgr.isTail || readerMgr.isHead) {
+                let xOffset = scrollView.contentOffset.x - view.frame.width
+                
+                if readerMgr.isTail && xOffset > 0 {
+                    overScrollView.frame.origin.x = view.frame.width - abs(xOffset)
+                } else if readerMgr.isHead && xOffset < 0 {
+                    overScrollView.frame.origin.x = abs(xOffset) - view.frame.width
+                }
+                
+                let osvX = overScrollView.frame.origin.x
+                if osvX < -view.frame.width / 2 || osvX > view.frame.width / 2 {
+                    overScrollView.hidden = false
+                    overScrollView.setNeedsDisplay()
+                }
+                
+                Utils.Log(xOffset)
+            }
         }
     }
 }

@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="loadingIndicator" destination="1VJ-Gn-iUd" id="b9R-E3-dfi"/>
                 <outlet property="nextBtn" destination="c9E-sV-5ZK" id="bj4-uO-RVI"/>
+                <outlet property="overScrollView" destination="tgQ-s9-EqA" id="qrn-Sa-tHr"/>
                 <outlet property="prevBtn" destination="P7j-5F-cHI" id="FVv-rH-ik5"/>
                 <outlet property="view" destination="iN0-l3-epB" id="VAB-bh-cSy"/>
             </connections>
@@ -18,6 +19,48 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tgQ-s9-EqA">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reading_parchment_border" translatesAutoresizingMaskIntoConstraints="NO" id="Gge-3x-5Xl">
+                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.045836343930635841" colorSpace="custom" customColorSpace="sRGB"/>
+                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                <rect key="frame" x="-80" y="-336" width="400" height="800"/>
+                            </variation>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="Gge-3x-5Xl" firstAttribute="centerY" secondItem="tgQ-s9-EqA" secondAttribute="centerY" id="4DC-dH-2HN"/>
+                        <constraint firstItem="Gge-3x-5Xl" firstAttribute="height" secondItem="tgQ-s9-EqA" secondAttribute="height" id="IVh-XF-rKH"/>
+                        <constraint firstItem="Gge-3x-5Xl" firstAttribute="centerX" secondItem="tgQ-s9-EqA" secondAttribute="centerX" id="Nz3-9L-kI3"/>
+                        <constraint firstItem="Gge-3x-5Xl" firstAttribute="width" secondItem="tgQ-s9-EqA" secondAttribute="width" id="SRz-o9-oxT"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="subviews">
+                            <exclude reference="Gge-3x-5Xl"/>
+                        </mask>
+                        <mask key="constraints">
+                            <exclude reference="4DC-dH-2HN"/>
+                            <exclude reference="IVh-XF-rKH"/>
+                            <exclude reference="Nz3-9L-kI3"/>
+                            <exclude reference="SRz-o9-oxT"/>
+                        </mask>
+                    </variation>
+                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                        <rect key="frame" x="80" y="336" width="240" height="128"/>
+                        <mask key="subviews">
+                            <include reference="Gge-3x-5Xl"/>
+                        </mask>
+                        <mask key="constraints">
+                            <include reference="4DC-dH-2HN"/>
+                            <include reference="IVh-XF-rKH"/>
+                            <include reference="Nz3-9L-kI3"/>
+                            <include reference="SRz-o9-oxT"/>
+                        </mask>
+                    </variation>
+                </view>
                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P7j-5F-cHI">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                     <constraints>
@@ -31,8 +74,7 @@
                             <exclude reference="pmx-YN-Jq6"/>
                         </mask>
                     </variation>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="16" y="762" width="31" height="30"/>
+                    <variation key="heightClass=regular-widthClass=compact">
                         <mask key="constraints">
                             <exclude reference="P5y-pD-LVK"/>
                             <exclude reference="pmx-YN-Jq6"/>
@@ -52,8 +94,7 @@
                             <exclude reference="YYg-ep-NPw"/>
                         </mask>
                     </variation>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="353" y="762" width="32" height="30"/>
+                    <variation key="heightClass=regular-widthClass=compact">
                         <mask key="constraints">
                             <exclude reference="Pj6-Ta-3eG"/>
                             <exclude reference="YYg-ep-NPw"/>
@@ -67,20 +108,29 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
+                <constraint firstItem="tgQ-s9-EqA" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="4TF-ot-8Sh"/>
                 <constraint firstItem="1VJ-Gn-iUd" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="6f7-3U-AB4"/>
                 <constraint firstItem="P7j-5F-cHI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="7dJ-ly-cM9"/>
+                <constraint firstItem="tgQ-s9-EqA" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Brd-Hb-IwW"/>
+                <constraint firstItem="tgQ-s9-EqA" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="NDY-aS-Ixe"/>
                 <constraint firstItem="1VJ-Gn-iUd" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="QAd-pT-Yan"/>
                 <constraint firstAttribute="trailing" secondItem="c9E-sV-5ZK" secondAttribute="trailing" constant="10" id="TMH-2T-FDg"/>
                 <constraint firstAttribute="bottom" secondItem="P7j-5F-cHI" secondAttribute="bottom" constant="10" id="TcL-U6-UyG"/>
                 <constraint firstAttribute="bottom" secondItem="c9E-sV-5ZK" secondAttribute="bottom" constant="10" id="s5v-YR-Mme"/>
+                <constraint firstItem="tgQ-s9-EqA" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="zCV-aG-C4W"/>
             </constraints>
             <variation key="default">
                 <mask key="subviews">
+                    <exclude reference="tgQ-s9-EqA"/>
                     <exclude reference="P7j-5F-cHI"/>
                     <exclude reference="c9E-sV-5ZK"/>
                     <exclude reference="1VJ-Gn-iUd"/>
                 </mask>
                 <mask key="constraints">
+                    <exclude reference="4TF-ot-8Sh"/>
+                    <exclude reference="Brd-Hb-IwW"/>
+                    <exclude reference="NDY-aS-Ixe"/>
+                    <exclude reference="zCV-aG-C4W"/>
                     <exclude reference="6f7-3U-AB4"/>
                     <exclude reference="QAd-pT-Yan"/>
                     <exclude reference="7dJ-ly-cM9"/>
@@ -91,11 +141,16 @@
             </variation>
             <variation key="heightClass=regular-widthClass=compact">
                 <mask key="subviews">
+                    <include reference="tgQ-s9-EqA"/>
                     <include reference="P7j-5F-cHI"/>
                     <include reference="c9E-sV-5ZK"/>
                     <include reference="1VJ-Gn-iUd"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="4TF-ot-8Sh"/>
+                    <include reference="Brd-Hb-IwW"/>
+                    <include reference="NDY-aS-Ixe"/>
+                    <include reference="zCV-aG-C4W"/>
                     <include reference="6f7-3U-AB4"/>
                     <include reference="QAd-pT-Yan"/>
                     <include reference="7dJ-ly-cM9"/>
@@ -106,4 +161,7 @@
             </variation>
         </view>
     </objects>
+    <resources>
+        <image name="reading_parchment_border" width="1080" height="1920"/>
+    </resources>
 </document>

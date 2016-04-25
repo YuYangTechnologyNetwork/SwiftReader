@@ -41,7 +41,7 @@ class ReaderManager: NSObject {
     }
 
     var isTail: Bool {
-        return currChapter.isTail && currChapter.range.loc >= book.size
+        return currChapter.isTail && currChapter.range.end >= book.size
     }
     
     override var description: String {
