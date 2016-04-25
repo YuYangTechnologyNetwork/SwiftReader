@@ -16,6 +16,8 @@ class Typesetter {
     }
     
     private typealias `Self` = Typesetter
+
+    static let DEFAULT_THEME = Theme.Sepia()
     
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 20.0
@@ -63,6 +65,10 @@ class Typesetter {
     /*Text draw direction, see Typesetter.TextOrentation*/
     var textOrentation: TextOrentation = .Horizontal {
         didSet { for l in listeners.values { l("TextOrentation") } }
+    }
+
+    var theme: Theme = Self.DEFAULT_THEME {
+        didSet { for l in listeners.values { l("Theme") } }
     }
     
     /*
@@ -120,7 +126,7 @@ class Typesetter {
                 attrt.yy_setAlignment(.Natural, range: NSMakeRange(0, start))
 
                 let line = UIView(frame: CGRectMake(0, 0, paperWidth - margin.left - margin.right, 1))
-                line.backgroundColor = UIColor.blackColor()
+                line.backgroundColor = theme.foregroundColor
                 
                 let lineStr = NSMutableAttributedString.yy_attachmentStringWithContent(
                     line,
@@ -145,7 +151,7 @@ class Typesetter {
         attrt.yy_setFont(yyFont, range: NSMakeRange(start, attrt.length - start))
         attrt.yy_setAlignment(.Justified, range: NSMakeRange(start, attrt.length - start))
 
-        attrt.yy_color            = UIColor.blackColor()
+        attrt.yy_color            = theme.foregroundColor
         attrt.yy_lineSpacing      = line_space
         attrt.yy_paragraphSpacing = line_space * 2
         return attrt

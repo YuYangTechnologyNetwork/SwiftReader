@@ -72,6 +72,10 @@ class Book: NSObject {
     }
 
     func bookMark() -> BookMark? {
-        return BookMark(title: NO_TITLE, range: NSMakeRange(size - CHAPTER_SIZE, CHAPTER_SIZE))
+        /*let file = fopen(fullFilePath, "r")
+        let loc = FileReader().getWordBorder(file, fuzzyPos: size - CHAPTER_SIZE, encoding: FileReader.Encodings[encoding]!)
+        fclose(file)
+        return BookMark(title: NO_TITLE, range: NSMakeRange(loc, CHAPTER_SIZE))*/
+        return nil
     }
 }

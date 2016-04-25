@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PageViewController" customModule="NovelReader" customModuleProvider="target">
             <connections>
+                <outlet property="boardMaskView" destination="qNB-Ci-6Ff" id="mAk-MC-vxz"/>
                 <outlet property="containerView" destination="bL5-ea-QSS" id="MTB-T1-a1p"/>
                 <outlet property="view" destination="iN0-l3-epB" id="Kms-cZ-xyd"/>
             </connections>
@@ -18,13 +19,11 @@
             <subviews>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reading_parchment_border" translatesAutoresizingMaskIntoConstraints="NO" id="qNB-Ci-6Ff">
                     <rect key="frame" x="0.0" y="0.0" width="600" height="575"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.054235910404624277" colorSpace="custom" customColorSpace="sRGB"/>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bL5-ea-QSS" customClass="YYLabel">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="80" y="322" width="240" height="128"/>
-                    </variation>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>

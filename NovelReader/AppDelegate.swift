@@ -14,6 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        Typesetter.Ins.font             = FontManager.SupportFonts.System
+        //Typesetter.Ins.theme            = Theme.Night()
         self.window                     = UIWindow(frame: UIScreen.mainScreen().bounds)
         self.window?.rootViewController = ReaderViewController()
         self.window!.backgroundColor    = UIColor.blackColor()

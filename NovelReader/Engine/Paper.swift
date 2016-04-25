@@ -34,7 +34,7 @@ class Paper: NSObject {
         paperMargin.left   = Typesetter.Ins.margin.left
         paperMargin.top    = Typesetter.Ins.margin.top + Typesetter.Ins.line_space / 2
         paperMargin.right  = Typesetter.Ins.margin.right
-        paperMargin.bottom = Typesetter.Ins.margin.bottom + Typesetter.Ins.line_space / 2
+        paperMargin.bottom = Typesetter.Ins.margin.bottom
 
         self.size                               = size
         self.textContainer                      = YYTextContainer(size: size, insets: paperMargin)

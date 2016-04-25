@@ -344,9 +344,9 @@
 			isa = PBXGroup;
 			children = (
 				112B9D781CAD4AF200D0F9AB /* Paper.swift */,
+				112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */,
 				3D49C7371C96F60900DD408F /* Typesetter.swift */,
 				1156F1861CA3BB88006B5848 /* FileReader.swift */,
-				112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */,
 			);
 			name = Engine;
 			sourceTree = "<group>";

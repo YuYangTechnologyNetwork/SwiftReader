@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Playgrounds/Test.playground">
+   </FileRef>
+   <FileRef
       location = "group:NovelReader.xcodeproj">
    </FileRef>
    <FileRef

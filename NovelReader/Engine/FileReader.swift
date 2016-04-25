@@ -208,7 +208,7 @@ class FileReader {
 
 extension FileReader {
     private var CHAPTER_REGEX: String {
-        return "^(\\s{0,}第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回]\\s{0,}.{0,30}[^\\)]){1,}$"
+        return "^(第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回].{0,30})+$"
     }
     
     /*!
@@ -364,8 +364,9 @@ extension FileReader {
             
             for line in lines {
                 let str = String(line)
+                let trimStr = str.stringByReplacingOccurrencesOfString(" ", withString: "")
                 
-                if str.regexMatch(self.CHAPTER_REGEX) {
+                if trimStr.regexMatch(self.CHAPTER_REGEX) {
                     let tr = snippet!.rangeOfString(
                         str,
                         options: .CaseInsensitiveSearch,
@@ -384,6 +385,7 @@ extension FileReader {
                     }
                     
                     title.append(BookMark(title: t, range: range))
+                    Utils.Log(t)
                 }
             }
             
@@ -415,17 +417,39 @@ extension FileReader {
         if chapters.count < 2 {
             return chapters
         }
-        
+
         var merged: [BookMark] = [], i = 0
         let count = chapters.count
-        
+
+        let isSimilar = { (s1: String, s2: String) -> Bool in
+            var similarity = s1 == s2
+
+            if !similarity {
+                let long = s1.length >= s2.length ? s1 : s2
+                let short = long == s1 ? s2 : s1
+                similarity = long.containsString(short)
+
+                if !similarity {
+                    let sim = long.similarity(short)
+                    similarity = sim.1 >= 0.9 || sim.0 <= 2
+                }
+            }
+
+            return similarity
+        }
+
         repeat {
             let ccp = chapters[i]
-            
+
             if ccp.title.length(encoding) >= ccp.range.len / 2 {
-                let ncp: BookMark? = i < count - 1 ? chapters[i + 1]: nil
-                
-                if i == 0 || (ncp != nil && ccp.title == ncp!.title) {
+                let ncp: BookMark? = i < count - 1 ? chapters[i + 1] : nil
+                let cct = ccp.title.stringByReplacingOccurrencesOfString(" ", withString: "")
+                let nct = ncp == nil ? nil : ncp?.title.stringByReplacingOccurrencesOfString(" ", withString: "")
+
+                Utils.Log(cct)
+                Utils.Log(nct)
+
+                if i == 0 || (ncp != nil && isSimilar(cct, nct!)) {
                     merged.append(BookMark(title: ccp.title,
                         range: NSMakeRange(ccp.range.loc, ccp.range.len + ncp!.range.len)))
                     i += 1
@@ -438,10 +462,10 @@ extension FileReader {
             } else {
                 merged.append(ccp)
             }
-            
+
             i += 1
         } while (i < count)
-        
+
         return merged
     }
     

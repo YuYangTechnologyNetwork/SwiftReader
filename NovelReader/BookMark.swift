@@ -11,7 +11,7 @@ import Foundation
 class BookMark: NSObject {
     var title: String  = NO_TITLE
     var range: NSRange = EMPTY_RANGE
-    var offset: UInt   = 0
+    var offset: Int   = 0
 
     init(title: String, range: NSRange) {
         self.title = title

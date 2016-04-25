@@ -32,6 +32,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         addChildViewController(pageViewCtrl)
         view.addSubview(pageViewCtrl.view)
         view.sendSubviewToBack(pageViewCtrl.view)
+        view.backgroundColor = Typesetter.Ins.theme.backgroundColor
         
         for v in pageViewCtrl.view.subviews {
             if v.isKindOfClass(UIScrollView) {
@@ -44,9 +45,6 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     
     override func viewWillAppear(animated: Bool) {
         loadingIndicator.startAnimating()
-        
-        Typesetter.Ins.font = FontManager.SupportFonts.SongTi
-        
         FontManager.asyncDownloadFont(Typesetter.Ins.font) {
             (success: Bool, fontName: String, msg: String) in
             if !success {
@@ -130,7 +128,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     /*UIPageViewControllerDataSource*/
     func pageViewController(pageViewController: UIPageViewController,
         viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
-            if self.readerMgr.isHead {
+            if self.readerMgr.isHead || self.readerMgr.prevPaper == nil {
                 return nil
             }
             
@@ -140,7 +138,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     /*UIPageViewControllerDataSource*/
     func pageViewController(pageViewController: UIPageViewController,
         viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-            if self.readerMgr.isTail {
+            if self.readerMgr.isTail || self.readerMgr.nextPaper == nil {
                 return nil
             }
             

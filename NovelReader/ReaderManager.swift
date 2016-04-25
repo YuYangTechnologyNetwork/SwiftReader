@@ -61,7 +61,7 @@ class ReaderManager: NSObject {
      */
     func asyncPrepare(callback: (_: Chapter.Status) -> Void) {
         if let bm = book.bookMark() {
-            currChapter = Chapter(title: bm.title, range: bm.range)
+            currChapter = Chapter(bm: bm)
         } else {
             currChapter = Chapter(range: NSMakeRange(0, CHAPTER_SIZE))
         }
@@ -141,7 +141,7 @@ class ReaderManager: NSObject {
             
             if prevChapter.isEmpty {
                 let loc = max(currChapter.range.loc - CHAPTER_SIZE, 0)
-                let len = min(currChapter.range.loc - loc, CHAPTER_SIZE)
+                let len = min(currChapter.range.loc - loc, CHAPTER_SIZE - 1)
                 prevChapter = Chapter(range: NSMakeRange(loc, len))
                 prevChapter.asyncLoadInRange(self, reverse: true, book: book, callback: { (s: Chapter.Status) in
                     if s == Chapter.Status.Success {

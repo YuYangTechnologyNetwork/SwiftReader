@@ -53,17 +53,27 @@ class Chapter: BookMark {
     var tailPage: Paper? {
         return isEmpty ? nil : _papers[_papers.count - 1]
     }
-    
+
     override var description: String {
         return isEmpty ? "Blank" : super.description
     }
 
-    private var _offset = 0
+    private var _offset = 0 {
+        didSet {
+            offset = _offset
+        }
+    }
+
     private var _papers: [Paper] = []
 
     private(set) var status: Status = .Blank
-    
+
     private var asyncTask: dispatch_block_t? = nil
+
+    init(bm: BookMark) {
+        super.init(title: bm.title, range: bm.range)
+        _offset = bm.offset
+    }
 
     override init(title: String = NO_TITLE, range: NSRange = EMPTY_RANGE) {
         super.init(title: title, range: range)
@@ -71,7 +81,7 @@ class Chapter: BookMark {
 
     /**
      Async load the chapter and paging
-     
+
      - parameter readerMgr: ReaderManager
      - parameter reverse:   The chapter in the range chapters head or tail
      - parameter book:      The novel book
@@ -96,7 +106,12 @@ class Chapter: BookMark {
             let file = fopen((book.fullFilePath), "r")
             let encoding = FileReader.Encodings[book.encoding]
             let reader = FileReader()
-            let chapters = reader.chaptersInRange(file, range: self.range, encoding: encoding!)
+            var chapters = reader.chaptersInRange(file, range: self.range, encoding: encoding!)
+
+            if chapters.count > 0 && self.range.loc > 0 && chapters.first!.title == NO_TITLE {
+                chapters.removeFirst()
+            }
+
             let ready = chapters.count > 0
 
             // Get chapter
@@ -111,6 +126,8 @@ class Chapter: BookMark {
 
                 let content = reader.readRange(file, range: self.range, encoding: encoding!)
                 self._papers = readerMgr.paging(content!, firstListIsTitle: self.title != NO_TITLE)
+            } else {
+                Utils.Log(chapters)
             }
 
             self.status = ready ? .Success : .Failure
@@ -122,7 +139,7 @@ class Chapter: BookMark {
             dispatch_async(dispatch_get_main_queue()) {
                 // Logging
                 Utils.Log("Loaded: \(self)")
-                
+
                 // Reset async task
                 self.asyncTask = nil
 
