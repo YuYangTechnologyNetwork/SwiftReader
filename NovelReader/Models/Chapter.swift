@@ -31,7 +31,7 @@ class Chapter: BookMark {
     }
 
     var isEmpty: Bool {
-        return _papers.count == 0 && status != .Loading
+        return _papers.count == 0 /*&& status != .Loading*/
     }
 
     var currPage: Paper? {
@@ -89,7 +89,7 @@ class Chapter: BookMark {
      */
     func asyncLoadInRange(readerMgr: ReaderManager, reverse: Bool, book: Book, callback: (_: Status) -> Void) {
         // Filter illegal range
-        if range.end <= range.location {
+        if !range.isLogical {
             callback(.Failure)
             return
         }
@@ -100,40 +100,8 @@ class Chapter: BookMark {
                 UIApplication.sharedApplication().networkActivityIndicatorVisible = true
             }
 
-            self.status = .Loading
-
-            // Open file
-            let file = fopen((book.fullFilePath), "r")
-            let encoding = FileReader.Encodings[book.encoding]
-            let reader = FileReader()
-            var chapters = reader.chaptersInRange(file, range: self.range, encoding: encoding!)
-
-            if chapters.count > 0 && self.range.loc > 0 && chapters.first!.title == NO_TITLE {
-                chapters.removeFirst()
-            }
-
-            let ready = chapters.count > 0
-
-            // Get chapter
-            if ready {
-                if reverse {
-                    self.range = (chapters.last?.range)!
-                    self.title = (chapters.last?.title)!
-                } else {
-                    self.range = (chapters.first?.range)!
-                    self.title = (chapters.first?.title)!
-                }
-
-                let content = reader.readRange(file, range: self.range, encoding: encoding!)
-                self._papers = readerMgr.paging(content!, firstListIsTitle: self.title != NO_TITLE)
-            } else {
-                Utils.Log(chapters)
-            }
-
-            self.status = ready ? .Success : .Failure
-
-            // Close file
-            fclose(file)
+            // Loading
+            self.loadInRange(readerMgr, reverse: reverse, book: book)
 
             // Back to main thread
             dispatch_async(dispatch_get_main_queue()) {
@@ -153,6 +121,66 @@ class Chapter: BookMark {
 
         asyncTask = task
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), task)
+    }
+
+    func loadInRange(readerMgr: ReaderManager, reverse: Bool, book: Book) -> Status {
+        // Filter illegal range
+        if !range.isLogical {
+            return .Failure
+        }
+
+        self.status = .Loading
+
+        // Open file
+        let file = fopen((book.fullFilePath), "r")
+        let encoding = FileReader.Encodings[book.encoding]
+        let reader = FileReader()
+
+        let getChapters = { (r: NSRange) -> [BookMark] in
+            var tc = reader.chaptersInRange(file, range: r, encoding: encoding!)
+            print(tc)
+            if tc.count > 0 && self.range.loc > 0 && tc.first!.title == NO_TITLE {
+                tc.removeFirst()
+            }
+
+            return tc
+        }
+
+        var chapters = getChapters(self.range)
+        if chapters.count == 0 {
+            if reverse {
+                let loc = max(self.range.loc - CHAPTER_SIZE * 2, 0)
+                let len = min(self.range.loc - loc, CHAPTER_SIZE * 2 + self.range.len)
+                chapters = getChapters(NSMakeRange(loc, len))
+            } else {
+                let loc = self.range.loc
+                let len = min(self.range.end + CHAPTER_SIZE, book.size - loc)
+                chapters = getChapters(NSMakeRange(loc, len))
+            }
+        }
+
+        let ready = chapters.count > 0
+
+        // Get chapter
+        if ready {
+            if reverse {
+                self.range = (chapters.last?.range)!
+                self.title = (chapters.last?.title)!
+            } else {
+                self.range = (chapters.first?.range)!
+                self.title = (chapters.first?.title)!
+            }
+
+            let content = reader.readRange(file, range: self.range, encoding: encoding!)
+            self._papers = readerMgr.paging(content!, firstListIsTitle: self.title != NO_TITLE)
+        }
+
+        self.status = ready ? .Success : .Failure
+
+        // Close file
+        fclose(file)
+
+        return self.status
     }
 
     func trash() {
@@ -176,11 +204,13 @@ class Chapter: BookMark {
         _offset = max(0, _offset)
     }
 
-    func setHead() {
+    func setHead() -> Chapter {
         _offset = 0
+        return self
     }
 
-    func setTail() {
+    func setTail() -> Chapter {
         _offset = _papers.count - 1
+        return self
     }
 }

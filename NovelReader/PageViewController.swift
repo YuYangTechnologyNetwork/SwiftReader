@@ -14,6 +14,7 @@ class PageViewController: UIViewController {
 
     private var paper: Paper?
     private var needRefresh: Bool = true
+    private var fadeIn: Bool = false
 
     override func viewDidLoad() {
         containerView.textVerticalAlignment = .Top
@@ -30,23 +31,31 @@ class PageViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         if self.needRefresh {
+            needRefresh = false
             if let p = self.paper {
                 p.attachToView(containerView)
-                needRefresh = false
-            }
 
+                if fadeIn {
+                    fadeIn = false
+                    UIView.animateWithDuration(0.2) {
+                        self.view.alpha = 0.0
+                        self.view.alpha = 1.0
+                    }
+                }
+            }
         }
     }
 
-    func bindPaper(paper: Paper?) -> PageViewController {
+    func bindPaper(paper: Paper?, fadeIn: Bool = false) -> PageViewController {
         if let p = paper {
             self.needRefresh = self.paper == nil || self.paper?.text != p.text
             self.paper = p
+            self.fadeIn = fadeIn
         }
 
         return self
     }
-    
+
     override var description: String {
         return paper != nil ? (paper?.text.substringToIndex((paper?.text.startIndex.advancedBy(4))!))! : super.description
     }

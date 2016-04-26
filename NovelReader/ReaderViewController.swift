@@ -68,22 +68,22 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
 
         // Async load book content
         dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
-            let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
+            let filePath = NSBundle.mainBundle().pathForResource("将夜", ofType: "txt")
             let book = try! Book(fullFilePath: filePath!)
             dispatch_async(dispatch_get_main_queue()) {
                 self.readerMgr = ReaderManager(b: book, size: self.view.frame.size)
                 self.readerMgr.asyncPrepare({ (s: Chapter.Status) in
                     if s == Chapter.Status.Success {
-                        self.setPages()
+                         self.setPages()
                     }
                 })
             }
         }
     }
-    
-    private func setPages() {
-        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper)
-        
+
+    private func setPages(animation: Bool = true) {
+        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, fadeIn: true)
+
         if readerMgr.isHead {
             swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
         } else if readerMgr.isTail {
@@ -92,17 +92,13 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
             swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
             swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
         }
-        
-        pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false, completion: nil)
-        loadingIndicator.stopAnimating()
-        loadingIndicator.hidden = true
-        
-        UIView.animateWithDuration(0.3) {
-            self.pageViewCtrl.view.alpha = 0.0
-            self.pageViewCtrl.view.alpha = 1.0
-        }
+
+        pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false, completion:  nil)
+
+        self.loadingIndicator.stopAnimating()
+        self.loadingIndicator.hidden = true
     }
-    
+
     func snapToPrevPage(view: UIView) {
         if !readerMgr.isHead {
             currIndex = prevIndex(currIndex)
@@ -132,30 +128,29 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     private func prevIndex(index: Int) -> Int {
         return index > 0 ? index - 1: 2
     }
-    
+
     /*UIPageViewControllerDataSource*/
-    func pageViewController(pageViewController: UIPageViewController,
-        viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
-            if self.readerMgr.isHead || self.readerMgr.prevPaper == nil {
-                return nil
-            }
-            
-            return swipeCtrls[prevIndex(currIndex)].bindPaper(self.readerMgr.prevPaper)
+    func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
+        if /*self.readerMgr.isHead ||*/ self.readerMgr.prevPaper == nil {
+            return nil
+        }
+
+        return swipeCtrls[prevIndex(currIndex)].bindPaper(self.readerMgr.prevPaper)
     }
-    
+
     /*UIPageViewControllerDataSource*/
-    func pageViewController(pageViewController: UIPageViewController,
-        viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-        if self.readerMgr.isTail || self.readerMgr.nextPaper == nil {
-                return nil
-            }
-            
-            return swipeCtrls[nextIndex(currIndex)].bindPaper(self.readerMgr.nextPaper)
+    func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
+        if /*self.readerMgr.isTail ||*/ self.readerMgr.nextPaper == nil {
+            return nil
+        }
+
+        return swipeCtrls[nextIndex(currIndex)].bindPaper(self.readerMgr.nextPaper)
     }
     
     /*UIPageViewControllerDelegate*/
     func pageViewController(pageViewController: UIPageViewController,
-        willTransitionToViewControllers pendingViewControllers: [UIViewController]) { }
+        willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
+    }
     
     /*UIPageViewControllerDelegate*/
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool,
@@ -176,12 +171,12 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         if Typesetter.Ins.theme.name == Theme.PARCHMENT {
-            if (readerMgr.isTail || readerMgr.isHead) {
+            if (readerMgr.prevPaper == nil || readerMgr.nextPaper == nil) {
                 let xOffset = scrollView.contentOffset.x - view.frame.width
                 
-                if readerMgr.isTail && xOffset > 0 {
+                if readerMgr.nextPaper == nil && xOffset > 0 {
                     overScrollView.frame.origin.x = view.frame.width - abs(xOffset)
-                } else if readerMgr.isHead && xOffset < 0 {
+                } else if readerMgr.prevPaper == nil && xOffset < 0 {
                     overScrollView.frame.origin.x = abs(xOffset) - view.frame.width
                 }
                 
@@ -191,7 +186,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
                     overScrollView.setNeedsDisplay()
                 }
                 
-                Utils.Log(xOffset)
+                Utils.Log(osvX)
             }
         }
     }

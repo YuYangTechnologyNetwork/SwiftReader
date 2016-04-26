@@ -106,6 +106,10 @@ extension NSRange {
     var desc: String {
         return String("\(loc)\(len)".hash)
     }
+
+    var isLogical : Bool {
+        return location < end
+    }
 }
 
 extension UIColor {
