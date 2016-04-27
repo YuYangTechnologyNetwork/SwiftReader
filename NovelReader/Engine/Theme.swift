@@ -81,7 +81,7 @@ class Theme {
 
         override init() {
             super.init()
-            foregroundColor = UIColor(red: 0.167, green: 0.225, blue: 0.163, alpha: 1)
+            foregroundColor = UIColor(red: 0.117, green: 0.143, blue: 0.113, alpha: 1)
             backgroundColor = UIColor(red: 0.695, green: 0.822, blue: 0.710, alpha: 1)
         }
     }

@@ -47,6 +47,8 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     override func viewWillAppear(animated: Bool) {
         loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
         loadingIndicator.startAnimating()
+
+        Typesetter.Ins.font = FontManager.SupportFonts.SongTi
         FontManager.asyncDownloadFont(Typesetter.Ins.font) {
             (success: Bool, fontName: String, msg: String) in
             if !success {
@@ -67,8 +69,8 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         swipeCtrls = [PageViewController(), PageViewController(), PageViewController()]
 
         // Async load book content
-        dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
-            let filePath = NSBundle.mainBundle().pathForResource("将夜", ofType: "txt")
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            let filePath = NSBundle.mainBundle().pathForResource("zx_utf8", ofType: "txt")
             let book = try! Book(fullFilePath: filePath!)
             dispatch_async(dispatch_get_main_queue()) {
                 self.readerMgr = ReaderManager(b: book, size: self.view.frame.size)

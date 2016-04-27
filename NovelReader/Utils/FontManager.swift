@@ -84,14 +84,21 @@ final class FontManager {
      */
     static func asyncDownloadFont(font: SupportFonts, callback: (Bool, String, String) -> Void) {
         let pname = getFontName(font)
-        let attrs = NSMutableDictionary(object: pname, forKey: kCTFontNameAttribute as String)
-        let descs = NSMutableArray(object: CTFontDescriptorCreateWithAttributes(attrs))
 
         let runInUIThread = { (finish: Bool, font:String, msg: String) in
             dispatch_async(dispatch_get_main_queue()) {
                 callback(finish, font, msg)
             }
         }
+
+        if isAvailable(pname) {
+            runInUIThread(true, pname, pname)
+            return
+        }
+
+        let attrs = NSMutableDictionary(object: pname, forKey: kCTFontNameAttribute as String)
+        let descs = NSMutableArray(object: CTFontDescriptorCreateWithAttributes(attrs))
+
 
         CTFontDescriptorMatchFontDescriptorsWithProgressHandler(descs, nil) {
             (state: CTFontDescriptorMatchingState, paramDict: CFDictionaryRef) in

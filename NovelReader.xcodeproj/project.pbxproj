@@ -41,15 +41,13 @@
 		11C7433F1CC78A1800384FFB /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7433E1CC78A1800384FFB /* Chapter.swift */; };
 		11DAD99B1C9FE5D50027F98A /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DAD9991C9FE5D50027F98A /* MainViewController.swift */; };
 		11DAD99C1C9FE5D50027F98A /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11DAD99A1C9FE5D50027F98A /* MainViewController.xib */; };
-		11F196231CCF21A20094A73A /* 将夜.txt in Resources */ = {isa = PBXBuildFile; fileRef = 11F196221CCF21A20094A73A /* 将夜.txt */; };
+		11F32CD51CD099B800543CF3 /* zx_utf8.txt in Resources */ = {isa = PBXBuildFile; fileRef = 11F32CD41CD099B800543CF3 /* zx_utf8.txt */; };
 		3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C70D1C96F53700DD408F /* AppDelegate.swift */; };
 		3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D49C70F1C96F53700DD408F /* Assets.xcassets */; };
 		3D49C7131C96F53700DD408F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D49C7111C96F53700DD408F /* LaunchScreen.storyboard */; };
 		3D49C71E1C96F53700DD408F /* NovelReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C71D1C96F53700DD408F /* NovelReaderTests.swift */; };
 		3D49C7291C96F53700DD408F /* NovelReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7281C96F53700DD408F /* NovelReaderUITests.swift */; };
 		3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7371C96F60900DD408F /* Typesetter.swift */; };
-		3D6A244A1CA0362B00F05D55 /* jy_gbk.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3D6A24481CA0362B00F05D55 /* jy_gbk.txt */; };
-		3D6A244B1CA0362B00F05D55 /* jy_utf8.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3D6A24491CA0362B00F05D55 /* jy_utf8.txt */; };
 		3D833A981CAFC09700D31925 /* ReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D833A971CAFC09700D31925 /* ReaderViewController.swift */; };
 		3D833A9A1CAFD45100D31925 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D833A991CAFD45100D31925 /* PageViewController.swift */; };
 		3D833A9C1CAFD7EF00D31925 /* ReaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */; };
@@ -133,7 +131,7 @@
 		11C7433E1CC78A1800384FFB /* Chapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Chapter.swift; path = Models/Chapter.swift; sourceTree = "<group>"; };
 		11DAD9991C9FE5D50027F98A /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		11DAD99A1C9FE5D50027F98A /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
-		11F196221CCF21A20094A73A /* 将夜.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "将夜.txt"; path = "Books/将夜.txt"; sourceTree = "<group>"; };
+		11F32CD41CD099B800543CF3 /* zx_utf8.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = zx_utf8.txt; path = Books/zx_utf8.txt; sourceTree = "<group>"; };
 		2C29CF4B14E4A37B75632830 /* libPods-NovelReader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovelReader.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D05DA151CAC20EA0059DBDF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		3D05DA171CAC20F90059DBDF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -151,8 +149,6 @@
 		3D49C7281C96F53700DD408F /* NovelReaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovelReaderUITests.swift; sourceTree = "<group>"; };
 		3D49C72A1C96F53700DD408F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D49C7371C96F60900DD408F /* Typesetter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Typesetter.swift; path = Engine/Typesetter.swift; sourceTree = "<group>"; };
-		3D6A24481CA0362B00F05D55 /* jy_gbk.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = jy_gbk.txt; path = Books/jy_gbk.txt; sourceTree = "<group>"; };
-		3D6A24491CA0362B00F05D55 /* jy_utf8.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = jy_utf8.txt; path = Books/jy_utf8.txt; sourceTree = "<group>"; };
 		3D833A971CAFC09700D31925 /* ReaderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaderViewController.swift; sourceTree = "<group>"; };
 		3D833A991CAFD45100D31925 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		3D833A9B1CAFD7EF00D31925 /* ReaderManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaderManager.swift; sourceTree = "<group>"; };
@@ -356,9 +352,7 @@
 		3D6A24471CA0361F00F05D55 /* Books */ = {
 			isa = PBXGroup;
 			children = (
-				11F196221CCF21A20094A73A /* 将夜.txt */,
-				3D6A24481CA0362B00F05D55 /* jy_gbk.txt */,
-				3D6A24491CA0362B00F05D55 /* jy_utf8.txt */,
+				11F32CD41CD099B800543CF3 /* zx_utf8.txt */,
 			);
 			name = Books;
 			sourceTree = "<group>";
@@ -494,15 +488,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D6A244A1CA0362B00F05D55 /* jy_gbk.txt in Resources */,
 				112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */,
 				3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */,
 				3D833A9E1CAFDB7B00D31925 /* PageViewController.xib in Resources */,
 				112E9CD21C9FF1B400C5E34C /* GB2312Freq.tab in Resources */,
 				3D833AA01CAFE44900D31925 /* ReaderViewController.xib in Resources */,
-				3D6A244B1CA0362B00F05D55 /* jy_utf8.txt in Resources */,
 				112E9CD11C9FF1B400C5E34C /* EUCTWFreq.tab in Resources */,
-				11F196231CCF21A20094A73A /* 将夜.txt in Resources */,
+				11F32CD51CD099B800543CF3 /* zx_utf8.txt in Resources */,
 				112E9CD01C9FF1B400C5E34C /* EUCKRFreq.tab in Resources */,
 				112E9CD31C9FF1B400C5E34C /* JISFreq.tab in Resources */,
 				11DAD99C1C9FE5D50027F98A /* MainViewController.xib in Resources */,
