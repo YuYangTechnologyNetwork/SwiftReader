@@ -14,6 +14,7 @@ class RenderViewController: UIViewController, UIPageViewControllerDataSource, UI
     private var readerMgr: ReaderManager!
     private var swipeCtrls: [PageViewController]!
     private var pageViewCtrl: UIPageViewController!
+    private var menuViewCtrl: ReaderViewController!
     
     @IBOutlet weak var prevBtn: UIButton!
     @IBOutlet weak var nextBtn: UIButton!
@@ -30,9 +31,16 @@ class RenderViewController: UIViewController, UIPageViewControllerDataSource, UI
         pageViewCtrl.dataSource  = self
         pageViewCtrl.didMoveToParentViewController(self)
         
+        menuViewCtrl = ReaderViewController()
+        menuViewCtrl.renderController = self
+        
         addChildViewController(pageViewCtrl)
         view.addSubview(pageViewCtrl.view)
         view.sendSubviewToBack(pageViewCtrl.view)
+        
+        addChildViewController(menuViewCtrl)
+        view.addSubview(menuViewCtrl.view)
+        
         view.backgroundColor = Typesetter.Ins.theme.backgroundColor
         
         for v in pageViewCtrl.view.subviews {
@@ -168,6 +176,8 @@ class RenderViewController: UIViewController, UIPageViewControllerDataSource, UI
                 
                 overScrollView.hidden = true
             }
+        
+        menuViewCtrl.view.userInteractionEnabled = finished
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
