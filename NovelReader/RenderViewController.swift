@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate {
+class RenderViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate {
     private var currIndex: Int = 0
     private var lastIndex: Int = 0
     private var readerMgr: ReaderManager!
@@ -21,8 +21,8 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     @IBOutlet weak var overScrollView: UIView!
     
     override func viewDidLoad() {
-        prevBtn.addTarget(self, action: #selector(ReaderViewController.snapToPrevPage), forControlEvents: .TouchUpInside)
-        nextBtn.addTarget(self, action: #selector(ReaderViewController.snapToNextPage), forControlEvents: .TouchUpInside)
+        prevBtn.addTarget(self, action: #selector(RenderViewController.snapToPrevPage), forControlEvents: .TouchUpInside)
+        nextBtn.addTarget(self, action: #selector(RenderViewController.snapToNextPage), forControlEvents: .TouchUpInside)
         
         pageViewCtrl = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: .Horizontal, options: nil)
         pageViewCtrl.view.frame  = self.view.frame
@@ -48,7 +48,6 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
         loadingIndicator.startAnimating()
 
-        Typesetter.Ins.font = FontManager.SupportFonts.SongTi
         FontManager.asyncDownloadFont(Typesetter.Ins.font) {
             (success: Bool, fontName: String, msg: String) in
             if !success {

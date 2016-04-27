@@ -5,7 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ReaderViewController" customModule="NovelReader" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RenderViewController" customModule="NovelReader" customModuleProvider="target">
             <connections>
                 <outlet property="loadingIndicator" destination="1VJ-Gn-iUd" id="b9R-E3-dfi"/>
                 <outlet property="nextBtn" destination="c9E-sV-5ZK" id="bj4-uO-RVI"/>
@@ -25,9 +25,6 @@
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reading_parchment_border" translatesAutoresizingMaskIntoConstraints="NO" id="Gge-3x-5Xl">
                             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.045836343930635841" colorSpace="custom" customColorSpace="sRGB"/>
-                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                <rect key="frame" x="-80" y="-336" width="400" height="800"/>
-                            </variation>
                         </imageView>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -48,8 +45,7 @@
                             <exclude reference="SRz-o9-oxT"/>
                         </mask>
                     </variation>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="80" y="336" width="240" height="128"/>
+                    <variation key="heightClass=regular-widthClass=compact">
                         <mask key="subviews">
                             <include reference="Gge-3x-5Xl"/>
                         </mask>
@@ -127,16 +123,16 @@
                     <exclude reference="1VJ-Gn-iUd"/>
                 </mask>
                 <mask key="constraints">
-                    <exclude reference="4TF-ot-8Sh"/>
-                    <exclude reference="Brd-Hb-IwW"/>
-                    <exclude reference="NDY-aS-Ixe"/>
-                    <exclude reference="zCV-aG-C4W"/>
                     <exclude reference="6f7-3U-AB4"/>
                     <exclude reference="QAd-pT-Yan"/>
                     <exclude reference="7dJ-ly-cM9"/>
                     <exclude reference="TcL-U6-UyG"/>
                     <exclude reference="TMH-2T-FDg"/>
                     <exclude reference="s5v-YR-Mme"/>
+                    <exclude reference="4TF-ot-8Sh"/>
+                    <exclude reference="Brd-Hb-IwW"/>
+                    <exclude reference="NDY-aS-Ixe"/>
+                    <exclude reference="zCV-aG-C4W"/>
                 </mask>
             </variation>
             <variation key="heightClass=regular-widthClass=compact">
@@ -147,16 +143,16 @@
                     <include reference="1VJ-Gn-iUd"/>
                 </mask>
                 <mask key="constraints">
-                    <include reference="4TF-ot-8Sh"/>
-                    <include reference="Brd-Hb-IwW"/>
-                    <include reference="NDY-aS-Ixe"/>
-                    <include reference="zCV-aG-C4W"/>
                     <include reference="6f7-3U-AB4"/>
                     <include reference="QAd-pT-Yan"/>
                     <include reference="7dJ-ly-cM9"/>
                     <include reference="TcL-U6-UyG"/>
                     <include reference="TMH-2T-FDg"/>
                     <include reference="s5v-YR-Mme"/>
+                    <include reference="4TF-ot-8Sh"/>
+                    <include reference="Brd-Hb-IwW"/>
+                    <include reference="NDY-aS-Ixe"/>
+                    <include reference="zCV-aG-C4W"/>
                 </mask>
             </variation>
         </view>

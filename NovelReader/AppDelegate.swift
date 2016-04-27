@@ -14,10 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        Typesetter.Ins.font             = FontManager.SupportFonts.System
-        //Typesetter.Ins.theme            = Theme.Eyeshield()
         self.window                     = UIWindow(frame: UIScreen.mainScreen().bounds)
-        self.window?.rootViewController = ReaderViewController()
+        self.window?.rootViewController = RenderViewController()
         self.window!.backgroundColor    = UIColor.blackColor()
         self.window!.makeKeyAndVisible()
         return true
