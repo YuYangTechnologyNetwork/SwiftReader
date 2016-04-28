@@ -11,7 +11,7 @@ import UIKit
 class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var topBar: UIView!
-    @IBOutlet weak var bottomBar: UIView!
+    @IBOutlet weak var bottomBar: UIToolbar!
     @IBOutlet weak var maskPanel: UIView!
     @IBOutlet weak var stylePanel: UIView!
 
@@ -34,11 +34,19 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewDidLoad()
 
         renderController = ReaderViewController()
+        addChildViewController(renderController)
 
-        self.addChildViewController(renderController)
         view.addSubview(renderController.view)
         view.sendSubviewToBack(renderController.view)
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(maskPanelTaped(_:))))
+    }
+
+    override func viewWillAppear(animated: Bool) {
+        self.topBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+        self.bottomBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+        self.bottomBar.tintColor = Typesetter.Ins.theme.foregroundColor
+        self.bottomBar.setShadowImage(UIImage(), forToolbarPosition: .Any)
+        self.bottomBar.setBackgroundImage(UIImage(), forToolbarPosition: .Any, barMetrics: .Default)
     }
 
     override func prefersStatusBarHidden() -> Bool {
@@ -46,7 +54,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+        return Typesetter.Ins.theme.statusBarStyle
     }
 
     func maskPanelTaped(recognizer: UITapGestureRecognizer) {

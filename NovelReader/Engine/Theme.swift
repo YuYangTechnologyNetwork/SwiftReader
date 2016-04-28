@@ -23,9 +23,28 @@ class Theme {
         return Theme.DEFAULT
     }
 
+    var statusBarStyle: UIStatusBarStyle {
+        return .Default
+    }
+
+    var menuColor: UIColor {
+        return foregroundColor
+    }
+
+    var menuBackgroundColor: UIColor {
+        return backgroundColor
+    }
+
     class Parchment: Theme {
         private static var bgColor: UIColor? = nil
+
+        private var menuBgColor = UIColor(red:0.780,  green:0.633,  blue:0.455, alpha:1)
+
         override var name: String { return Theme.PARCHMENT }
+
+        override var menuBackgroundColor: UIColor {
+            return menuBgColor
+        }
 
         override init() {
             super.init()
@@ -58,6 +77,10 @@ class Theme {
 
     class Night: Theme {
         override var name: String { return Theme.NIGHT }
+
+        override var statusBarStyle: UIStatusBarStyle {
+            return .LightContent
+        }
 
         override init() {
             super.init()
