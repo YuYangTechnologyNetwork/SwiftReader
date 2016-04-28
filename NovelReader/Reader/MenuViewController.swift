@@ -11,10 +11,12 @@ import UIKit
 class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var topBar: UIView!
-    @IBOutlet weak var bottomBar: UIToolbar!
+    @IBOutlet weak var bottomBar: UIView!
     @IBOutlet weak var maskPanel: UIView!
     @IBOutlet weak var stylePanel: UIView!
+    @IBOutlet weak var chapterTitle: UILabel!
 
+    @IBOutlet weak var topSubContainer: UIView!
     var size: CGSize {
         return self.view.bounds.size
     }
@@ -32,6 +34,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        Typesetter.Ins.theme = Theme.Night()
 
         renderController = ReaderViewController()
         addChildViewController(renderController)
@@ -42,11 +46,12 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     override func viewWillAppear(animated: Bool) {
+        self.topBar.tintColor = Typesetter.Ins.theme.foregroundColor
+        self.bottomBar.tintColor = Typesetter.Ins.theme.foregroundColor
+        self.chapterTitle.textColor = Typesetter.Ins.theme.foregroundColor
+        
         self.topBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
         self.bottomBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
-        self.bottomBar.tintColor = Typesetter.Ins.theme.foregroundColor
-        self.bottomBar.setShadowImage(UIImage(), forToolbarPosition: .Any)
-        self.bottomBar.setBackgroundImage(UIImage(), forToolbarPosition: .Any, barMetrics: .Default)
     }
 
     override func prefersStatusBarHidden() -> Bool {
@@ -89,6 +94,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.topBar.frame.origin.y = -self.topBar.bounds.height
         self.bottomBar.frame.origin.y = self.view.bounds.height
         self.maskPanel.alpha = 0.0
+        self.topSubContainer.alpha = 0.0
 
         self.menuShow = true
         self.topBar.hidden = false
@@ -102,11 +108,13 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.topBar.frame.origin.y = 0
             self.bottomBar.frame.origin.y = self.view.bounds.height - self.bottomBar.bounds.height
             self.maskPanel.alpha = 1.0
+            self.topSubContainer.alpha = 1.0
         }) { (finish: Bool) in
             if !finish {
                 self.topBar.frame.origin.y = 0
                 self.bottomBar.frame.origin.y = self.view.bounds.height - self.bottomBar.bounds.height
                 self.maskPanel.alpha = 1.0
+                self.topSubContainer.alpha = 1.0
             }
         }
     }
@@ -120,6 +128,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.topBar.frame.origin.y = -self.topBar.bounds.height
             self.bottomBar.frame.origin.y = self.view.bounds.height
             self.maskPanel.alpha = 0.0
+            self.topSubContainer.alpha = 0.0
         }) { (finish: Bool) in
             self.topBar.hidden = true
             self.bottomBar.hidden = true
@@ -130,6 +139,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.topBar.frame.origin.y = -self.topBar.bounds.height
                 self.bottomBar.frame.origin.y = self.view.bounds.height
                 self.maskPanel.alpha = 0.0
+                self.topSubContainer.alpha = 0.0
             }
         }
     }

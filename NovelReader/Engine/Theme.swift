@@ -78,10 +78,6 @@ class Theme {
     class Night: Theme {
         override var name: String { return Theme.NIGHT }
 
-        override var statusBarStyle: UIStatusBarStyle {
-            return .LightContent
-        }
-
         override init() {
             super.init()
             foregroundColor = UIColor(red: 0.310, green: 0.407, blue: 0.478, alpha: 1)
