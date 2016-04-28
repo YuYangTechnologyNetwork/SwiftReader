@@ -17,7 +17,7 @@ class Typesetter {
     
     private typealias `Self` = Typesetter
 
-    static let DEFAULT_THEME = Theme.Night()
+    static let DEFAULT_THEME = Theme.Sepia()
     
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 20.0

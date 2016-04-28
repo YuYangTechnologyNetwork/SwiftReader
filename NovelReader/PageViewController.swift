@@ -28,7 +28,7 @@ class PageViewController: UIViewController {
             p.attachToView(containerView)
         }
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         if self.needRefresh {
             needRefresh = false
@@ -54,9 +54,5 @@ class PageViewController: UIViewController {
         }
 
         return self
-    }
-
-    override var description: String {
-        return paper != nil ? (paper?.text.substringToIndex((paper?.text.startIndex.advancedBy(4))!))! : super.description
     }
 }

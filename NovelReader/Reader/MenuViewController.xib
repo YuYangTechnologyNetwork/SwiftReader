@@ -5,7 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10116"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ReaderViewController" customModule="NovelReader" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MenuViewController" customModule="NovelReader" customModuleProvider="target">
             <connections>
                 <outlet property="bottomBar" destination="0NP-yf-Jm1" id="0bT-dS-QJ1"/>
                 <outlet property="maskPanel" destination="8no-kp-6gh" id="g84-AU-Izn"/>
@@ -21,7 +21,7 @@
             <subviews>
                 <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8no-kp-6gh">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.19933164739884393" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.19897037572254336" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
                 <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f4c-H5-ake">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
@@ -106,22 +106,22 @@
                     <exclude reference="Ueg-ZK-Z7k"/>
                 </mask>
                 <mask key="constraints">
-                    <exclude reference="Lm0-6f-css"/>
-                    <exclude reference="kJQ-NY-qut"/>
-                    <exclude reference="mOC-Vg-jTC"/>
-                    <exclude reference="qFO-Ji-BuX"/>
+                    <exclude reference="9vs-pr-l99"/>
+                    <exclude reference="Git-sm-HrB"/>
+                    <exclude reference="mTh-zI-k69"/>
                     <exclude reference="C5J-4l-mUu"/>
                     <exclude reference="Vay-dK-xTG"/>
                     <exclude reference="bte-IH-LJS"/>
                     <exclude reference="e3c-D5-Ge4"/>
-                    <exclude reference="9vs-pr-l99"/>
-                    <exclude reference="Git-sm-HrB"/>
-                    <exclude reference="mTh-zI-k69"/>
                     <exclude reference="Ni8-Nt-t3P"/>
                     <exclude reference="aaK-Ah-nfm"/>
                     <exclude reference="cyO-eo-VJq"/>
                     <exclude reference="h1k-kL-ycY"/>
                     <exclude reference="sg8-xg-ABv"/>
+                    <exclude reference="Lm0-6f-css"/>
+                    <exclude reference="kJQ-NY-qut"/>
+                    <exclude reference="mOC-Vg-jTC"/>
+                    <exclude reference="qFO-Ji-BuX"/>
                 </mask>
             </variation>
             <variation key="heightClass=regular-widthClass=compact">
@@ -132,22 +132,22 @@
                     <include reference="Ueg-ZK-Z7k"/>
                 </mask>
                 <mask key="constraints">
-                    <include reference="Lm0-6f-css"/>
-                    <include reference="kJQ-NY-qut"/>
-                    <include reference="mOC-Vg-jTC"/>
-                    <include reference="qFO-Ji-BuX"/>
+                    <include reference="9vs-pr-l99"/>
+                    <include reference="Git-sm-HrB"/>
+                    <include reference="mTh-zI-k69"/>
                     <include reference="C5J-4l-mUu"/>
                     <include reference="Vay-dK-xTG"/>
                     <include reference="bte-IH-LJS"/>
                     <include reference="e3c-D5-Ge4"/>
-                    <include reference="9vs-pr-l99"/>
-                    <include reference="Git-sm-HrB"/>
-                    <include reference="mTh-zI-k69"/>
                     <include reference="Ni8-Nt-t3P"/>
                     <include reference="aaK-Ah-nfm"/>
                     <include reference="cyO-eo-VJq"/>
                     <include reference="h1k-kL-ycY"/>
                     <include reference="sg8-xg-ABv"/>
+                    <include reference="Lm0-6f-css"/>
+                    <include reference="kJQ-NY-qut"/>
+                    <include reference="mOC-Vg-jTC"/>
+                    <include reference="qFO-Ji-BuX"/>
                 </mask>
             </variation>
         </view>
