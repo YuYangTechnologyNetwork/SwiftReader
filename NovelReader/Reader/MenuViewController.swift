@@ -35,7 +35,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        Typesetter.Ins.theme = Theme.Night()
+        //Typesetter.Ins.theme = Theme.Night()
 
         renderController = ReaderViewController()
         addChildViewController(renderController)
