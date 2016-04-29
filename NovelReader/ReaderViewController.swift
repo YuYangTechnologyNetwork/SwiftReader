@@ -11,7 +11,7 @@ import UIKit
 class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate {
     private var currIndex: Int = 0
     private var lastIndex: Int = 0
-    private var readerMgr: ReaderManager!
+    var readerMgr: ReaderManager!
     private var swipeCtrls: [PageViewController]!
     private var pageViewCtrl: UIPageViewController!
 

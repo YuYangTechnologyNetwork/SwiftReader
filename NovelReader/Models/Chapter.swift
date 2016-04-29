@@ -159,7 +159,7 @@ class Chapter: BookMark {
             }
         }
 
-        let ready = chapters.count > 0
+        var ready = chapters.count > 0
 
         // Get chapter
         if ready {
@@ -172,7 +172,16 @@ class Chapter: BookMark {
             }
 
             let content = reader.readRange(file, range: self.range, encoding: encoding!)
-            self._papers = readerMgr.paging(content!, firstListIsTitle: self.title != NO_TITLE)
+
+            if let text = content {
+                self._papers = readerMgr.paging(text, firstListIsTitle: self.title != NO_TITLE)
+
+                if self.title == NO_TITLE {
+                    self.title = text.componentsSeparatedByString(FileReader.getNewLineCharater(text)).first!
+                }
+            } else {
+                ready = false
+            }
         }
 
         self.status = ready ? .Success : .Failure

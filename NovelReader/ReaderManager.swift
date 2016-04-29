@@ -37,6 +37,10 @@ class ReaderManager: NSObject {
         }
     }
 
+    var currBookMark: BookMark {
+        return currChapter
+    }
+
     var isHead: Bool {
         return currChapter.isHead && currChapter.range.loc <= 0
     }
