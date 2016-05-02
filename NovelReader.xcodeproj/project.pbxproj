@@ -44,6 +44,8 @@
 		11F32CD51CD099B800543CF3 /* zx_utf8.txt in Resources */ = {isa = PBXBuildFile; fileRef = 11F32CD41CD099B800543CF3 /* zx_utf8.txt */; };
 		11F32CD81CD0D68000543CF3 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F32CD61CD0D68000543CF3 /* MenuViewController.swift */; };
 		11F32CD91CD0D68000543CF3 /* MenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11F32CD71CD0D68000543CF3 /* MenuViewController.xib */; };
+		3D2554B01CD79A2C00A4330C /* StylePanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2554AF1CD79A2C00A4330C /* StylePanelView.swift */; };
+		3D2554B21CD79A5400A4330C /* StylePanelView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D2554B11CD79A5400A4330C /* StylePanelView.xib */; };
 		3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C70D1C96F53700DD408F /* AppDelegate.swift */; };
 		3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D49C70F1C96F53700DD408F /* Assets.xcassets */; };
 		3D49C7131C96F53700DD408F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D49C7111C96F53700DD408F /* LaunchScreen.storyboard */; };
@@ -141,6 +143,8 @@
 		3D05DA171CAC20F90059DBDF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3D05DA191CAC21050059DBDF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		3D05DA1B1CAC21150059DBDF /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		3D2554AF1CD79A2C00A4330C /* StylePanelView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StylePanelView.swift; path = Views/StylePanelView.swift; sourceTree = "<group>"; };
+		3D2554B11CD79A5400A4330C /* StylePanelView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StylePanelView.xib; path = xlibs/StylePanelView.xib; sourceTree = "<group>"; };
 		3D49C70A1C96F53700DD408F /* NovelReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NovelReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D49C70D1C96F53700DD408F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3D49C70F1C96F53700DD408F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -288,8 +292,17 @@
 				11F32CD71CD0D68000543CF3 /* MenuViewController.xib */,
 				3D833A9F1CAFE44900D31925 /* ReaderViewController.xib */,
 				3D49C7111C96F53700DD408F /* LaunchScreen.storyboard */,
+				3D2554B11CD79A5400A4330C /* StylePanelView.xib */,
 			);
 			name = xlibs;
+			sourceTree = "<group>";
+		};
+		3D2554AE1CD799AE00A4330C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3D2554AF1CD79A2C00A4330C /* StylePanelView.swift */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 		3D49C7011C96F53700DD408F = {
@@ -319,6 +332,7 @@
 			children = (
 				11F32CDA1CD0D78C00543CF3 /* xlibs */,
 				111F8B631CAA61E400090D1A /* Utils */,
+				3D2554AE1CD799AE00A4330C /* Views */,
 				3D6A24471CA0361F00F05D55 /* Books */,
 				112E9C881C9FF18D00C5E34C /* ThirdParty */,
 				11DAD9981C9FE5A50027F98A /* Reader */,
@@ -510,6 +524,7 @@
 				11F32CD91CD0D68000543CF3 /* MenuViewController.xib in Resources */,
 				112E9CD11C9FF1B400C5E34C /* EUCTWFreq.tab in Resources */,
 				11F32CD51CD099B800543CF3 /* zx_utf8.txt in Resources */,
+				3D2554B21CD79A5400A4330C /* StylePanelView.xib in Resources */,
 				112E9CD01C9FF1B400C5E34C /* EUCKRFreq.tab in Resources */,
 				112E9CD31C9FF1B400C5E34C /* JISFreq.tab in Resources */,
 				11DAD99C1C9FE5D50027F98A /* MainViewController.xib in Resources */,
@@ -610,6 +625,7 @@
 				112E9CC21C9FF1B400C5E34C /* nsEUCKRProber.cpp in Sources */,
 				3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */,
 				111B55C41CABD6C700070E9C /* Constants.swift in Sources */,
+				3D2554B01CD79A2C00A4330C /* StylePanelView.swift in Sources */,
 				112E9CBB1C9FF1B400C5E34C /* CharDistribution.cpp in Sources */,
 				3D833A9A1CAFD45100D31925 /* PageViewController.swift in Sources */,
 				1156F1871CA3BB88006B5848 /* FileReader.swift in Sources */,

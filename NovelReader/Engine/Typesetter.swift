@@ -133,7 +133,7 @@ class Typesetter {
                     line,
                     contentMode: .Center,
                     attachmentSize: line.bounds.size,
-                    alignToFont: yyFont, alignment: .Center)
+                    alignToFont: yyFont!, alignment: .Center)
                 
                 attrt.insertAttributedString(lineStr, atIndex: start)
             }

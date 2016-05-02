@@ -15,7 +15,7 @@ class ReaderManager: NSObject {
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
-    private var listeners: [String: (s: Chapter.Status, next: Bool) -> Void] = [:]
+    private var listeners: [String: (chpater: Chapter) -> Void] = [:]
 
     var currPaper: Paper? {
         return currChapter.currPage!
@@ -25,7 +25,7 @@ class ReaderManager: NSObject {
         if currChapter.isTail {
             return !nextChapter.isEmpty ? nextChapter.headPage : nil
         } else {
-            return currChapter.nextPage
+            return currChapter.nextPage 
         }
     }
 
@@ -60,12 +60,12 @@ class ReaderManager: NSObject {
     }
 
     /**
-     Add listener that will be called on aysnc chapter loading finish
+     Add listener that will be called on current chpater is changed
 
      - parameter name:     The listener name
      - parameter listener: Listener
      */
-    func addListener(name: String, listener: (s: Chapter.Status, next: Bool) -> Void) {
+    func addListener(name: String, listener: (chpater: Chapter) -> Void) {
         if listeners.indexForKey(name) == nil {
             listeners[name] = listener
         }
@@ -87,7 +87,7 @@ class ReaderManager: NSObject {
 
      - parameter callback: Will be call on prepare finish or error
      */
-    func asyncPrepare(callback: (_: Chapter.Status) -> Void) {
+    func asyncPrepare(callback: (_: Chapter) -> Void) {
         if let bm = book.bookMark() {
             currChapter = Chapter(bm: bm)
         } else {
@@ -125,7 +125,7 @@ class ReaderManager: NSObject {
             // Back to main thread
             dispatch_async(dispatch_get_main_queue()) {
                 Utils.Log(self)
-                callback(self.currChapter.status)
+                callback(self.currChapter)
             }
         }
     }
@@ -169,6 +169,10 @@ class ReaderManager: NSObject {
                 prevChapter = currChapter.setTail()
                 currChapter = nextChapter.setHead()
                 nextChapter = Chapter.EMPTY_CHAPTER.setHead()
+                
+                for l in self.listeners {
+                    l.1(chpater: self.currChapter)
+                }
             } else {
                 currChapter.next()
             }
@@ -194,6 +198,10 @@ class ReaderManager: NSObject {
                 nextChapter = currChapter.setHead()
                 currChapter = prevChapter.setTail()
                 prevChapter = Chapter.EMPTY_CHAPTER.setTail()
+                
+                for l in self.listeners {
+                    l.1(chpater: self.currChapter)
+                }
             } else {
                 currChapter.prev()
             }

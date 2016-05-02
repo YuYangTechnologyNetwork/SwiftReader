@@ -13,8 +13,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var topBar: UIView!
     @IBOutlet weak var bottomBar: UIView!
     @IBOutlet weak var maskPanel: UIView!
-    @IBOutlet weak var stylePanel: UIView!
     @IBOutlet weak var chapterTitle: UILabel!
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
 
     @IBOutlet weak var topSubContainer: UIView!
     var size: CGSize {
@@ -30,19 +30,19 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
     var menuShow: Bool = false
     var downZone: DownZone = .None
-    var renderController: ReaderViewController!
+    var readerManager: ReaderManager!
+    var stylePanelView: StylePanelView!
+    var readerController: ReaderViewController!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //Typesetter.Ins.theme = Theme.Night()
-
-        renderController = ReaderViewController()
-        addChildViewController(renderController)
-
-        view.addSubview(renderController.view)
-        view.sendSubviewToBack(renderController.view)
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(maskPanelTaped(_:))))
+        /*Typesetter.Ins.theme = Theme.Night()*/
+        loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
+        
+        stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, 158))
+        stylePanelView.hidden = true
+        self.bottomBar.addSubview(stylePanelView)
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -52,6 +52,27 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         
         self.topBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
         self.bottomBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+        
+        // Start loading
+        self.loadingIndicator.startAnimating()
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            
+            let filePath = NSBundle.mainBundle().pathForResource("zx_utf8", ofType: "txt")
+            let book = try! Book(fullFilePath: filePath!)
+            
+            dispatch_async(dispatch_get_main_queue()) {
+                self.readerManager = ReaderManager(b: book, size: self.view.frame.size)
+                
+                self.readerManager.addListener("menu-title") { (chapter: Chapter) in
+                    self.chapterTitle.text = chapter.title
+                }
+                
+                self.readerManager.asyncPrepare({ (chapter: Chapter) in
+                    self.attachReaderView(chapter)
+                })
+            }
+        }
     }
 
     override func prefersStatusBarHidden() -> Bool {
@@ -61,6 +82,28 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return Typesetter.Ins.theme.statusBarStyle
     }
+    
+    func attachReaderView(currChapter: Chapter) {
+        FontManager.asyncDownloadFont(Typesetter.Ins.font) { (success: Bool, fontName: String, msg: String) in
+            
+            self.loadingIndicator.stopAnimating()
+            self.loadingIndicator.hidden = true
+            self.chapterTitle.text = currChapter.title
+            
+            if !success {
+                Typesetter.Ins.font = FontManager.SupportFonts.System
+            }
+
+            self.readerController = ReaderViewController()
+            self.readerController.readerMgr = self.readerManager
+            self.readerController.view.frame = self.view.frame
+            
+            self.addChildViewController(self.readerController)
+            self.view.addSubview(self.readerController.view)
+            self.view.sendSubviewToBack(self.readerController.view)
+            self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.maskPanelTaped(_:))))
+        }
+    }
 
     func maskPanelTaped(recognizer: UITapGestureRecognizer) {
         let point = recognizer.locationInView(maskPanel)
@@ -69,9 +112,9 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             if inMenuRegion(point) {
                 showMenu()
             } else if inNextRegion(point) {
-                renderController.snapToNextPage()
+                readerController.snapToNextPage()
             } else if inPrevRegion(point) {
-                renderController.snapToPrevPage()
+                readerController.snapToPrevPage()
             }
         } else {
             hideMenu()
@@ -100,7 +143,6 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.topBar.hidden = false
         self.bottomBar.hidden = false
         self.maskPanel.hidden = false
-        self.stylePanel.hidden = true
 
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .Slide)
@@ -121,26 +163,45 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
     func hideMenu() {
         self.menuShow = false
-
+        
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
             self.setNeedsStatusBarAppearanceUpdate()
             self.topBar.frame.origin.y = -self.topBar.bounds.height
-            self.bottomBar.frame.origin.y = self.view.bounds.height
+            self.bottomBar.frame = CGRectMake(0, self.view.bounds.height, self.view.bounds.width, 48)
             self.maskPanel.alpha = 0.0
             self.topSubContainer.alpha = 0.0
         }) { (finish: Bool) in
             self.topBar.hidden = true
             self.bottomBar.hidden = true
             self.maskPanel.hidden = true
-            self.stylePanel.hidden = true
-
-            if !finish {
-                self.topBar.frame.origin.y = -self.topBar.bounds.height
-                self.bottomBar.frame.origin.y = self.view.bounds.height
-                self.maskPanel.alpha = 0.0
-                self.topSubContainer.alpha = 0.0
-            }
+            self.topBar.frame.origin.y = -self.topBar.bounds.height
+            self.bottomBar.frame = CGRectMake(0, self.view.bounds.height, self.view.bounds.width, 48)
+            self.maskPanel.alpha = 0.0
+            self.topSubContainer.alpha = 0.0
+            
+            self.stylePanelView.hidden = true
+            self.stylePanelView.alpha = 0
+        }
+    }
+    
+    @IBAction func onStyleBtnClicked(sender: AnyObject) {
+        showStylePanel()
+    }
+    
+    func showStylePanel() {
+        self.stylePanelView.hidden = false
+        self.stylePanelView.alpha = 0
+        
+        UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
+            UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
+            self.setNeedsStatusBarAppearanceUpdate()
+            self.bottomBar.frame = CGRectMake(0, self.view.bounds.height - 158, self.view.bounds.width, 158)
+            self.stylePanelView.frame = CGRectMake(0, self.view.bounds.height - 158, self.view.bounds.width, 158)
+            self.stylePanelView.alpha = 1.0
+        }) { (finish: Bool) in
+            self.bottomBar.frame = CGRectMake(0, self.view.bounds.height - 158, self.view.bounds.width, 158)
+            //self.stylePanelView.frame = self.bottomBar.frame
         }
     }
 }

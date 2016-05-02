@@ -71,7 +71,7 @@ class Paper: NSObject {
         var attrText   = Typesetter.Ins.typeset(reIndentText, firstLineIsTitle: firstLineIsTitle,
                                               paperWidth: size.width, startWithNewLine: startWithNewLine)
         var tmpTxtLy   = YYTextLayout(container: self.textContainer, text: attrText)
-        let vRange     = tmpTxtLy.visibleRange
+        let vRange     = tmpTxtLy!.visibleRange
         let vText      = attrText.attributedSubstringFromRange(vRange).string
         let vLines     = vText.componentsSeparatedByString(newLineChar)
         endWithNewLine = (vLines.last?.isEmpty)!

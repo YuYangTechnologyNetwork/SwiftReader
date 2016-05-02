@@ -11,7 +11,6 @@ import UIKit
 class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate {
     private var currIndex: Int = 0
     private var lastIndex: Int = 0
-    var readerMgr: ReaderManager!
     private var swipeCtrls: [PageViewController]!
     private var pageViewCtrl: UIPageViewController!
 
@@ -22,8 +21,9 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     private var tail: Bool {
         return self.readerMgr.isTail || self.readerMgr.nextPaper == nil
     }
-
-    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
+    
+    var readerMgr: ReaderManager!
+    
     @IBOutlet weak var overScrollView: UIView!
 
     override func viewDidLoad() {
@@ -38,6 +38,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         view.sendSubviewToBack(pageViewCtrl.view)
 
         view.backgroundColor = Typesetter.Ins.theme.backgroundColor
+        overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
 
         for v in pageViewCtrl.view.subviews {
             if v.isKindOfClass(UIScrollView) {
@@ -47,40 +48,11 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     }
 
     override func viewWillAppear(animated: Bool) {
-        loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
-        loadingIndicator.startAnimating()
-
-        FontManager.asyncDownloadFont(Typesetter.Ins.font) {
-            (success: Bool, fontName: String, msg: String) in
-            if !success {
-                Typesetter.Ins.font = FontManager.SupportFonts.System
-            }
-
-            self.initliaze()
-        }
-
-        overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
+        bindPages()
     }
 
-    private func initliaze() {
+    func bindPages(animation: Bool = true) {
         swipeCtrls = [PageViewController(), PageViewController(), PageViewController()]
-
-        // Async load book content
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-            let filePath = NSBundle.mainBundle().pathForResource("zx_utf8", ofType: "txt")
-            let book = try! Book(fullFilePath: filePath!)
-            dispatch_async(dispatch_get_main_queue()) {
-                self.readerMgr = ReaderManager(b: book, size: self.view.frame.size)
-                self.readerMgr.asyncPrepare({ (s: Chapter.Status) in
-                    if s == Chapter.Status.Success {
-                        self.setPages()
-                    }
-                })
-            }
-        }
-    }
-
-    private func setPages(animation: Bool = true) {
         swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, fadeIn: true)
 
         if readerMgr.isHead {
@@ -93,9 +65,6 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         }
 
         pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false, completion: nil)
-
-        self.loadingIndicator.stopAnimating()
-        self.loadingIndicator.hidden = true
     }
 
     func snapToPrevPage() {
