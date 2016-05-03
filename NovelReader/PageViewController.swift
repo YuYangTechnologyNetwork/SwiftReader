@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import YYText
 
 class PageViewController: UIViewController {
     @IBOutlet weak var containerView: YYLabel!

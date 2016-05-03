@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
@@ -17,6 +18,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
 
     @IBOutlet weak var topSubContainer: UIView!
+    @IBOutlet weak var btmSubContainer: UIView!
+
     var size: CGSize {
         return self.view.bounds.size
     }
@@ -34,15 +37,19 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     var stylePanelView: StylePanelView!
     var readerController: ReaderViewController!
 
+    let stylePanelHeight:CGFloat = 190
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        /*Typesetter.Ins.theme = Theme.Night()*/
+        Typesetter.Ins.theme = Theme.Parchment()
         loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
         
-        stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, 158))
-        stylePanelView.hidden = true
-        self.bottomBar.addSubview(stylePanelView)
+        stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))
+        stylePanelView.tintColor = Typesetter.Ins.theme.foregroundColor
+        stylePanelView.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+        btmSubContainer.addSubview(stylePanelView)
+        btmSubContainer.hidden = true
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -72,6 +79,13 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                     self.attachReaderView(chapter)
                 })
             }
+        }
+
+        stylePanelView.snp_makeConstraints { (make) -> Void in
+            make.width.equalTo(self.btmSubContainer.snp_width)
+            make.height.equalTo(stylePanelHeight)
+            make.top.equalTo(self.btmSubContainer.snp_top)
+            make.left.equalTo(self.btmSubContainer.snp_left)
         }
     }
 
@@ -163,45 +177,54 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
     func hideMenu() {
         self.menuShow = false
-        
+        self.btmSubContainer.userInteractionEnabled = false
+
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
             self.setNeedsStatusBarAppearanceUpdate()
             self.topBar.frame.origin.y = -self.topBar.bounds.height
-            self.bottomBar.frame = CGRectMake(0, self.view.bounds.height, self.view.bounds.width, 48)
+            self.bottomBar.frame.origin.y = self.view.bounds.height
+            self.btmSubContainer.frame.origin.y = self.view.bounds.height
             self.maskPanel.alpha = 0.0
             self.topSubContainer.alpha = 0.0
         }) { (finish: Bool) in
+            self.topBar.frame.origin.y = -self.topBar.bounds.height
+            self.bottomBar.frame.origin.y = self.view.bounds.height
+
+            self.bottomBar.alpha = 1
+            self.maskPanel.alpha = 0.0
+            self.stylePanelView.alpha = 0
+            self.topSubContainer.alpha = 0.0
+
             self.topBar.hidden = true
             self.bottomBar.hidden = true
             self.maskPanel.hidden = true
-            self.topBar.frame.origin.y = -self.topBar.bounds.height
-            self.bottomBar.frame = CGRectMake(0, self.view.bounds.height, self.view.bounds.width, 48)
-            self.maskPanel.alpha = 0.0
-            self.topSubContainer.alpha = 0.0
-            
             self.stylePanelView.hidden = true
-            self.stylePanelView.alpha = 0
+            self.btmSubContainer.hidden = true
         }
     }
     
     @IBAction func onStyleBtnClicked(sender: AnyObject) {
+        stylePanelView.hidden = false
+        btmSubContainer.hidden = false
+        btmSubContainer.frame.origin.y = self.view.bounds.height
+        btmSubContainer.userInteractionEnabled = true
+
         showStylePanel()
     }
     
     func showStylePanel() {
-        self.stylePanelView.hidden = false
-        self.stylePanelView.alpha = 0
-        
+        stylePanelView.applyTheme()
+
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
             self.setNeedsStatusBarAppearanceUpdate()
-            self.bottomBar.frame = CGRectMake(0, self.view.bounds.height - 158, self.view.bounds.width, 158)
-            self.stylePanelView.frame = CGRectMake(0, self.view.bounds.height - 158, self.view.bounds.width, 158)
-            self.stylePanelView.alpha = 1.0
+            self.bottomBar.alpha = 0
+            self.stylePanelView.alpha  = 1
+            self.btmSubContainer.frame.origin.y = self.view.bounds.height - self.stylePanelHeight
         }) { (finish: Bool) in
-            self.bottomBar.frame = CGRectMake(0, self.view.bounds.height - 158, self.view.bounds.width, 158)
-            //self.stylePanelView.frame = self.bottomBar.frame
+            //self.bottomBar.frame       = subMenuRect
+            //self.btmSubContainer.frame = subMenuRect
         }
     }
 }

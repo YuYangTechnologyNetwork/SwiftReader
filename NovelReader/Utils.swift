@@ -25,4 +25,15 @@ class Utils {
             NSLog("\(paths.first!).\(funcs.first!)(:\(line)) \(anyOb)")
         #endif
     }
+
+    static func color2Img(color: UIColor) -> UIImage {
+        let rect = CGRectMake(0, 0, 64, 28)
+        UIGraphicsBeginImageContext(rect.size)
+        let ctx = UIGraphicsGetCurrentContext()
+        CGContextSetFillColorWithColor(ctx, color.CGColor)
+        CGContextFillRect(ctx, rect)
+        let theImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext()
+        return theImage
+    }
 }

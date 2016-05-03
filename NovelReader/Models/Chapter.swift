@@ -138,7 +138,6 @@ class Chapter: BookMark {
 
         let getChapters = { (r: NSRange) -> [BookMark] in
             var tc = reader.chaptersInRange(file, range: r, encoding: encoding!)
-            print(tc)
             if tc.count > 0 && self.range.loc > 0 && tc.first!.title == NO_TITLE {
                 tc.removeFirst()
             }

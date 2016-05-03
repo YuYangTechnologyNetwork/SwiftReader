@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import YYText
 
 class Paper: NSObject {
     /*Visible text*/
