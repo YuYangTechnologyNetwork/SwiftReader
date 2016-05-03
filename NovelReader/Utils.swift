@@ -26,14 +26,33 @@ class Utils {
         #endif
     }
 
-    static func color2Img(color: UIColor) -> UIImage {
-        let rect = CGRectMake(0, 0, 64, 28)
-        UIGraphicsBeginImageContext(rect.size)
-        let ctx = UIGraphicsGetCurrentContext()
-        CGContextSetFillColorWithColor(ctx, color.CGColor)
-        CGContextFillRect(ctx, rect)
-        let theImage = UIGraphicsGetImageFromCurrentImageContext();
+    /**
+     Create a UIImage from the color
+     
+     - parameter color:  UIColor
+     - parameter size:   UIImage size
+     - parameter circle: circle?
+     
+     - returns: A UIImage
+     */
+    static func color2Img(color: UIColor, size: CGSize, circle: Bool = false) -> UIImage {
+        let layer = CALayer()
+        layer.frame = CGRectMake(0, 0, size.width, size.height)
+        layer.backgroundColor = color.CGColor
+        layer.allowsEdgeAntialiasing = true
+        
+        if circle {
+            layer.cornerRadius = min(size.width, size.height) / 2
+            layer.masksToBounds = true
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        let ctx = UIGraphicsGetCurrentContext()!
+        CGContextSetInterpolationQuality(ctx, .High)
+        layer.renderInContext(ctx)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return theImage
+        
+        return img
     }
 }

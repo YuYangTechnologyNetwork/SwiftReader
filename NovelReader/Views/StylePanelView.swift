@@ -10,7 +10,6 @@ import UIKit
 import SnapKit
 
 class StylePanelView: UIView {
-
     @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var fontSetBtn: UIButton!
     @IBOutlet weak var vSplitLine: UIView!
@@ -22,7 +21,7 @@ class StylePanelView: UIView {
     @IBOutlet weak var marginIncBtn: UIButton!
     @IBOutlet weak var marginLabel: UILabel!
     @IBOutlet weak var themeSegment: UISegmentedControl!
-    @IBOutlet weak var lightnessSlider: UISlider!
+    @IBOutlet weak var brightnessSlider: UISlider!
     @IBOutlet weak var fontSizeSegment: UISegmentedControl!
     
     override init(frame: CGRect) {	
@@ -38,9 +37,6 @@ class StylePanelView: UIView {
     private func commonInit() {
         NSBundle.mainBundle().loadNibNamed("StylePanelView", owner: self, options: nil)
         guard let content = contentView else { return }
-
-        content.frame = self.frame
-
         self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(blankAction(_:))))
         self.addSubview(content)
 
@@ -53,11 +49,19 @@ class StylePanelView: UIView {
     }
 
     func applyTheme() {
-        self.vSplitLine.alpha = 0.05
-        self.vSplitLine.backgroundColor = Typesetter.Ins.theme.foregroundColor
-
-        self.hSplitLine.alpha = 0.05
-        self.hSplitLine.backgroundColor = Typesetter.Ins.theme.foregroundColor
+        self.tintColor = Typesetter.Ins.theme.foregroundColor
+        self.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+        
+        self.vSplitLine.backgroundColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.05)
+        self.hSplitLine.backgroundColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.05)
+        
+        self.marginLabel.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.8)
+        self.lineSpaceLabel.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.8)
+        
+        self.brightnessSlider.setThumbImage(Utils.color2Img(Typesetter.Ins.theme.foregroundColor, 
+            size: CGSizeMake(20, 20), circle: true), forState: [.Normal])
+        self.brightnessSlider.maximumTrackTintColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.1)
+        self.brightnessSlider.minimumTrackTintColor = Typesetter.Ins.theme.foregroundColor.newBrightness(0.35)
     }
 
     func blankAction(_:UIView) {}

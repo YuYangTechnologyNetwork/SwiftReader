@@ -125,4 +125,16 @@ extension UIColor {
         return UIColor(red: CGFloat(rgb & 0xFF0000 >> 16) / 255.0, green: CGFloat(rgb & 0xFF00 >> 8) / 255.0,
             blue: CGFloat(rgb & 0xFF) / 255.0, alpha: alpha)
     }
+    
+    func newAlpha(alpha: CGFloat) -> UIColor {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+        return UIColor(red: r, green: g, blue: b, alpha: alpha)
+    }
+    
+    func newBrightness(brightness: CGFloat) -> UIColor {
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return UIColor(hue: h, saturation: s, brightness: brightness, alpha: a)
+    }
 }
