@@ -464,7 +464,7 @@ extension FileReader {
             }
 
             i += 1
-        } while (i < count)
+        } while (i < count - 1)
 
         return merged
     }
