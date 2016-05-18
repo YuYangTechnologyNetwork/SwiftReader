@@ -25,12 +25,14 @@ class MainViewController: UIViewController {
         FontManager.asyncDownloadFont(Typesetter.Ins.font) { (_: Bool, _: String, _: String) in
             // Async load book content
             dispatch_async(dispatch_queue_create("ready_to_open_book", nil)) {
-                let filePath = NSBundle.mainBundle().pathForResource("将夜", ofType: "txt")
+                let filePath = NSBundle.mainBundle().pathForResource("zx_utf8", ofType: "txt")
                 let book     = try! Book(fullFilePath: filePath!)
-                let file     = fopen(filePath!, "r")
+                let file     = fopen(filePath!, "rb+")
                 let reader   = FileReader()
 
-                let chs = reader.chaptersInRange(file, range: NSMakeRange(book.size - 10 * CHAPTER_SIZE, book.size), encoding: FileReader.Encodings[book.encoding]!)
+				reader.asyncGetChaptersOfFile(filePath!, encoding: FileReader.Encodings[book.encoding]!)({ chapters in
+					Utils.Log("Chapters count: [\(chapters.count)]")
+				})
 
                 let paper    = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
                 paper.writtingLineByLine(book.description, firstLineIsTitle: false, startWithNewLine: false)

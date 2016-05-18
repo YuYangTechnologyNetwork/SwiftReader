@@ -6,6 +6,7 @@ use_frameworks!
 target 'NovelReader' do
 pod 'YYText'
 pod 'SnapKit'
+# pod 'PromiseKit/CorePromise'
 end
 
 target 'NovelReaderTests' do

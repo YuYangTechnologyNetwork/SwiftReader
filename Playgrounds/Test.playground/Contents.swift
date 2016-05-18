@@ -69,5 +69,29 @@ extension String {
 
 let chapter = "第五卷第神来之笔第二十九章红薯易冷"
 
-print(chapter.similarity("第五卷"))
+let r = chapter.rangeOfString("第二十九章")
+
+/*print(r)
+
+print(chapter.substringFromIndex(r!.endIndex))
+
+print(chapter.substringToIndex(r!.startIndex))*/
+
+func asyncTask<T>(backgroudTask: () -> T) -> (onMain: (result: T) -> Void) -> Void {
+    return { (mainTask: (res: T) -> Void) in
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            let result = backgroudTask()
+            dispatch_async(dispatch_get_main_queue()) {
+                mainTask(res: result)
+            }
+        }
+    }
+}
+
+asyncTask { () -> Int in
+    print("abc")
+	return 1 + 2
+}(onMain: { res in
+    //print(res)
+})
 

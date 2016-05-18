@@ -13,7 +13,7 @@ class BookMark: NSObject {
     var range: NSRange = EMPTY_RANGE
     var offset: Int   = 0
 
-    init(title: String, range: NSRange) {
+    init(title: String = NO_TITLE, range: NSRange) {
         self.title = title
         self.range = range
     }

@@ -42,7 +42,10 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        Typesetter.Ins.theme = Theme.Night()
+        Typesetter.Ins.theme = Theme.Parchment()
+        Typesetter.Ins.fontSize = 10
+        Typesetter.Ins.line_space = 2
+        
         loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
         
         stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))

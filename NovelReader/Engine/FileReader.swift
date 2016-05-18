@@ -7,6 +7,7 @@
 //
 
 import Foundation
+// import PromiseKit
 
 class FileReader {
     private typealias `Self` = FileReader
@@ -97,7 +98,7 @@ class FileReader {
         fseek(file, probable_pos, SEEK_SET)
         
         let buffer = UnsafeMutablePointer<UInt8>.alloc(buffer_size)
-        let valid_len = fread(buffer, 1, buffer_size, file)
+        let valid_len = fread(buffer, sizeof(UInt8), buffer_size, file)
         
         if valid_len > 0 {
             switch encoding {
@@ -116,6 +117,8 @@ class FileReader {
             }
         } else if valid_len == 0 && feof(file) != 0 {
             valid_pos = probable_pos
+        } else {
+            perror("file error, \(ferror(file)): ")
         }
         
         free(buffer)
@@ -382,26 +385,111 @@ extension FileReader {
                     if title.count > 0 {
                         let l = title[title.count - 1]
                         title[title.count - 1].range = NSMakeRange(l.range.loc, loc - l.range.loc)
+                        Utils.Log(title.last)
                     }
                     
                     title.append(BookMark(title: t, range: range))
-                    Utils.Log(t)
                 }
             }
             
             if title.count == 0 {
                 title.append(BookMark(title: NO_TITLE, range: range))
+                Utils.Log(title.last)
             } else {
                 let l = title.last!
                 title.last!.range = NSMakeRange(l.range.loc, range.loc + snippet!.length(encoding) - l.range.loc)
+                Utils.Log(title.last)
             }
             
             if title[0].range.location > range.location {
                 title.insert(BookMark(title: NO_TITLE, range: NSMakeRange(range.loc, title[0].range.loc)), atIndex: 0)
+                Utils.Log(title.first)
             }
         }
 
         return merge(title, encoding: encoding)
+    }
+    
+	func asyncGetChaptersOfFile(fileName: String, encoding: UInt) -> (_: (_: [BookMark]) -> Void) -> Void {
+		return Utils.asyncTask { () -> [BookMark] in
+			var chapters: [BookMark] = []
+            let file = fopen(fileName, "r")
+			let fileSize = self.getFileSize(file)
+			var start = 0
+            var end = self.getWordBorder(file, fuzzyPos: start + CHAPTER_SIZE, encoding: encoding)
+            let noSpaceRegex = try? NSRegularExpression(pattern: "\\s+", options: .CaseInsensitive)
+
+			while (end <= fileSize) {
+				let snippet = self.readRange(file, range: NSMakeRange(start, end - start), encoding: encoding)
+				if let text = snippet {
+					let chs = self.chaptersInSnippet(text, encoding: encoding, begin: start, head: start == 0)
+                    
+                    
+                    
+
+				} else {
+					Utils.Log("Get chapters exception at (\(start), \(end))")
+					break
+				}
+			}
+
+			Utils.Log("Get chapters finish at (end: \(end), size: \(fileSize))")
+
+			return chapters
+		}
+	}
+    
+    func chaptersInSnippet(snippet: String, encoding: UInt, begin:Int, head: Bool = false) -> [BookMark] {
+        let lines = snippet.componentsSeparatedByString(Self.getNewLineCharater(snippet))
+        var text = snippet, loc = 0, offset = 0
+        let noSpaceRegex = try? NSRegularExpression(pattern: "\\s+", options: .CaseInsensitive)
+        var chapters:[BookMark] = []
+        
+        for line in lines {
+            var trimLine =  line
+            if let regex = noSpaceRegex {
+                trimLine = regex.stringByReplacingMatchesInString(line, options: .WithTransparentBounds,
+                                                                  range: NSMakeRange(0, line.length), withTemplate: "")
+            } else {
+                trimLine = line.stringByReplacingOccurrencesOfString(" ", withString: "")
+            }
+            
+            if trimLine.regexMatch(self.CHAPTER_REGEX) {
+                let matchR = text.rangeOfString(line)
+                if let r = matchR {
+                    loc = text.substringToIndex(r.startIndex).length(encoding) + offset
+                    offset = text.substringToIndex(r.endIndex).length(encoding)
+                    text = text.substringFromIndex(r.endIndex)
+                    
+                    if !chapters.isEmpty {
+                        let last = chapters.last!
+                        chapters[chapters.count - 1].range = NSMakeRange(last.range.loc, loc - last.range.loc)
+                    } else {
+                        chapters.append(BookMark(title: line, range: NSMakeRange(loc + begin, 0)))
+                    }
+                }
+            }
+        }
+        
+        if chapters.isEmpty {
+            if head {
+                chapters.append(BookMark(range: NSMakeRange(0, snippet.length(encoding))))
+            }
+        } else {
+            if head && chapters.first!.range.loc > 0 {
+                chapters.insert(BookMark(range: NSMakeRange(0, chapters.first!.range.loc)), atIndex: 0)
+            }
+            
+            let last = chapters.last!
+            if snippet.hasSuffix(Self.getNewLineCharater(snippet)) {
+                chapters[chapters.count - 1].range = NSMakeRange(last.range.loc, text.length(encoding))
+            } else {
+                chapters[chapters.count - 1].range = NSMakeRange(last.range.loc,
+                                                                 text.length(encoding) - lines.last!.length(encoding))
+            }
+        }
+        
+        return merge(chapters, encoding: encoding)
     }
     
     /*
@@ -446,14 +534,14 @@ extension FileReader {
                 let cct = ccp.title.stringByReplacingOccurrencesOfString(" ", withString: "")
                 let nct = ncp == nil ? nil : ncp?.title.stringByReplacingOccurrencesOfString(" ", withString: "")
 
-                Utils.Log(cct)
-                Utils.Log(nct)
+                /*Utils.Log(cct)
+                Utils.Log(nct)*/
 
                 if i == 0 || (ncp != nil && isSimilar(cct, nct!)) {
                     merged.append(BookMark(title: ccp.title,
                         range: NSMakeRange(ccp.range.loc, ccp.range.len + ncp!.range.len)))
                     i += 1
-                } else {
+                } else if ncp != nil {
                     let end = merged.count - 1
                     let endE = merged[end]
                     merged[end] = BookMark(title: endE.title,
@@ -465,6 +553,12 @@ extension FileReader {
 
             i += 1
         } while (i < count)
+
+		#if DEBUG
+			for item in merged {
+				Utils.Log(item)
+			}
+		#endif
 
         return merged
     }
