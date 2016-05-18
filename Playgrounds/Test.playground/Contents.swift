@@ -69,5 +69,25 @@ extension String {
 
 let chapter = "第五卷第神来之笔第二十九章红薯易冷"
 
-print(chapter.similarity("第五卷"))
+//print(chapter.similarity("第五卷"))
+
+var head = 0, tail = 0, resetted = false
+repeat {
+    print("\(head) - \(tail)")
+    if tail > head {
+        head += 1
+    } else {
+        if head == tail && head == 0 {
+            tail = 1
+            continue
+        }
+
+        tail -= 1
+        if tail < 0 {
+            tail = head + 1
+            head = 0
+            print("----")
+        }
+    }
+} while (tail < 5)
 

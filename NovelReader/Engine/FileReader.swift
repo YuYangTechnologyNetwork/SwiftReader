@@ -341,6 +341,63 @@ extension FileReader {
         
         return snippet.1
     }
+
+    /**
+     Read a snippet of file in range
+
+     - parameter file:     The file pointer
+     - parameter r:        The special NSRange
+     - parameter encoding: The iOS defined ecnoding, eg: NSUTF8StringEncoding
+
+     - returns: Tuple that wrapped the snippet string and the reader NSRange
+     */
+    func fetchRange(file: UnsafeMutablePointer<FILE>, _ r: NSRange, _ encoding: UInt) -> (String, NSRange) {
+        var snippet: String? = nil, scope: NSRange!, head = 0, tail = 0
+        let fileSize = getFileSize(file)
+
+        /*
+         * If the range start and end not a word border, try to repair it.
+         * Loops mybe like below:
+         *   L0:     r.loc ... r.loc + r.len + 1
+         *   L1: r.loc - 1 ... r.loc + r.len + 1
+         *   L2: r.loc - 1 ... r.loc + r.len
+         *   L3:     r.loc ... r.loc + r.len + 2
+         *   L4: r.loc - 1 ... r.loc + r.len + 2
+         *   L5: r.loc - 2 ... r.loc + r.len + 2
+         *   L6: r.loc - 2 ... r.loc + r.len + 1
+         *   L7: r.loc - 2 ... r.loc + r.len + 0
+         *   ...
+         */
+        repeat {
+            Utils.Log("Offset: (\(head), \(tail))")
+            scope   = NSMakeRange(r.loc - head, min(r.len + head + tail, fileSize - r.loc + head))
+            let buf = UnsafeMutablePointer<UInt8>.alloc(scope.len)
+
+            fseek(file, scope.loc, SEEK_SET)
+            let readed = fread(buf, sizeof(UInt8), scope.len, file)
+            snippet    = readed > 0 ? String(data: NSData(bytes: buf, length: readed), encoding: encoding) : nil
+
+            if snippet == nil {
+                if tail > head {
+                    head += 1
+                } else {
+                    if head == tail && head == 0 {
+                        tail = 1
+                        continue
+                    }
+
+                    tail -= 1
+
+                    if tail < 0 {
+                        tail = head + 1
+                        head = 0
+                    }
+                }
+            }
+        } while (snippet == nil || scope.len >= fileSize)
+
+        return (snippet ?? "", scope)
+    }
     
     /*
      * Read chapters of file in range
@@ -483,4 +540,6 @@ extension FileReader {
             return "\n"
         }
     }
+
+
 }
