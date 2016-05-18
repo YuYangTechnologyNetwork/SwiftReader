@@ -30,15 +30,22 @@ class MainViewController: UIViewController {
                 let file     = fopen(filePath!, "rb+")
                 let reader   = FileReader()
 
-				reader.asyncGetChaptersOfFile(filePath!, encoding: FileReader.Encodings[book.encoding]!)({ chapters in
-					Utils.Log("Chapters count: [\(chapters.count)]")
-				})
+                //let chs = reader.chaptersInRange(file, range: NSMakeRange(0, 10 * CHAPTER_SIZE), encoding: FileReader.Encodings[book.encoding]!)
+
+                //for ch in chs {
+                    //Utils.Log(ch)
+                //}
+
+                Utils.Log(book)
+
+                let range = NSMakeRange(1022, FileReader.BUFFER_SIZE + 2)
+                let result = reader.fetchRange(file, range, FileReader.Encodings[book.encoding]!)
+
+                Utils.Log("InOut: \(range)→\(result.1)")
 
                 let paper    = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
-                paper.writtingLineByLine(book.description, firstLineIsTitle: false, startWithNewLine: false)
-                
-                print(book)
-                
+                paper.writtingLineByLine(result.0, firstLineIsTitle: false, startWithNewLine: result.1.loc == 0)
+
                 fclose(file)
                 
                 dispatch_async(dispatch_get_main_queue()) {

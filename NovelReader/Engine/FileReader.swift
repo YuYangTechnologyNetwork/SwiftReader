@@ -30,6 +30,23 @@ class FileReader {
         ENCODING_GB18030: CFStringConvertEncodingToNSStringEncoding(UInt32(CFStringEncodings.GB_18030_2000.rawValue))
     ]
     
+	enum Encoding: String {
+        case UNKNOW = "Unknow"
+		case UTF8 = "UTF-8"
+		case GB18030 = "GB18030"
+        
+		func value() -> UInt {
+			switch self {
+			case .UTF8:
+				return NSUTF8StringEncoding
+			case .GB18030:
+				return CFStringConvertEncodingToNSStringEncoding(UInt32(CFStringEncodings.GB_18030_2000.rawValue))
+            case .UNKNOW:
+                return 0
+			}
+		}
+	}
+    
     /*
      * Guess the special text file encoding type, use the open-source library `uchardet` by Mozilla.org
      *
@@ -58,6 +75,28 @@ class FileReader {
         
         return isSupportEncding(possible_encoding!) ? possible_encoding! : Self.UNKNOW_ENCODING
     }
+    
+	func guessEncoding(file: UnsafeMutablePointer<FILE>) -> Encoding {
+		let uchar_handle = uchardet_new()
+		let cache_buffer = UnsafeMutablePointer<Int8>.alloc(Self.BUFFER_SIZE)
+
+		while feof(file) == 0 {
+			let valid_len = fread(cache_buffer, 1, Self.BUFFER_SIZE, file)
+			let retval = uchardet_handle_data(uchar_handle, cache_buffer, valid_len)
+
+			if retval != 0 {
+				return Encoding.UNKNOW
+			}
+		}
+
+		uchardet_data_end(uchar_handle)
+		let possible_encoding = String.fromCString(uchardet_get_charset(uchar_handle))
+		uchardet_delete(uchar_handle)
+
+		free(cache_buffer)
+
+		return Encoding(rawValue: possible_encoding ?? "") ?? Encoding.UNKNOW
+	}
     
     /*
      * Check the special encoding name for supportive
@@ -214,135 +253,57 @@ extension FileReader {
         return "^.{0,4}(第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回].{0,30})+[^。！？.!?]$"
     }
     
-    /*!
-     * @param file      The file pointer
-     *
-     * @param callback  If open file success, callback be called when reading chapters finish
-     *
-     * @return          If open file failed, false will be returned
+    /**
+     Read a snippet of file in range
+
+     - parameter file:     The file pointer
+     - parameter r:        The special NSRange
+     - parameter encoding: The iOS defined ecnoding, eg: NSUTF8StringEncoding
+
+     - returns: Tuple that wrapped the snippet string and the reader NSRange
      */
-    func asyncGetChapters(file: UnsafeMutablePointer<FILE>, callback: ([BookMark]) -> Void) -> Bool {
-        if file != nil {
-            let encodingStr = self.guessFileEncoding(file)
-            
-            if isSupportEncding(encodingStr) {
-                let ecnoding = Self.Encodings[encodingStr]!
-                let fileSize = getFileSize(file)
-                
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-                    var location = 0, chapters: [BookMark] = []
-                    
-                    repeat {
-                        let head = self.getWordBorder(file, fuzzyPos: location, encoding: ecnoding)
-                        let tail = self.getWordBorder(file, fuzzyPos: head + Self.BUFFER_SIZE, encoding: ecnoding)
-                        let size = tail - head
-                        
-                        if size > 0 {
-                            chapters += self.chaptersInRange(file, range: NSMakeRange(head, size), encoding: ecnoding)
-                            location = tail
-                        }
-                    } while (location < fileSize)
-                    
-                    dispatch_async(dispatch_get_main_queue()) {
-                        callback(chapters)
-                    }
-                }
-                
-                return true
-            }
-        }
-        
-        return false
-    }
-    
-    /*
-     * @param file      The file pointer
-     *
-     * @param callback  If open file success, callback be called when reading chapters finish
-     *
-     * @param range     The special range, [0 ... filesize]
-     *
-     * @return          If open file failed, false will be returned
-     */
-    func asyncGetChaptersInRange(file: UnsafeMutablePointer<FILE>, range: NSRange, callback: ([BookMark]) -> Void) -> Bool {
-        if file != nil {
-            let encodingStr = self.guessFileEncoding(file)
-            
-            if isSupportEncding(encodingStr) {
-                let ecnoding = Self.Encodings[encodingStr]!, fileSize = getFileSize(file)
-                
-                if range.location < 0 || range.location + range.length > fileSize { return false }
-                
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-                    let chapters = self.chaptersInRange(file, range: range, encoding: ecnoding)
-                    dispatch_async(dispatch_get_main_queue()) {
-                        callback(chapters)
-                    }
-                }
-                
-                return true
-            }
-        }
-        
-        return false
-    }
-    
-    /*
-     * Read a snippet of file in range
-     *
-     * @param file      The file pointer
-     *
-     * @param range     The special range, [0 ... filesize]
-     *
-     * @param ecnoding  The iOS defined ecnoding, eg: NSUTF8StringEncoding
-     *
-     * @return String   If range or encoding is illegal, nil will be returned
-     */
-    func readRange(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> String? {
-        /*
-         * Try read a prefect snippet in range
-         */
-        let detector = { (head: Int, tail: Int) -> (Bool, String?) in
-            let loc = range.location - head
-            let len = range.length - head + tail
-            let buf = UnsafeMutablePointer<UInt8>.alloc(len)
-            
-            fseek(file, loc, SEEK_SET)
-            
-            let readed = fread(buf, 1, len, file)
-            var tmpSnippet: String? = nil
-            
-            if readed > 0 {
-                tmpSnippet = String(data: NSData(bytes: buf, length: min(readed, len)), encoding: encoding)
-            }
-            
-            free(buf)
-            
-            return (readed == len, tmpSnippet)
-        }
-        
-        var offset = 0, count = 0, dir = 0, snippet: (Bool, String?) = (true, nil)
-        
+    func fetchRange(file: UnsafeMutablePointer<FILE>, _ r: NSRange, _ encoding: UInt) -> (String, NSRange) {
+        var snippet: String? = nil, scope: NSRange!, head = 0, tail = 0
+        let fileSize = getFileSize(file)
+
         /*
          * If the range start and end not a word border, try to repair it.
          * Loops mybe like below:
-         *   Loop 0:     range.loc ... range.loc + range.len - 1
-         *   Loop 1: range.loc - 1 ... range.loc + range.len
-         *   Loop 2: range.loc - 1 ... range.loc + range.len - 1
-         *   Loop 3:     range.loc ... range.loc + range.len - 2
+         *   L0:     r.loc ... r.end + 1
+         *   L1: r.loc - 1 ... r.end + 1
+         *   L2: r.loc - 1 ... r.end
+         *   L3:     r.loc ... r.end + 2
          *   ...
          */
         repeat {
-            snippet = detector(dir % 2 == 0 ? offset : 0, dir > 0 ? offset : 0)
-            
-            if (snippet.1 == nil) {
-                offset += dir == 0 ? 1 : 0
-                count += 1
-                dir = count % 3
+            Utils.Log("Offset: (\(head), \(tail))")
+            scope   = NSMakeRange(r.loc - head, min(r.len + head + tail, fileSize - r.loc + head))
+            let buf = UnsafeMutablePointer<UInt8>.alloc(scope.len)
+
+            fseek(file, scope.loc, SEEK_SET)
+            let readed = fread(buf, sizeof(UInt8), scope.len, file)
+            snippet    = readed > 0 ? String(data: NSData(bytes: buf, length: readed), encoding: encoding) : nil
+
+            if snippet == nil {
+                if tail > head {
+                    head += 1
+                } else {
+                    if head == tail && head == 0 {
+                        tail = 1
+                        continue
+                    }
+
+                    tail -= 1
+
+                    if tail < 0 {
+                        tail = head + 1
+                        head = 0
+                    }
+                }
             }
-        } while (snippet.0 && snippet.1 == nil)
-        
-        return snippet.1
+        } while (snippet == nil || scope.len >= fileSize)
+
+        return (snippet ?? "", scope)
     }
     
     /*
@@ -356,140 +317,54 @@ extension FileReader {
      *
      * @return (Title, location)    If range or encoding is illegal, [] will be returned
      */
-    func chaptersInRange(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> [BookMark] {
-        let snippet = self.readRange(file, range: range, encoding: encoding)
-        var title: [BookMark] = []
+    func fetchChaptersInRange(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> [BookMark] {
+        let fetchRed = fetchRange(file, range, encoding)
+        let snippet  = fetchRed.0
+        let scope    = fetchRed.1
+        var title    = [BookMark]()
         
-        if snippet != nil {
-            let lines = snippet!.componentsSeparatedByString(Self.getNewLineCharater(snippet!))
-            var loc = range.location
-            var index: String.CharacterView.Index = (snippet?.startIndex)!
+        if !snippet.isEmpty {
+            let lines = snippet.componentsSeparatedByString(Self.getNewLineCharater(snippet))
+            var loc   = scope.location
+            var index = snippet.startIndex
             
             for line in lines {
                 let str = String(line)
                 let trimStr = str.stringByReplacingOccurrencesOfString(" ", withString: "")
                 
                 if trimStr.regexMatch(self.CHAPTER_REGEX) {
-                    let tr = snippet!.rangeOfString(
+                    let tr = snippet.rangeOfString(
                         str,
                         options: .CaseInsensitiveSearch,
-                        range: Range<String.CharacterView.Index>(index ..< (snippet?.endIndex)!),
+                        range: Range<String.Index>(index ..< snippet.endIndex),
                         locale: nil)
                     
-                    loc = range.location + (snippet?.substringToIndex((tr?.startIndex)!).length(encoding))!
-                    index = (tr?.endIndex)!
-                    
-                    let t = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
-                    let range = NSMakeRange(loc, 0)
+                    loc       = scope.location + snippet.substringToIndex((tr?.startIndex)!).length(encoding)
+                    index     = (tr?.endIndex)!
+                    let t     = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
                     
                     if title.count > 0 {
                         let l = title[title.count - 1]
                         title[title.count - 1].range = NSMakeRange(l.range.loc, loc - l.range.loc)
-                        Utils.Log(title.last)
                     }
                     
-                    title.append(BookMark(title: t, range: range))
+                    title.append(BookMark(title: t, range: NSMakeRange(loc, 0)))
                 }
             }
             
             if title.count == 0 {
-                title.append(BookMark(title: NO_TITLE, range: range))
-                Utils.Log(title.last)
+                title.append(BookMark(range: scope))
             } else {
                 let l = title.last!
-                title.last!.range = NSMakeRange(l.range.loc, range.loc + snippet!.length(encoding) - l.range.loc)
-                Utils.Log(title.last)
+                title.last!.range = NSMakeRange(l.range.loc, scope.loc + snippet.length(encoding) - l.range.loc)
             }
             
-            if title[0].range.location > range.location {
-                title.insert(BookMark(title: NO_TITLE, range: NSMakeRange(range.loc, title[0].range.loc)), atIndex: 0)
-                Utils.Log(title.first)
+            if title[0].range.location > scope.location {
+                title.insert(BookMark(range: NSMakeRange(scope.loc, title[0].range.loc)), atIndex: 0)
             }
         }
-
+        
         return merge(title, encoding: encoding)
-    }
-    
-	func asyncGetChaptersOfFile(fileName: String, encoding: UInt) -> (_: (_: [BookMark]) -> Void) -> Void {
-		return Utils.asyncTask { () -> [BookMark] in
-			var chapters: [BookMark] = []
-            let file = fopen(fileName, "r")
-			let fileSize = self.getFileSize(file)
-			var start = 0
-            var end = self.getWordBorder(file, fuzzyPos: start + CHAPTER_SIZE, encoding: encoding)
-            let noSpaceRegex = try? NSRegularExpression(pattern: "\\s+", options: .CaseInsensitive)
-
-			while (end <= fileSize) {
-				let snippet = self.readRange(file, range: NSMakeRange(start, end - start), encoding: encoding)
-				if let text = snippet {
-					let chs = self.chaptersInSnippet(text, encoding: encoding, begin: start, head: start == 0)
-                    
-                    
-                    
-
-				} else {
-					Utils.Log("Get chapters exception at (\(start), \(end))")
-					break
-				}
-			}
-
-			Utils.Log("Get chapters finish at (end: \(end), size: \(fileSize))")
-
-			return chapters
-		}
-	}
-    
-    func chaptersInSnippet(snippet: String, encoding: UInt, begin:Int, head: Bool = false) -> [BookMark] {
-        let lines = snippet.componentsSeparatedByString(Self.getNewLineCharater(snippet))
-        var text = snippet, loc = 0, offset = 0
-        let noSpaceRegex = try? NSRegularExpression(pattern: "\\s+", options: .CaseInsensitive)
-        var chapters:[BookMark] = []
-        
-        for line in lines {
-            var trimLine =  line
-            if let regex = noSpaceRegex {
-                trimLine = regex.stringByReplacingMatchesInString(line, options: .WithTransparentBounds,
-                                                                  range: NSMakeRange(0, line.length), withTemplate: "")
-            } else {
-                trimLine = line.stringByReplacingOccurrencesOfString(" ", withString: "")
-            }
-            
-            if trimLine.regexMatch(self.CHAPTER_REGEX) {
-                let matchR = text.rangeOfString(line)
-                if let r = matchR {
-                    loc = text.substringToIndex(r.startIndex).length(encoding) + offset
-                    offset = text.substringToIndex(r.endIndex).length(encoding)
-                    text = text.substringFromIndex(r.endIndex)
-                    
-                    if !chapters.isEmpty {
-                        let last = chapters.last!
-                        chapters[chapters.count - 1].range = NSMakeRange(last.range.loc, loc - last.range.loc)
-                    } else {
-                        chapters.append(BookMark(title: line, range: NSMakeRange(loc + begin, 0)))
-                    }
-                }
-            }
-        }
-        
-        if chapters.isEmpty {
-            if head {
-                chapters.append(BookMark(range: NSMakeRange(0, snippet.length(encoding))))
-            }
-        } else {
-            if head && chapters.first!.range.loc > 0 {
-                chapters.insert(BookMark(range: NSMakeRange(0, chapters.first!.range.loc)), atIndex: 0)
-            }
-            
-            let last = chapters.last!
-            if snippet.hasSuffix(Self.getNewLineCharater(snippet)) {
-                chapters[chapters.count - 1].range = NSMakeRange(last.range.loc, text.length(encoding))
-            } else {
-                chapters[chapters.count - 1].range = NSMakeRange(last.range.loc,
-                                                                 text.length(encoding) - lines.last!.length(encoding))
-            }
-        }
-        
-        return merge(chapters, encoding: encoding)
     }
     
     /*
@@ -505,7 +380,7 @@ extension FileReader {
         if chapters.count < 2 {
             return chapters
         }
-
+        
         var merged: [BookMark] = [], i = 0
         let count = chapters.count
 
@@ -529,22 +404,19 @@ extension FileReader {
         repeat {
             let ccp = chapters[i]
 
-            if ccp.title.length(encoding) >= ccp.range.len / 2 {
-                let ncp: BookMark? = i < count - 1 ? chapters[i + 1] : nil
-                let cct = ccp.title.stringByReplacingOccurrencesOfString(" ", withString: "")
-                let nct = ncp == nil ? nil : ncp?.title.stringByReplacingOccurrencesOfString(" ", withString: "")
+            if i < count - 1 && ccp.title.length(encoding) >= ccp.range.len / 2 {
+                let ncp     = chapters[i + 1]
+                let cct     = ccp.title.stringByReplacingOccurrencesOfString(" ", withString: "")
+                let nct     = ncp.title.stringByReplacingOccurrencesOfString(" ", withString: "")
 
-                /*Utils.Log(cct)
-                Utils.Log(nct)*/
-
-                if i == 0 || (ncp != nil && isSimilar(cct, nct!)) {
+                if i == 0 || isSimilar(cct, nct) {
                     merged.append(BookMark(title: ccp.title,
-                        range: NSMakeRange(ccp.range.loc, ccp.range.len + ncp!.range.len)))
-                    i += 1
-                } else if ncp != nil {
-                    let end = merged.count - 1
-                    let endE = merged[end]
-                    merged[end] = BookMark(title: endE.title,
+                        range: NSMakeRange(ccp.range.loc, ccp.range.len + ncp.range.len)))
+                i           += 1
+                } else {
+                let end     = merged.count - 1
+                let endE    = merged[end]
+                merged[end] = BookMark(title: endE.title,
                         range: NSMakeRange(endE.range.loc, endE.range.len + ccp.range.len))
                 }
             } else {

@@ -13,7 +13,7 @@ enum Error: ErrorType {
     case NotSupportEncoding(String)
 }
 
-let NO_TITLE = "no_title"
+let NO_TITLE = "No_Title"
 
 let EMPTY_STR = ""
 let EMPTY_SIZE = CGSizeMake(0, 0)

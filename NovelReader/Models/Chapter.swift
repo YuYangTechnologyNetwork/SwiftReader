@@ -129,54 +129,59 @@ class Chapter: BookMark {
             return .Failure
         }
 
-        self.status = .Loading
-
-        // Open file
-        let file = fopen((book.fullFilePath), "r")
+        self.status  = .Loading
+        let file     = fopen((book.fullFilePath), "r")
         let encoding = FileReader.Encodings[book.encoding]
-        let reader = FileReader()
+        let reader   = FileReader()
 
-        let getChapters = { (r: NSRange) -> [BookMark] in
-            var tc = reader.chaptersInRange(file, range: r, encoding: encoding!)
-            if tc.count > 0 && self.range.loc > 0 && tc.first!.title == NO_TITLE {
-                tc.removeFirst()
-            }
+		var chapters: [BookMark]!, loc = range.loc, len = range.len + readerMgr.currBookMark.range.len / 2, scale = 0
+		repeat {
+			chapters = reader.fetchChaptersInRange(file, range: NSMakeRange(loc, len), encoding: encoding!)
 
-            return tc
-        }
+			if chapters.count > 0 && self.range.loc > 0 && chapters.first!.title == NO_TITLE {
+				chapters.removeFirst()
+			}
 
-        var chapters = getChapters(self.range)
-        if chapters.count == 0 {
-            if reverse {
-                let loc = max(self.range.loc - CHAPTER_SIZE * 2, 0)
-                let len = min(self.range.loc - loc, CHAPTER_SIZE * 2 + self.range.len)
-                chapters = getChapters(NSMakeRange(loc, len))
+			if chapters.count >= 2 || (reverse && loc == 0) || len == book.size - loc {
+				break
             } else {
-                let loc = self.range.loc
-                let len = min(self.range.end + CHAPTER_SIZE, book.size - loc)
-                chapters = getChapters(NSMakeRange(loc, len))
+                scale += 1
             }
-        }
+
+			if reverse {
+				loc = max(range.loc - CHAPTER_SIZE * scale, 0)
+				len = range.end - loc + readerMgr.currBookMark.range.len / 2
+			} else {
+				loc = range.loc
+				len = min(CHAPTER_SIZE * scale, book.size - loc)
+			}
+		} while true
 
         var ready = chapters.count > 0
+        
+        chapters.sortInPlace { $0.0.range.loc < $0.1.range.loc }
 
         // Get chapter
         if ready {
-            if reverse {
-                self.range = (chapters.last?.range)!
-                self.title = (chapters.last?.title)!
-            } else {
-                self.range = (chapters.first?.range)!
-                self.title = (chapters.first?.title)!
-            }
+			if reverse {
+				for (i, c) in chapters.enumerate() {
+					if c.title == readerMgr.currBookMark.title {
+						range = chapters[i - 1].range
+						title = chapters[i - 1].title
+						break
+					}
+				}
+			} else {
+				range = chapters[0].range
+				title = chapters[0].title
+			}
 
-            let content = reader.readRange(file, range: self.range, encoding: encoding!)
+            let content = reader.fetchRange(file, range, encoding!).0
 
-            if let text = content {
-                self._papers = readerMgr.paging(text, firstListIsTitle: self.title != NO_TITLE)
-
-                if self.title == NO_TITLE {
-                    self.title = text.componentsSeparatedByString(FileReader.getNewLineCharater(text)).first!
+            if !content.isEmpty {
+                _papers = readerMgr.paging(content, firstListIsTitle: self.title != NO_TITLE)
+                if title == NO_TITLE {
+                    title = content.componentsSeparatedByString(FileReader.getNewLineCharater(content)).first!
                 }
             } else {
                 ready = false

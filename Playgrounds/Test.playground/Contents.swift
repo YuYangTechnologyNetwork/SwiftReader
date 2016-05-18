@@ -94,4 +94,25 @@ asyncTask { () -> Int in
 }(onMain: { res in
     //print(res)
 })
+//print(chapter.similarity("第五卷"))
+
+var head = 0, tail = 0, resetted = false
+repeat {
+    print("\(head) - \(tail)")
+    if tail > head {
+        head += 1
+    } else {
+        if head == tail && head == 0 {
+            tail = 1
+            continue
+        }
+
+        tail -= 1
+        if tail < 0 {
+            tail = head + 1
+            head = 0
+            print("----")
+        }
+    }
+} while (tail < 5)
 
