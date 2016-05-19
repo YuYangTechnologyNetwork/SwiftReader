@@ -1,13 +1,13 @@
 PODS:
-  - SnapKit (0.20.0)
-  - YYText (1.0.5)
+  - SnapKit (0.18.0)
+  - YYText (0.9.11)
 
 DEPENDENCIES:
   - SnapKit
   - YYText
 
 SPEC CHECKSUMS:
-  SnapKit: 5fce3c1bbbf1fbd31de9aa92f33eb9fa03f15650
-  YYText: ac09660c9ccd9b817f409a20caa6f5587444d2ae
+  SnapKit: e1f090a6d47b1dd4bd89b73f72b6746a7835ef3c
+  YYText: 11d30e835ed4cfcc0f0ed27a44b4b604d879d5fe
 
 COCOAPODS: 0.39.0

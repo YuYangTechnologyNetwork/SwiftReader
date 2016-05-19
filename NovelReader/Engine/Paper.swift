@@ -79,7 +79,7 @@ class Paper: NSObject {
         self.realLen   = visibleLengthInOriginalText(text, visibleLines: vLines)
 
         if reIndentText.length > vText.length {
-            let looseRange = NSMakeRange(vRange.loc, min(vRange.length + 20, reIndentText.length - vRange.loc))
+            let looseRange = NSMakeRange(vRange.loc, min(vRange.length + 20, attrText.length - vRange.loc))
             attrText       = Typesetter.Ins.typeset(attrText.attributedSubstringFromRange(looseRange).string,
                                               firstLineIsTitle: firstLineIsTitle,
                                               paperWidth: size.width, startWithNewLine: startWithNewLine)
