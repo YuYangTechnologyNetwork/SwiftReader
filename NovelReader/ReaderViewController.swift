@@ -21,9 +21,9 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     private var tail: Bool {
         return self.readerMgr.isTail || self.readerMgr.nextPaper == nil
     }
-    
+
     var readerMgr: ReaderManager!
-    
+
     @IBOutlet weak var overScrollView: UIView!
 
     override func viewDidLoad() {
@@ -52,8 +52,8 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     }
 
     func bindPages(animation: Bool = true) {
-        swipeCtrls = [PageViewController(), PageViewController(), PageViewController()]
-        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, fadeIn: true)
+        swipeCtrls = [PageViewController().index(0), PageViewController().index(1), PageViewController().index(2)]
+        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper)
 
         if readerMgr.isHead {
             swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
@@ -69,22 +69,22 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
 
     func snapToPrevPage() {
         if !head {
-            pageViewCtrl.setViewControllers([swipeCtrls[prevIndex(currIndex)]], direction: .Reverse, animated: true) {
-                (_: Bool) in
-                self.currIndex = self.prevIndex(self.currIndex)
-                self.readerMgr.swipToPrev()
-                self.swipeCtrls[self.prevIndex(self.currIndex)].bindPaper(self.readerMgr.prevPaper)
+            if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
+                readerMgr.swipToPrev()
+                currVCtrl.bindPaper(readerMgr.currPaper)
+                swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+                swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
             }
         }
     }
 
     func snapToNextPage() {
         if !tail {
-            pageViewCtrl.setViewControllers([swipeCtrls[nextIndex(currIndex)]], direction: .Forward, animated: true) {
-                (_: Bool) in
-                self.currIndex = self.nextIndex(self.currIndex)
-                self.readerMgr.swipToNext()
-                self.swipeCtrls[self.nextIndex(self.currIndex)].bindPaper(self.readerMgr.nextPaper)
+            if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
+                readerMgr.swipToNext()
+                currVCtrl.bindPaper(readerMgr.currPaper)
+                swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+                swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
             }
         }
     }
@@ -98,31 +98,35 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     }
 
     /*UIPageViewControllerDataSource*/
-    func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
-        return head ? nil : swipeCtrls[prevIndex(currIndex)].bindPaper(self.readerMgr.prevPaper)
+    func pageViewController(pageViewController: UIPageViewController,
+        viewControllerBeforeViewController v: UIViewController) -> UIViewController? {
+            return head ? nil : swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
     }
 
     /*UIPageViewControllerDataSource*/
-    func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-        return tail ? nil : swipeCtrls[nextIndex(currIndex)].bindPaper(self.readerMgr.nextPaper)
+    func pageViewController(pageViewController: UIPageViewController,
+        viewControllerAfterViewController v: UIViewController) -> UIViewController? {
+            return tail ? nil : swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
     }
 
     /*UIPageViewControllerDelegate*/
     func pageViewController(pageViewController: UIPageViewController,
         willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
+            lastIndex = currIndex
     }
 
     /*UIPageViewControllerDelegate*/
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool,
         previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
             if completed {
-                lastIndex = currIndex
-                currIndex = swipeCtrls.indexOf(pageViewController.viewControllers![0] as! PageViewController)!
+                if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
+                    currIndex = currVCtrl.index
 
-                if lastIndex == prevIndex(currIndex) {
-                    self.readerMgr.swipToNext()
-                } else if lastIndex == nextIndex(currIndex) {
-                    self.readerMgr.swipToPrev()
+                    if lastIndex == prevIndex(currIndex) {
+                        self.readerMgr.swipToNext()
+                    } else if lastIndex == nextIndex(currIndex) {
+                        self.readerMgr.swipToPrev()
+                    }
                 }
 
                 overScrollView.hidden = true

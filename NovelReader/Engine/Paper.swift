@@ -121,9 +121,10 @@ class Paper: NSObject {
      */
     func attachToView(yyLabel: YYLabel) -> Bool {
         if self.textLayout != nil {
-            yyLabel.displaysAsynchronously = true
-            yyLabel.ignoreCommonProperties = true
-            yyLabel.textLayout             = self.textLayout;
+            yyLabel.displaysAsynchronously      = true
+            yyLabel.ignoreCommonProperties      = true
+            //yyLabel.fadeOnAsynchronouslyDisplay = false
+            yyLabel.textLayout                  = self.textLayout;
             return true
         }
         

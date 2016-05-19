@@ -49,19 +49,24 @@ class StylePanelView: UIView {
     }
 
     func applyTheme() {
-        self.tintColor = Typesetter.Ins.theme.foregroundColor
-        self.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
-        
-        self.vSplitLine.backgroundColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.05)
-        self.hSplitLine.backgroundColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.05)
-        
-        self.marginLabel.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.8)
-        self.lineSpaceLabel.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.8)
-        
-        self.brightnessSlider.setThumbImage(Utils.color2Img(Typesetter.Ins.theme.foregroundColor, 
-            size: CGSizeMake(20, 20), circle: true), forState: [.Normal])
-        self.brightnessSlider.maximumTrackTintColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.1)
-        self.brightnessSlider.minimumTrackTintColor = Typesetter.Ins.theme.foregroundColor.newBrightness(0.35)
+        let tp                                      = Typesetter.Ins
+        self.tintColor                              = tp.theme.foregroundColor
+        self.backgroundColor                        = tp.theme.menuBackgroundColor
+
+        self.vSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)
+        self.hSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)
+
+        self.marginLabel.textColor                  = tp.theme.foregroundColor.newAlpha(0.8)
+        self.lineSpaceLabel.textColor               = tp.theme.foregroundColor.newAlpha(0.8)
+        self.brightnessSlider.maximumTrackTintColor = tp.theme.foregroundColor.newAlpha(0.1)
+        self.brightnessSlider.minimumTrackTintColor = tp.theme.foregroundColor
+
+        let trackBness:CGFloat                      = tp.theme.name == Theme.NIGHT ? 0.35 : 0.16
+
+        self.brightnessSlider.setThumbImage(
+            Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness),
+            size: CGSizeMake(20, 20), circle: true),
+            forState: [.Normal])
     }
 
     func blankAction(_:UIView) {}

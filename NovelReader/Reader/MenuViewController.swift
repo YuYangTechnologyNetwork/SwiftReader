@@ -43,8 +43,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewDidLoad()
         
         //Typesetter.Ins.theme = Theme.Night()
-        Typesetter.Ins.fontSize = 10
-        Typesetter.Ins.line_space = 2
+        //Typesetter.Ins.fontSize = 10
+        //Typesetter.Ins.line_space = 2
         
         loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
         

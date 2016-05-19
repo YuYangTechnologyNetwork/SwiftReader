@@ -177,7 +177,7 @@ class ReaderManager: NSObject {
                 currChapter.next()
             }
 
-            if nextChapter.isEmpty {
+            if nextChapter.isEmpty && nextChapter.status != Chapter.Status.Loading {
                 Utils.Log("Loading next...")
                 let loc = currChapter.range.end
                 let len = min(CHAPTER_SIZE, book.size - loc)
@@ -206,7 +206,7 @@ class ReaderManager: NSObject {
                 currChapter.prev()
             }
 
-            if prevChapter.isEmpty {
+            if prevChapter.isEmpty && prevChapter.status != Chapter.Status.Loading {
                 Utils.Log("Loading prev...")
                 let loc = max(currChapter.range.loc - CHAPTER_SIZE, 0)
                 let len = min(currChapter.range.loc - loc, CHAPTER_SIZE - 1)
