@@ -15,10 +15,30 @@ class Theme {
 
     static var NIGHT: String { return "Night" }
     static var SEPIA: String { return "Sepia" }
-    static var DEFAULT: String { return "Default" }
+    static var DEFAULT: String { return "Sepia" }
     static var PARCHMENT: String { return "Parchment" }
     static var EYESHIELD: String { return "Eyeshield" }
-
+    
+    enum Info: Int {
+        case Default = 0
+        case Parchment
+        case Eyeshield
+        case Night
+        
+		var name: String {
+			switch self {
+			case .Default:
+				return "Sepia"
+			case .Parchment:
+				return "Parchment"
+			case .Eyeshield:
+				return "Eyeshield"
+			case .Night:
+				return "Night"
+			}
+		}
+    }
+    
     var name: String {
         return Theme.DEFAULT
     }
@@ -33,6 +53,23 @@ class Theme {
 
     var menuBackgroundColor: UIColor {
         return backgroundColor
+    }
+    
+    static func forName(info:Info?) -> Theme {
+        if let i = info {
+            switch i {
+            case .Default:
+                return Sepia()
+            case .Eyeshield:
+                return Eyeshield()
+            case .Night:
+                return Night()
+            case .Parchment:
+                return Parchment()
+            }
+        } else {
+            return Sepia()
+        }
     }
 
     class Parchment: Theme {
@@ -52,7 +89,7 @@ class Theme {
             boardMaskNeeded = true
 
             if let bgc = Parchment.bgColor {
-                foregroundColor = bgc
+                backgroundColor = bgc
             } else {
                 var parchment: dispatch_once_t = 0
                 dispatch_once(&parchment) {

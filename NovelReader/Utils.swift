@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Utils {
+final class Utils {
     /**
      Control your log an DEBUG and RELEASE
      

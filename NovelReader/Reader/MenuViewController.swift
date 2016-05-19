@@ -39,18 +39,24 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
     let stylePanelHeight:CGFloat = 190
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //Typesetter.Ins.theme = Theme.Night()
-        //Typesetter.Ins.fontSize = 10
-        //Typesetter.Ins.line_space = 2
-        
-        loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
-        
-        stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))
-        btmSubContainer.addSubview(stylePanelView)
-    }
+	override func viewDidLoad() {
+		super.viewDidLoad()
+
+		/*Typesetter.Ins.theme = Theme.Night()
+		Typesetter.Ins.fontSize = 10
+		Typesetter.Ins.line_space = 2*/
+
+		loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
+		stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))
+		btmSubContainer.addSubview(stylePanelView)
+
+		Typesetter.Ins.addListener("MenuListener") { field, oldValue in
+			if "Theme" == field {
+				self.hideMenu { self.applyTheme() }
+				Utils.Log(Typesetter.Ins.theme.name)
+			}
+		}
+	}
 
     override func viewWillAppear(animated: Bool) {
         self.applyTheme()
@@ -92,14 +98,19 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         return Typesetter.Ins.theme.statusBarStyle
     }
     
-    func applyTheme() {
-        self.topBar.tintColor = Typesetter.Ins.theme.foregroundColor
-        self.bottomBar.tintColor = Typesetter.Ins.theme.foregroundColor
-        self.chapterTitle.textColor = Typesetter.Ins.theme.foregroundColor
-        
-        self.topBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
-        self.bottomBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
-    }
+	func applyTheme() {
+		self.view.backgroundColor = Typesetter.Ins.theme.backgroundColor
+		self.topBar.tintColor = Typesetter.Ins.theme.foregroundColor
+		self.bottomBar.tintColor = Typesetter.Ins.theme.foregroundColor
+		self.chapterTitle.textColor = Typesetter.Ins.theme.foregroundColor
+		self.topBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+		self.bottomBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+
+		if let rvc = self.readerController {
+			self.stylePanelView.applyTheme()
+			rvc.applyTheme()
+		}
+	}
     
     func attachReaderView(currChapter: Chapter) {
         FontManager.asyncDownloadFont(Typesetter.Ins.font) { (success: Bool, fontName: String, msg: String) in
@@ -178,7 +189,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
 
-    func hideMenu() {
+    func hideMenu(animationCompeted:(()->Void)? = nil ) {
         self.menuShow = false
         self.btmSubContainer.userInteractionEnabled = false
 
@@ -206,6 +217,10 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.maskPanel.hidden = true
             self.stylePanelView.hidden = true
             self.btmSubContainer.hidden = true
+            
+            if let end = animationCompeted {
+                end()
+            }
         }
     }
     

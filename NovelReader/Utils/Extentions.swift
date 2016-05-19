@@ -49,7 +49,7 @@ extension String {
      - returns: Array wrapped characters
      */
     func array() -> [Char] {
-        return self.characters.map { String($0) }
+        return characters.map { String($0) }
     }
 
     /**

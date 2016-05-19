@@ -13,10 +13,10 @@ enum Error: ErrorType {
     case NotSupportEncoding(String)
 }
 
-let NO_TITLE = "No_Title"
+let NO_TITLE     = "No_Title"
 
-let EMPTY_STR = ""
-let EMPTY_SIZE = CGSizeMake(0, 0)
-let EMPTY_RANGE = NSMakeRange(0, 0)
+let EMPTY_STR    = ""
+let EMPTY_SIZE   = CGSizeMake(0, 0)
+let EMPTY_RANGE  = NSMakeRange(0, 0)
 
 let CHAPTER_SIZE = 15360

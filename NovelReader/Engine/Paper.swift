@@ -12,7 +12,7 @@ import YYText
 class Paper: NSObject {
     /*Visible text*/
     var text: String!
-
+    
     /*For YYLabel*/
     private var textLayout: YYTextLayout!
 
@@ -29,6 +29,11 @@ class Paper: NSObject {
 
     /*Paper text bounds*/
     private var size: CGSize!
+    
+    private var firstLineIsTitle = false
+    private var startWithNewLine = false
+    
+    private var firstTypesetterTheme = Typesetter.Ins.theme.name
     
     init(size: CGSize) {
         var paperMargin    = UIEdgeInsetsZero
@@ -86,8 +91,11 @@ class Paper: NSObject {
             tmpTxtLy       = YYTextLayout(container: self.textContainer, text: attrText)
         }
 
+        self.startWithNewLine = startWithNewLine
+        self.firstLineIsTitle = firstLineIsTitle
         self.textLayout = tmpTxtLy
         self.text       = attrText.attributedSubstringFromRange(textLayout.visibleRange).string
+        self.firstTypesetterTheme = Typesetter.Ins.theme.name
     }
     
     /**
@@ -119,15 +127,30 @@ class Paper: NSObject {
      *
      * @return Bool     If paper not call writtingText, false will be returned
      */
-    func attachToView(yyLabel: YYLabel) -> Bool {
-        if self.textLayout != nil {
-            yyLabel.displaysAsynchronously      = true
-            yyLabel.ignoreCommonProperties      = true
-            //yyLabel.fadeOnAsynchronouslyDisplay = false
-            yyLabel.textLayout                  = self.textLayout;
-            return true
-        }
-        
-        return false
-    }
+	func attachToView(yyLabel: YYLabel, applyTheme: Bool = false) -> Bool {
+		if self.textLayout != nil {
+			if firstTypesetterTheme != Typesetter.Ins.theme.name {
+				let attrText = Typesetter.Ins.typeset(
+					text,
+					firstLineIsTitle: firstLineIsTitle,
+					paperWidth: size.width,
+					startWithNewLine: startWithNewLine
+				)
+
+				let tmpTxtLy = YYTextLayout(container: textContainer, text: attrText)
+                self.textLayout = tmpTxtLy
+                self.firstTypesetterTheme = Typesetter.Ins.theme.name
+			} else if (applyTheme) {
+				return true
+			}
+
+			yyLabel.displaysAsynchronously = true
+			yyLabel.ignoreCommonProperties = true
+            yyLabel.fadeOnAsynchronouslyDisplay = false
+			yyLabel.textLayout = self.textLayout;
+			return true
+		}
+
+		return false
+	}
 }

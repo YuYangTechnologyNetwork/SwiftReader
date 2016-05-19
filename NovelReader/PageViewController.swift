@@ -23,18 +23,12 @@ class PageViewController: UIViewController {
 
     override func viewDidLoad() {
         containerView.textVerticalAlignment = .Top
-        containerView.displaysAsynchronously = true
-        containerView.ignoreCommonProperties = true
-
-        view.backgroundColor = Typesetter.Ins.theme.backgroundColor
-        boardMaskView.hidden = !Typesetter.Ins.theme.boardMaskNeeded
-
-        if let p = self.paper {
-            p.attachToView(containerView)
-        }
+        applyTheme()
     }
 
     override func viewWillAppear(animated: Bool) {
+        boardMaskView.hidden = Typesetter.Ins.theme.name != Theme.PARCHMENT
+        
         if self.needRefresh {
             needRefresh = false
             if let p = self.paper {
@@ -47,6 +41,27 @@ class PageViewController: UIViewController {
         _index = index
         return self
     }
+    
+	func applyTheme() {
+		if nil != paper && containerView != nil {
+            containerView.backgroundColor = UIColor.clearColor()
+			paper!.attachToView(self.containerView, applyTheme: true)
+		}
+
+		if boardMaskView != nil {
+			boardMaskView.hidden = Typesetter.Ins.theme.name != Theme.PARCHMENT
+		}
+
+		if let old = Typesetter.Ins.oldTheme {
+            if old.name == Theme.Info.Parchment.name {
+                self.view.backgroundColor = old.menuBackgroundColor
+            }
+		}
+
+		UIView.animateWithDuration(0.3) {
+			self.view.backgroundColor = Typesetter.Ins.theme.backgroundColor
+		}
+	}
 
     func bindPaper(paper: Paper?) -> PageViewController? {
         if let p = paper {

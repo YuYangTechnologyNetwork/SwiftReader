@@ -31,14 +31,12 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         pageViewCtrl.view.frame = self.view.frame
         pageViewCtrl.delegate = self
         pageViewCtrl.dataSource = self
+        pageViewCtrl.view.backgroundColor = UIColor.clearColor()
         pageViewCtrl.didMoveToParentViewController(self)
 
         addChildViewController(pageViewCtrl)
         view.addSubview(pageViewCtrl.view)
         view.sendSubviewToBack(pageViewCtrl.view)
-
-        view.backgroundColor = Typesetter.Ins.theme.backgroundColor
-        overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
 
         for v in pageViewCtrl.view.subviews {
             if v.isKindOfClass(UIScrollView) {
@@ -48,10 +46,11 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     }
 
     override func viewWillAppear(animated: Bool) {
+        applyTheme()
         bindPages()
     }
 
-    func bindPages(animation: Bool = true) {
+    func bindPages() {
         swipeCtrls = [PageViewController().index(0), PageViewController().index(1), PageViewController().index(2)]
         swipeCtrls[currIndex].bindPaper(readerMgr.currPaper)
 
@@ -66,6 +65,16 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
 
         pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false, completion: nil)
     }
+    
+    func applyTheme() {
+        overScrollView.hidden = true
+        overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
+		if let pages = swipeCtrls {
+			for p in pages {
+				p.applyTheme()
+			}
+		}
+	}
 
     func snapToPrevPage() {
         if !head {
@@ -133,6 +142,11 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
             }
     }
 
+    /**
+     See UIScrollViewDelegate
+     
+     - parameter scrollView: UIScrollView
+     */
     func scrollViewDidScroll(scrollView: UIScrollView) {
         if Typesetter.Ins.theme.name == Theme.PARCHMENT {
             if (readerMgr.prevPaper == nil || readerMgr.nextPaper == nil) {
@@ -147,7 +161,6 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
                 let osvX = overScrollView.frame.origin.x
                 if osvX < -view.frame.width / 2 || osvX > view.frame.width / 2 {
                     overScrollView.hidden = false
-                    overScrollView.setNeedsDisplay()
                 }
             }
         }

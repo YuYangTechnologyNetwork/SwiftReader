@@ -23,6 +23,8 @@ class StylePanelView: UIView {
     @IBOutlet weak var themeSegment: UISegmentedControl!
     @IBOutlet weak var brightnessSlider: UISlider!
     @IBOutlet weak var fontSizeSegment: UISegmentedControl!
+    @IBOutlet weak var brightnessMinLabel: UILabel!
+    @IBOutlet weak var brightnessMaxLabel: UILabel!
     
     override init(frame: CGRect) {	
         super.init(frame: frame)
@@ -48,7 +50,7 @@ class StylePanelView: UIView {
         }
     }
 
-    func applyTheme() {
+	func applyTheme() {
         let tp                                      = Typesetter.Ins
         self.tintColor                              = tp.theme.foregroundColor
         self.backgroundColor                        = tp.theme.menuBackgroundColor
@@ -56,18 +58,20 @@ class StylePanelView: UIView {
         self.vSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)
         self.hSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)
 
-        self.marginLabel.textColor                  = tp.theme.foregroundColor.newAlpha(0.8)
-        self.lineSpaceLabel.textColor               = tp.theme.foregroundColor.newAlpha(0.8)
+        self.marginLabel.textColor                  = tp.theme.foregroundColor.newAlpha(0.6)
+        self.lineSpaceLabel.textColor               = tp.theme.foregroundColor.newAlpha(0.6)
+        self.brightnessMinLabel.textColor           = tp.theme.foregroundColor
+        self.brightnessMaxLabel.textColor           = tp.theme.foregroundColor
         self.brightnessSlider.maximumTrackTintColor = tp.theme.foregroundColor.newAlpha(0.1)
         self.brightnessSlider.minimumTrackTintColor = tp.theme.foregroundColor
 
-        let trackBness:CGFloat                      = tp.theme.name == Theme.NIGHT ? 0.35 : 0.16
+        let trackBness: CGFloat                     = tp.theme.name == Theme.NIGHT ? 0.35 : 0.16
 
-        self.brightnessSlider.setThumbImage(
-            Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness),
-            size: CGSizeMake(20, 20), circle: true),
-            forState: [.Normal])
-    }
+		self.brightnessSlider.setThumbImage(
+			Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness),
+				size: CGSizeMake(20, 20), circle: true),
+			forState: [.Normal])
+	}
 
     func blankAction(_:UIView) {}
 
@@ -81,4 +85,8 @@ class StylePanelView: UIView {
             make.bottom.equalTo(self)
         }
     }
+    
+	@IBAction func onThemeChanged(sender: AnyObject) {
+		Typesetter.Ins.theme = Theme.forName(Theme.Info(rawValue: themeSegment.selectedSegmentIndex))
+	}
 }
