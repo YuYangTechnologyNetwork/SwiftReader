@@ -11,10 +11,27 @@ import Foundation
 
 class FileReader {
     private typealias `Self` = FileReader
+
     static let BUFFER_SIZE = 65536
     static let UNKNOW_ENCODING = "Unknow"
     static let ENCODING_UTF8 = "UTF-8"
     static let ENCODING_GB18030 = "GB18030"
+
+    private var _logOn = false
+
+    var logOff: FileReader {
+        return { () -> FileReader in
+            self._logOn = false
+            return self
+        }()
+    }
+
+    var logOn: FileReader {
+        return { () -> FileReader in
+            self._logOn = true
+            return self
+        }()
+    }
     
     // In this set, these gbk-code can't be decoded to a readable character
     private static let INVALID_SET: [String] = [
@@ -250,7 +267,7 @@ class FileReader {
 
 extension FileReader {
     private var CHAPTER_REGEX: String {
-        return "^.{0,4}(第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回].{0,30})+[^。！？.!?]$"
+        return "^[\\u4E00-\\u9FA5]{0,4}(第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回].{0,30})+[^。！？.!?]$"
     }
     
     /**
@@ -276,8 +293,11 @@ extension FileReader {
          *   ...
          */
         repeat {
-            Utils.Log("Offset: (\(head), \(tail))")
-            scope   = NSMakeRange(r.loc - head, min(r.len + head + tail, fileSize - r.loc + head))
+            if _logOn {
+                Utils.Log("Offset: (\(head), \(tail))")
+            }
+
+            scope   = NSMakeRange(max(r.loc - head, 0), min(r.len + head + tail, fileSize - r.loc + head))
             let buf = UnsafeMutablePointer<UInt8>.alloc(scope.len)
 
             fseek(file, scope.loc, SEEK_SET)
@@ -304,6 +324,90 @@ extension FileReader {
         } while (snippet == nil || scope.len >= fileSize)
 
         return (snippet ?? "", scope)
+    }
+
+    /**
+     Get the chapter range at special location
+
+     - parameter file:     File pointer
+     - parameter location: The special location
+     - parameter encoding: File encoding, eg: NSUTF8StringEncoding
+
+     - returns: nil or found chapter<BookMark>
+     */
+    func fetchChapterAtLocation(file: UnsafeMutablePointer<FILE>, location: Int, encoding: UInt) -> BookMark? {
+        let fileSize = getFileSize(file)
+        var loc = 0, len = 0, scale = 1
+
+        while true {
+            loc = max(0, location - CHAPTER_SIZE * scale)
+            len = min(CHAPTER_SIZE * (scale + 1), fileSize - loc)
+
+            let scope = NSMakeRange(loc, len)
+            var chapters = fetchChaptersInRange(file, range: scope, encoding: encoding)
+            chapters.sortInPlace { $0.0.range.loc > $0.1.range.loc }
+
+            for (i, ch) in chapters.enumerate() {
+                if scope.loc > 0 && scope.end < fileSize {
+                    if ch.range.loc <= location && ch.title != NO_TITLE && i != 0 {
+                        return ch
+                    }
+                } else if scope.loc == 0 {
+                    if ch.range.loc <= location && i != 0 {
+                        return ch
+                    }
+                } else {
+                    if ch.range.loc <= location && ch.title != NO_TITLE {
+                        return ch
+                    }
+                }
+            }
+
+            if scope.loc == 0 && scope.end >= fileSize {
+                break
+            } else {
+                scale += 1
+            }
+        }
+
+        return nil
+    }
+
+    /**
+     Fetch chapters of the special file
+
+     - parameter file:     File pointer
+     - parameter encoding: File encoding, eg: NSUTF8StringEncoding
+     - parameter slice:    A closure to get slice chapters
+     */
+    func fetchChaptersOfFile(file: UnsafeMutablePointer<FILE>, encoding: UInt, slice: ([BookMark]) -> Void) {
+        var start = 0, scale = 0
+        let fileSize = getFileSize(file)
+
+        while true {
+            let scope = NSMakeRange(max(start - Self.BUFFER_SIZE * scale, 0), Self.BUFFER_SIZE * (scale + 1))
+            var chapters = fetchChaptersInRange(file, range: scope, encoding: encoding)
+            chapters.sortInPlace { $0.0.range.loc < $0.1.range.loc }
+
+            var s = [BookMark]()
+            for (i, ch) in chapters.enumerate() {
+                if (i < chapters.count - 1 || scope.end >= fileSize) && ch.range.loc >= start {
+                    s.append(ch)
+                }
+            }
+
+            if s.isEmpty {
+                scale += 1
+            } else {
+                scale = 0
+                start = s.last!.range.end
+                slice(s)
+            }
+
+            if scope.end >= fileSize {
+                break
+            }
+        }
     }
     
     /*
@@ -427,9 +531,11 @@ extension FileReader {
         } while (i < count)
 
 		#if DEBUG
-			for item in merged {
-				Utils.Log(item)
-			}
+            if _logOn {
+                for item in merged {
+                    Utils.Log(item)
+                }
+            }
 		#endif
 
         return merged
