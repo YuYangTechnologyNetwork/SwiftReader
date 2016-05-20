@@ -43,10 +43,11 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
                 (v as! UIScrollView).delegate = self
             }
         }
+
     }
 
     override func viewWillAppear(animated: Bool) {
-        applyTheme()
+        overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
         bindPages()
     }
 
@@ -67,14 +68,11 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     }
     
     func applyTheme() {
-        overScrollView.hidden = true
+        swipeCtrls[currIndex].applyTheme()
+        swipeCtrls[nextIndex(currIndex)].applyTheme(false)
+        swipeCtrls[prevIndex(currIndex)].applyTheme(false)
         overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
-		if let pages = swipeCtrls {
-			for p in pages {
-				p.applyTheme()
-			}
-		}
-	}
+    }
 
     func snapToPrevPage() {
         if !head {

@@ -10,9 +10,6 @@ import Foundation
 import YYText
 
 class Paper: NSObject {
-    /*Visible text*/
-    var text: String!
-    
     /*For YYLabel*/
     private var textLayout: YYTextLayout!
 
@@ -21,31 +18,33 @@ class Paper: NSObject {
 
     private var rangeInFile: NSRange = EMPTY_RANGE
 
+    /*Visible text*/
+    private(set) var text: String!
+
     /*paper's length in origin book file*/
-    var realLen: Int = 0
+    private(set) var realLen: Int = 0
 
     /*The first line is the paragraph start*/
     private(set) var endWithNewLine: Bool = false
 
     /*Paper text bounds*/
     private var size: CGSize!
-    
-    private var firstLineIsTitle = false
-    private var startWithNewLine = false
-    
-    private var firstTypesetterTheme = Typesetter.Ins.theme.name
+    private var firstLineIsTitle     = false
+    private var startWithNewLine     = false
+    private var firstTypesetterTheme = ""
+    private var cachedText           = ""     /// Cached text for switch Theme
     
     init(size: CGSize) {
-        var paperMargin    = UIEdgeInsetsZero
-        paperMargin.left   = Typesetter.Ins.margin.left
-        paperMargin.top    = Typesetter.Ins.margin.top + Typesetter.Ins.line_space / 2
-        paperMargin.right  = Typesetter.Ins.margin.right
-        paperMargin.bottom = Typesetter.Ins.margin.bottom
+        var paperMargin                        = UIEdgeInsetsZero
+        paperMargin.left                       = Typesetter.Ins.margin.left
+        paperMargin.top                        = Typesetter.Ins.margin.top + Typesetter.Ins.line_space / 2
+        paperMargin.right                      = Typesetter.Ins.margin.right
+        paperMargin.bottom                     = Typesetter.Ins.margin.bottom
 
-        self.size                               = size
-        self.textContainer                      = YYTextContainer(size: size, insets: paperMargin)
-        self.textContainer.maximumNumberOfRows  = 0
-        self.textContainer.verticalForm         = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
+        self.size                              = size
+        self.textContainer                     = YYTextContainer(size: size, insets: paperMargin)
+        self.textContainer.verticalForm        = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
+        self.textContainer.maximumNumberOfRows = 0
     }
 
     /**
@@ -74,28 +73,38 @@ class Paper: NSObject {
         }
 
         // Get the visible text
-        var attrText   = Typesetter.Ins.typeset(reIndentText, firstLineIsTitle: firstLineIsTitle,
-                                              paperWidth: size.width, startWithNewLine: startWithNewLine)
-        var tmpTxtLy   = YYTextLayout(container: self.textContainer, text: attrText)
-        let vRange     = tmpTxtLy!.visibleRange
-        let vText      = attrText.attributedSubstringFromRange(vRange).string
-        let vLines     = vText.componentsSeparatedByString(newLineChar)
-        endWithNewLine = (vLines.last?.isEmpty)!
-        self.realLen   = visibleLengthInOriginalText(text, visibleLines: vLines)
+        var attrText = Typesetter.Ins.typeset(
+            reIndentText,
+            firstLineIsTitle: firstLineIsTitle,
+            paperWidth: size.width,
+            startWithNewLine: startWithNewLine
+        )
+
+        var tmpTxtLy = YYTextLayout(container: self.textContainer, text: attrText)
+        let vRange   = tmpTxtLy!.visibleRange
+        let vText    = attrText.attributedSubstringFromRange(vRange).string
+        let vLines   = vText.componentsSeparatedByString(newLineChar)
 
         if reIndentText.length > vText.length {
-            let looseRange = NSMakeRange(vRange.loc, min(vRange.length + 20, attrText.length - vRange.loc))
-            attrText       = Typesetter.Ins.typeset(attrText.attributedSubstringFromRange(looseRange).string,
-                                              firstLineIsTitle: firstLineIsTitle,
-                                              paperWidth: size.width, startWithNewLine: startWithNewLine)
-            tmpTxtLy       = YYTextLayout(container: self.textContainer, text: attrText)
+            let scope = NSMakeRange(vRange.loc, min(vRange.length + 20, attrText.length - vRange.loc))
+            attrText  = Typesetter.Ins.typeset(
+                attrText.attributedSubstringFromRange(scope).string,
+                firstLineIsTitle: firstLineIsTitle,
+                paperWidth: size.width,
+                startWithNewLine: startWithNewLine
+            )
+
+            tmpTxtLy  = YYTextLayout(container: self.textContainer, text: attrText)
         }
 
-        self.startWithNewLine = startWithNewLine
-        self.firstLineIsTitle = firstLineIsTitle
-        self.textLayout = tmpTxtLy
-        self.text       = attrText.attributedSubstringFromRange(textLayout.visibleRange).string
         self.firstTypesetterTheme = Typesetter.Ins.theme.name
+        self.startWithNewLine     = startWithNewLine
+        self.firstLineIsTitle     = firstLineIsTitle
+        self.endWithNewLine       = (vLines.last?.isEmpty)!
+        self.cachedText           = attrText.string
+        self.textLayout           = tmpTxtLy
+        self.realLen              = visibleLengthInOriginalText(text, visibleLines: vLines)
+        self.text                 = attrText.attributedSubstringFromRange(textLayout.visibleRange).string
     }
     
     /**
@@ -120,37 +129,29 @@ class Paper: NSObject {
         return text.substringToIndex(startIndex).length
     }
 
-    /*
-     * Attach this paper to a YYLabel to show
-     *
-     * @param           View to show paper
-     *
-     * @return Bool     If paper not call writtingText, false will be returned
+    /**
+     Attach this paper to a YYLabel to show
+
+     - parameter yyLabel:    View to show paper
+     - parameter applyTheme: Theme changed or not
      */
-	func attachToView(yyLabel: YYLabel, applyTheme: Bool = false) -> Bool {
+	func attachToView(yyLabel: YYLabel, applyTheme: Bool = false) {
 		if self.textLayout != nil {
 			if firstTypesetterTheme != Typesetter.Ins.theme.name {
-				let attrText = Typesetter.Ins.typeset(
-					text,
-					firstLineIsTitle: firstLineIsTitle,
-					paperWidth: size.width,
-					startWithNewLine: startWithNewLine
-				)
+                if !cachedText.isEmpty {
+                    let attrText = Typesetter.Ins.typeset(
+                        cachedText,
+                        firstLineIsTitle: firstLineIsTitle,
+                        paperWidth: size.width,
+                        startWithNewLine: startWithNewLine
+                    )
 
-				let tmpTxtLy = YYTextLayout(container: textContainer, text: attrText)
-                self.textLayout = tmpTxtLy
-                self.firstTypesetterTheme = Typesetter.Ins.theme.name
-			} else if (applyTheme) {
-				return true
-			}
+                    self.textLayout           = YYTextLayout(container: textContainer, text: attrText)
+                    self.firstTypesetterTheme = Typesetter.Ins.theme.name
+                }
+            }
 
-			yyLabel.displaysAsynchronously = true
-			yyLabel.ignoreCommonProperties = true
-            yyLabel.fadeOnAsynchronouslyDisplay = false
 			yyLabel.textLayout = self.textLayout;
-			return true
 		}
-
-		return false
 	}
 }
