@@ -23,7 +23,13 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         return self.readerMgr.isTail || self.readerMgr.nextPaper == nil
     }
 
-    var readerMgr: ReaderManager!
+    var readerMgr: ReaderManager! {
+        didSet {
+            readerMgr.addListener("Logging", forMonitor: ReaderManager.MonitorName.AsyncLoadFinish) { c in
+                Utils.Log(self.readerMgr)
+            }
+        }
+    }
 
     @IBOutlet weak var overScrollView: UIView!
 
@@ -52,8 +58,8 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     
 	func refreshPages() {
 		if let pages = self.swipeCtrls {
-			swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
-			swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
+			pages[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+			pages[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
 			pageViewCtrl.setViewControllers([pages[self.currIndex]], direction: .Forward, animated: false) { e in }
 		}
 	}
@@ -86,8 +92,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
             if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
                 readerMgr.swipToPrev()
                 currVCtrl.bindPaper(readerMgr.currPaper, doAnimation: true)
-                swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
-                swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
+                refreshPages()
             }
         }
     }
@@ -97,8 +102,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
             if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
                 readerMgr.swipToNext()
                 currVCtrl.bindPaper(readerMgr.currPaper, doAnimation: true)
-                swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
-                swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
+                refreshPages()
             }
         }
     }

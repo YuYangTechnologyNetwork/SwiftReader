@@ -149,11 +149,11 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     func inMenuRegion(p: CGPoint) -> Bool {
-        return size.width / 3 < p.x && p.x < size.width * 2 / 3 && size.height / 3 < p.y && p.y < size.height * 3 / 3
+        return size.width / 3 < p.x && p.x < size.width * 2 / 3 && size.height / 3 < p.y && p.y < size.height * 2 / 3
     }
 
     func inNextRegion(p: CGPoint) -> Bool {
-        return (size.width * 3 / 3 <= p.x) || (size.width / 3 < p.x && size.height * 2 / 3 <= p.y)
+        return (size.width * 2 / 3 <= p.x) || (size.width / 3 < p.x && size.height * 2 / 3 <= p.y)
     }
 
     func inPrevRegion(p: CGPoint) -> Bool {

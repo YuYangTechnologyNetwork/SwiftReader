@@ -30,8 +30,6 @@ class ReaderManager: NSObject {
     private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var listeners: [MonitorName: [String:(chpater: Chapter) -> Void]] = [:]
-    private var prevvBuffer:Buffer? = nil
-    private var nexttBuffer:Buffer? = nil
 
     var currPaper: Paper? {
         return currChapter.currPage!
