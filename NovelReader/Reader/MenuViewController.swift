@@ -62,21 +62,21 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.loadingIndicator.startAnimating()
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-            
             let filePath = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
-            let book = try! Book(fullFilePath: filePath!)
-            
+            let book = Book(fullFilePath: filePath!)
             dispatch_async(dispatch_get_main_queue()) {
-                self.readerManager = ReaderManager(b: book, size: self.view.frame.size)
-                
-                self.readerManager.addListener("MenuTitle", forMonitor: ReaderManager.MonitorName.ChapterChanged){
-                    chapter in
-                    self.chapterTitle.text = chapter.title
-                }
-                
-                self.readerManager.asyncPrepare({ (chapter: Chapter) in
-                    self.attachReaderView(chapter)
-                })
+				if let b = book {
+					self.readerManager = ReaderManager(b: b, size: self.view.frame.size)
+
+					self.readerManager.addListener("MenuTitle", forMonitor: ReaderManager.MonitorName.ChapterChanged) {
+						chapter in
+						self.chapterTitle.text = chapter.title
+					}
+
+					self.readerManager.asyncPrepare({ (chapter: Chapter) in
+						self.attachReaderView(chapter)
+					})
+				}
             }
         }
 

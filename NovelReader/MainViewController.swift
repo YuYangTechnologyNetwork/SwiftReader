@@ -20,7 +20,7 @@ class MainViewController: UIViewController {
         FontManager.asyncDownloadFont(Typesetter.Ins.font) { (_: Bool, _: String, _: String) in
             Utils.asyncTask({ () -> Paper in
                 let filePath = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
-                let book     = try! Book(fullFilePath: filePath!)
+                let book     = Book(fullFilePath: filePath!)!
                 let file     = fopen(filePath!, "r")
                 let reader   = FileReader()
                 let encoding = FileReader.Encodings[book.encoding]!

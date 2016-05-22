@@ -32,11 +32,11 @@ class Book: NSObject {
      *
      * @throw If can't open file at fullFilePath, throw an Error.FileNotExist(fullFilePath)
      */
-    init(fullFilePath: String) throws {
+    init?(fullFilePath: String) {
         let file = fopen(fullFilePath, "r")
 
         if file == nil {
-            throw Error.FileNotExist(fullFilePath)
+            return nil
         } else {
             let split = fullFilePath.characters.split("/")
             self.fullFilePath = fullFilePath
