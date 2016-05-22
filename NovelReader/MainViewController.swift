@@ -18,8 +18,8 @@ class MainViewController: UIViewController {
         self.progressIndicator.startAnimating()
 
         FontManager.asyncDownloadFont(Typesetter.Ins.font) { (_: Bool, _: String, _: String) in
-            Utils.asyncTask { () -> Paper in
-                let filePath = NSBundle.mainBundle().pathForResource("zx_utf8", ofType: "txt")
+            Utils.asyncTask({ () -> Paper in
+                let filePath = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
                 let book     = try! Book(fullFilePath: filePath!)
                 let file     = fopen(filePath!, "r")
                 let reader   = FileReader()
@@ -46,13 +46,13 @@ class MainViewController: UIViewController {
 
                 fclose(file)
                 return paper
-            }(onMain: { paper in
+            }){ paper in
                 paper.attachToView(self.yyLabel)
                 self.progressIndicator.stopAnimating()
                 self.progressIndicator.hidden = true
 
                 
-            })
+            }
         }
     }
 }

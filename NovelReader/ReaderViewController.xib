@@ -84,6 +84,7 @@
                     <include reference="zCV-aG-C4W"/>
                 </mask>
             </variation>
+            <point key="canvasLocation" x="94" y="434"/>
         </view>
     </objects>
     <resources>

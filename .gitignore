@@ -1,3 +1,5 @@
 DerivedData
 .DS_Store
 Pods/
+Podfile.lock
+NovelReader.xcworkspace/

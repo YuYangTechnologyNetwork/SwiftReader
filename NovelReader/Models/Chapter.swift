@@ -106,7 +106,7 @@ class Chapter: BookMark {
             // Back to main thread
             dispatch_async(dispatch_get_main_queue()) {
                 // Logging
-                Utils.Log("Loaded: \(self)")
+                // Utils.Log("Loaded: \(self)")
 
                 // Reset async task
                 self.asyncTask = nil

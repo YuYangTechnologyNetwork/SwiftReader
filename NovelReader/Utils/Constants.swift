@@ -20,3 +20,5 @@ let EMPTY_SIZE   = CGSizeMake(0, 0)
 let EMPTY_RANGE  = NSMakeRange(0, 0)
 
 let CHAPTER_SIZE = 15360
+
+let BUILD_BOOK = "zx_utf8"

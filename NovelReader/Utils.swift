@@ -10,7 +10,7 @@ import Foundation
 
 final class Utils {
     /**
-     Control your log an DEBUG and RELEASE
+     Control your log for DEBUG and RELEASE
      
      - parameter anyObj: any info
      - parameter file:   Logging file name
@@ -27,7 +27,7 @@ final class Utils {
     }
 
     /**
-     Create a UIImage from the color
+     Create a UIImage from UIColor
      
      - parameter color:  UIColor
      - parameter size:   UIImage size
@@ -59,17 +59,14 @@ final class Utils {
     /**
      Convenient for dispatch async
      
-     - parameter backgroudTask: The closure will run in background thread
-     
-     - returns: The closure run in main thread
+     - parameter task: This closure will run on background thread
+     - parameter main: This closure will run on main thread
      */
-	static func asyncTask<T>(backgroudTask: () -> T) -> (onMain: (result: T) -> Void) -> Void {
-		return { (mainTask: (res: T) -> Void) in
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-				let result = backgroudTask()
-				dispatch_async(dispatch_get_main_queue()) {
-					mainTask(res: result)
-				}
+	static func asyncTask<T>(task: () -> T, onMain main: (res: T) -> Void) {
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+			let result = task()
+			dispatch_async(dispatch_get_main_queue()) {
+				main(res: result)
 			}
 		}
 	}

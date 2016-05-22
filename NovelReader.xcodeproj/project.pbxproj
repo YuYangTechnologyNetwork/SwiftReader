@@ -46,6 +46,7 @@
 		11F32CD91CD0D68000543CF3 /* MenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11F32CD71CD0D68000543CF3 /* MenuViewController.xib */; };
 		3D2554B01CD79A2C00A4330C /* StylePanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2554AF1CD79A2C00A4330C /* StylePanelView.swift */; };
 		3D2554B21CD79A5400A4330C /* StylePanelView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D2554B11CD79A5400A4330C /* StylePanelView.xib */; };
+		3D45B5131CF01D2400FBE46A /* jy_gbk.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3D45B5121CF01D2400FBE46A /* jy_gbk.txt */; };
 		3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C70D1C96F53700DD408F /* AppDelegate.swift */; };
 		3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D49C70F1C96F53700DD408F /* Assets.xcassets */; };
 		3D49C7131C96F53700DD408F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D49C7111C96F53700DD408F /* LaunchScreen.storyboard */; };
@@ -144,6 +145,7 @@
 		3D05DA1B1CAC21150059DBDF /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		3D2554AF1CD79A2C00A4330C /* StylePanelView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StylePanelView.swift; path = Views/StylePanelView.swift; sourceTree = "<group>"; };
 		3D2554B11CD79A5400A4330C /* StylePanelView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StylePanelView.xib; path = xlibs/StylePanelView.xib; sourceTree = "<group>"; };
+		3D45B5121CF01D2400FBE46A /* jy_gbk.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = jy_gbk.txt; path = Books/jy_gbk.txt; sourceTree = "<group>"; };
 		3D49C70A1C96F53700DD408F /* NovelReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NovelReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D49C70D1C96F53700DD408F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3D49C70F1C96F53700DD408F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -380,6 +382,7 @@
 		3D6A24471CA0361F00F05D55 /* Books */ = {
 			isa = PBXGroup;
 			children = (
+				3D45B5121CF01D2400FBE46A /* jy_gbk.txt */,
 				11F32CD41CD099B800543CF3 /* zx_utf8.txt */,
 			);
 			name = Books;
@@ -477,7 +480,6 @@
 				TargetAttributes = {
 					3D49C7091C96F53700DD408F = {
 						CreatedOnToolsVersion = 7.2.1;
-						DevelopmentTeam = HTS5RJFQNL;
 					};
 					3D49C7181C96F53700DD408F = {
 						CreatedOnToolsVersion = 7.2.1;
@@ -526,6 +528,7 @@
 				11F32CD51CD099B800543CF3 /* zx_utf8.txt in Resources */,
 				3D2554B21CD79A5400A4330C /* StylePanelView.xib in Resources */,
 				112E9CD01C9FF1B400C5E34C /* EUCKRFreq.tab in Resources */,
+				3D45B5131CF01D2400FBE46A /* jy_gbk.txt in Resources */,
 				112E9CD31C9FF1B400C5E34C /* JISFreq.tab in Resources */,
 				11DAD99C1C9FE5D50027F98A /* MainViewController.xib in Resources */,
 				112E9CCF1C9FF1B400C5E34C /* Big5Freq.tab in Resources */,

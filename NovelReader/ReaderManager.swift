@@ -9,13 +9,29 @@
 import Foundation
 
 class ReaderManager: NSObject {
+    enum MonitorName:String {
+        case ChapterChanged
+        case AsyncLoadFinish
+    }
+    
+    private class Buffer {
+		var relativeChapter: Chapter!
+		var data: Chapter? = nil
+
+		init(relative: Chapter) {
+			relativeChapter = relative
+		}
+    }
+
     private var book: Book!
     private var encoding: UInt!
     private var paperSize: CGSize = EMPTY_SIZE
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
-    private var listeners: [String: (chpater: Chapter) -> Void] = [:]
+    private var listeners: [MonitorName: [String:(chpater: Chapter) -> Void]] = [:]
+    private var prevvBuffer:Buffer? = nil
+    private var nexttBuffer:Buffer? = nil
 
     var currPaper: Paper? {
         return currChapter.currPage!
@@ -48,6 +64,10 @@ class ReaderManager: NSObject {
     var isTail: Bool {
         return currChapter.isTail && currChapter.range.end >= book.size
     }
+    
+    var currentChapterPageCount:Int {
+        return currChapter.pageCount
+    }
 
     override var description: String {
         return "\nPrev: \(prevChapter)\nCurr: \(currChapter)\nNext: \(nextChapter)"
@@ -65,10 +85,16 @@ class ReaderManager: NSObject {
      - parameter name:     The listener name
      - parameter listener: Listener
      */
-    func addListener(name: String, listener: (chpater: Chapter) -> Void) {
-        if listeners.indexForKey(name) == nil {
-            listeners[name] = listener
-        }
+    func addListener(name:String, forMonitor m:MonitorName, listener: (chpater: Chapter) -> Void) {
+		if listeners.indexForKey(m) == nil {
+			listeners[m] = Dictionary< String, (chpater: Chapter) -> Void > ()
+		}
+
+		if listeners[m]!.indexForKey(name) == nil {
+			listeners[m]![name] = listener
+		} else {
+			listeners[m]!.updateValue(listener, forKey: name)
+		}
     }
 
     /**
@@ -76,11 +102,11 @@ class ReaderManager: NSObject {
 
      - parameter name: The listener name
      */
-    func removeListener(name: String) {
-        if listeners.indexForKey(name) != nil {
-            listeners.removeValueForKey(name)
-        }
-    }
+	func removeListener(name: String, forMonitor m: MonitorName) {
+		if listeners.indexForKey(m) != nil {
+			listeners[m]!.removeValueForKey(name)
+		}
+	}
 
     /**
      Aysnc prepare the book and the papers
@@ -94,39 +120,36 @@ class ReaderManager: NSObject {
             currChapter = Chapter(range: NSMakeRange(0, CHAPTER_SIZE))
         }
 
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+        Utils.asyncTask({
             // Load current chapter
             self.currChapter.loadInRange(self, reverse: false, book: self.book)
-
+            
             if self.currChapter.status == Chapter.Status.Success {
                 // Load prev chapter
                 var loc = max(self.currChapter.range.loc - CHAPTER_SIZE, 0)
                 var len = min(self.currChapter.range.loc - loc, CHAPTER_SIZE - 1)
                 var ran = NSMakeRange(loc, len)
-
+                
                 if ran.isLogical {
                     self.prevChapter = Chapter(range: ran)
                     self.prevChapter.setTail()
                     self.prevChapter.loadInRange(self, reverse: true, book: self.book)
                 }
-
+                
                 // Load next chapter
                 loc = self.currChapter.range.end
                 len = min(CHAPTER_SIZE, self.book.size - loc)
                 ran = NSMakeRange(loc, len)
-
+                
                 if ran.isLogical {
                     self.nextChapter = Chapter(range: ran)
                     self.nextChapter.setHead()
                     self.nextChapter.loadInRange(self, reverse: false, book: self.book)
                 }
             }
-
-            // Back to main thread
-            dispatch_async(dispatch_get_main_queue()) {
-                Utils.Log(self)
-                callback(self.currChapter)
-            }
+        }) {
+            Utils.Log(self)
+            callback(self.currChapter)
         }
     }
 
@@ -170,21 +193,26 @@ class ReaderManager: NSObject {
                 currChapter = nextChapter.setHead()
                 nextChapter = Chapter.EMPTY_CHAPTER.setHead()
                 
-                for l in self.listeners {
-                    l.1(chpater: self.currChapter)
-                }
+				if let ms = listeners[MonitorName.ChapterChanged] {
+					for l in ms.values {
+						l(chpater: currChapter)
+					}
+				}
             } else {
                 currChapter.next()
             }
 
             if nextChapter.isEmpty && nextChapter.status != Chapter.Status.Loading {
-                Utils.Log("Loading next...")
                 let loc = currChapter.range.end
                 let len = min(CHAPTER_SIZE, book.size - loc)
                 nextChapter = Chapter(range: NSMakeRange(loc, len)).setHead()
                 nextChapter.asyncLoadInRange(self, reverse: false, book: book, callback: { (s: Chapter.Status) in
                     if s == Chapter.Status.Success {
-                        Utils.Log(self)
+                        if let ms = self.listeners[MonitorName.AsyncLoadFinish] {
+                            for l in ms.values {
+                                l(chpater: self.nextChapter)
+                            }
+                        }
                     }
                 })
             }
@@ -199,21 +227,26 @@ class ReaderManager: NSObject {
                 currChapter = prevChapter.setTail()
                 prevChapter = Chapter.EMPTY_CHAPTER.setTail()
                 
-                for l in self.listeners {
-                    l.1(chpater: self.currChapter)
+                if let ms = listeners[MonitorName.ChapterChanged] {
+                    for l in ms.values {
+                        l(chpater: currChapter)
+                    }
                 }
             } else {
                 currChapter.prev()
             }
 
             if prevChapter.isEmpty && prevChapter.status != Chapter.Status.Loading {
-                Utils.Log("Loading prev...")
                 let loc = max(currChapter.range.loc - CHAPTER_SIZE, 0)
                 let len = min(currChapter.range.loc - loc, CHAPTER_SIZE - 1)
                 prevChapter = Chapter(range: NSMakeRange(loc, len)).setTail()
                 prevChapter.asyncLoadInRange(self, reverse: true, book: book, callback: { (s: Chapter.Status) in
                     if s == Chapter.Status.Success {
-                        Utils.Log(self)
+                        if let ms = self.listeners[MonitorName.AsyncLoadFinish] {
+                            for l in ms.values {
+                                l(chpater: self.prevChapter)
+                            }
+                        }
                     }
                 })
             }

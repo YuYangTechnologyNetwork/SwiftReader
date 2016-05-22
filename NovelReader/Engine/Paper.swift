@@ -9,7 +9,7 @@
 import Foundation
 import YYText
 
-class Paper: NSObject {
+class Paper:Equatable {
     /*For YYLabel*/
     private var textLayout: YYTextLayout!
 
@@ -154,4 +154,8 @@ class Paper: NSObject {
 			yyLabel.textLayout = self.textLayout;
 		}
 	}
+}
+
+func == (lhs: Paper, rhs: Paper) -> Bool {
+	return lhs.textLayout?.text == rhs.textLayout?.text
 }

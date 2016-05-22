@@ -68,9 +68,13 @@ class StylePanelView: UIView {
         let trackBness: CGFloat                     = tp.theme.name == Theme.NIGHT ? 0.35 : 0.16
 
 		self.brightnessSlider.setThumbImage(
-			Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness),
-				size: CGSizeMake(20, 20), circle: true),
-			forState: [.Normal])
+			Utils.color2Img(
+                tp.theme.foregroundColor.newBrightness(trackBness),
+				size: CGSizeMake(20, 20),
+                circle: true
+            ),
+			forState: [.Normal]
+        )
 	}
 
     func blankAction(_:UIView) {}

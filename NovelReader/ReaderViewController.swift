@@ -13,6 +13,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     private var lastIndex: Int = 0
     private var swipeCtrls: [PageViewController]!
     private var pageViewCtrl: UIPageViewController!
+    private var dataIsPrefect:Bool = false
 
     private var head: Bool {
         return self.readerMgr.isHead || self.readerMgr.prevPaper == nil
@@ -33,27 +34,33 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         pageViewCtrl.dataSource = self
         pageViewCtrl.view.backgroundColor = UIColor.clearColor()
         pageViewCtrl.didMoveToParentViewController(self)
-
+        
         addChildViewController(pageViewCtrl)
         view.addSubview(pageViewCtrl.view)
-        view.sendSubviewToBack(pageViewCtrl.view)
 
         for v in pageViewCtrl.view.subviews {
             if v.isKindOfClass(UIScrollView) {
                 (v as! UIScrollView).delegate = self
             }
         }
-
     }
 
     override func viewWillAppear(animated: Bool) {
         overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
         bindPages()
     }
+    
+	func refreshPages() {
+		if let pages = self.swipeCtrls {
+			swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+			swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
+			pageViewCtrl.setViewControllers([pages[self.currIndex]], direction: .Forward, animated: false) { e in }
+		}
+	}
 
     func bindPages() {
         swipeCtrls = [PageViewController().index(0), PageViewController().index(1), PageViewController().index(2)]
-        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper)
+        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, doAnimation: true)
 
         if readerMgr.isHead {
             swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
@@ -63,22 +70,22 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
             swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
             swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
         }
-
+        
         pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false, completion: nil)
     }
     
     func applyTheme() {
-        swipeCtrls[currIndex].applyTheme()
-        swipeCtrls[nextIndex(currIndex)].applyTheme(false)
+		swipeCtrls[currIndex].applyTheme()
+		swipeCtrls[nextIndex(currIndex)].applyTheme(false)
         swipeCtrls[prevIndex(currIndex)].applyTheme(false)
         overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
-    }
+	}
 
     func snapToPrevPage() {
         if !head {
             if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
                 readerMgr.swipToPrev()
-                currVCtrl.bindPaper(readerMgr.currPaper)
+                currVCtrl.bindPaper(readerMgr.currPaper, doAnimation: true)
                 swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
                 swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
             }
@@ -89,7 +96,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         if !tail {
             if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
                 readerMgr.swipToNext()
-                currVCtrl.bindPaper(readerMgr.currPaper)
+                currVCtrl.bindPaper(readerMgr.currPaper, doAnimation: true)
                 swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
                 swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
             }
@@ -118,27 +125,28 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
 
     /*UIPageViewControllerDelegate*/
     func pageViewController(pageViewController: UIPageViewController,
-        willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
-            lastIndex = currIndex
+                            willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
+        dataIsPrefect = true
     }
 
-    /*UIPageViewControllerDelegate*/
-    func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool,
-        previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-            if completed {
-                if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
-                    currIndex = currVCtrl.index
+	/*UIPageViewControllerDelegate*/
+	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool,
+		previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+			if completed {
+				if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
+					lastIndex = currIndex
+					currIndex = currVCtrl.index
 
-                    if lastIndex == prevIndex(currIndex) {
-                        self.readerMgr.swipToNext()
-                    } else if lastIndex == nextIndex(currIndex) {
-                        self.readerMgr.swipToPrev()
-                    }
-                }
+					if lastIndex == prevIndex(currIndex) {
+						self.readerMgr.swipToNext()
+					} else if lastIndex == nextIndex(currIndex) {
+						self.readerMgr.swipToPrev()
+					}
+				}
 
-                overScrollView.hidden = true
+                dataIsPrefect = false
             }
-    }
+	}
 
     /**
      See UIScrollViewDelegate
@@ -146,21 +154,28 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
      - parameter scrollView: UIScrollView
      */
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        if Typesetter.Ins.theme.name == Theme.PARCHMENT {
-            if (readerMgr.prevPaper == nil || readerMgr.nextPaper == nil) {
-                let xOffset = scrollView.contentOffset.x - view.frame.width
+		if Typesetter.Ins.theme.name == Theme.PARCHMENT {
+			let xOffset = scrollView.contentOffset.x - view.frame.width
 
-                if readerMgr.nextPaper == nil && xOffset > 0 {
-                    overScrollView.frame.origin.x = view.frame.width - abs(xOffset)
-                } else if readerMgr.prevPaper == nil && xOffset < 0 {
-                    overScrollView.frame.origin.x = abs(xOffset) - view.frame.width
-                }
-
-                let osvX = overScrollView.frame.origin.x
-                if osvX < -view.frame.width / 2 || osvX > view.frame.width / 2 {
-                    overScrollView.hidden = false
-                }
+            var justify = false
+			if xOffset > 0 {
+				overScrollView.frame.origin.x = view.frame.width - abs(xOffset)
+                justify = readerMgr.nextPaper == nil
+			} else if xOffset < 0 {
+                overScrollView.frame.origin.x = abs(xOffset) - view.frame.width
+                justify = readerMgr.prevPaper == nil
             }
-        }
+            
+            if xOffset % view.frame.width == 0 {
+                overScrollView.hidden = !justify
+                if !dataIsPrefect {
+                    refreshPages()
+                }
+			} else {
+                let littleShow =  overScrollView.frame.origin.x < -view.frame.width / 3 ||
+                    overScrollView.frame.origin.x > view.frame.width * 2 / 3 || justify
+                overScrollView.hidden = dataIsPrefect ? true : !littleShow
+			}
+		}
     }
 }

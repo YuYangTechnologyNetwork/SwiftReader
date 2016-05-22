@@ -267,7 +267,7 @@ class FileReader {
 
 extension FileReader {
     private var CHAPTER_REGEX: String {
-        return "^[\\u4E00-\\u9FA5]{0,4}(第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回].{0,30})+[^。！？.!?]$"
+        return "^[\\u4E00-\\u9FA5]{0,4}(第[〇一二三四五六七八九十百千零0123456789]+[章卷篇节集回].{0,30})+[^。.]$"
     }
     
     /**

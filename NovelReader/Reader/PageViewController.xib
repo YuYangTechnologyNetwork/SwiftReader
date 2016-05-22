@@ -8,6 +8,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PageViewController" customModule="NovelReader" customModuleProvider="target">
             <connections>
                 <outlet property="boardMaskView" destination="qNB-Ci-6Ff" id="mAk-MC-vxz"/>
+                <outlet property="bufferContainerView" destination="Oqk-YY-J0C" id="0FU-Ap-Km0"/>
                 <outlet property="containerView" destination="bL5-ea-QSS" id="MTB-T1-a1p"/>
                 <outlet property="view" destination="iN0-l3-epB" id="Kms-cZ-xyd"/>
             </connections>
@@ -25,17 +26,30 @@
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Oqk-YY-J0C" customClass="YYLabel">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                        <rect key="frame" x="80" y="336" width="240" height="128"/>
+                    </variation>
+                </view>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="qNB-Ci-6Ff" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="B60-OK-ObH"/>
+                <constraint firstItem="Oqk-YY-J0C" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="Btf-48-34j"/>
                 <constraint firstItem="bL5-ea-QSS" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="Feb-Qu-zRD"/>
+                <constraint firstItem="bL5-ea-QSS" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="K5S-W3-Ik1"/>
                 <constraint firstItem="bL5-ea-QSS" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="MYK-V9-3sF"/>
                 <constraint firstItem="qNB-Ci-6Ff" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="OZo-6W-oXl"/>
+                <constraint firstItem="Oqk-YY-J0C" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="POS-cK-Arb"/>
                 <constraint firstItem="bL5-ea-QSS" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="Q0w-fh-mlH"/>
                 <constraint firstItem="qNB-Ci-6Ff" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="RcB-53-RuK"/>
+                <constraint firstItem="bL5-ea-QSS" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="dCr-IX-t14"/>
+                <constraint firstItem="Oqk-YY-J0C" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="giX-Ya-D8H"/>
                 <constraint firstItem="bL5-ea-QSS" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="hkW-fw-cHb"/>
                 <constraint firstAttribute="bottom" secondItem="bL5-ea-QSS" secondAttribute="bottom" id="iMZ-1Q-7l5"/>
+                <constraint firstItem="Oqk-YY-J0C" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="n8d-s3-syg"/>
                 <constraint firstItem="qNB-Ci-6Ff" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="rgn-3c-JDQ"/>
                 <constraint firstAttribute="trailing" secondItem="bL5-ea-QSS" secondAttribute="trailing" id="vRy-tL-3Ey"/>
             </constraints>
@@ -43,11 +57,14 @@
                 <mask key="subviews">
                     <exclude reference="qNB-Ci-6Ff"/>
                     <exclude reference="bL5-ea-QSS"/>
+                    <exclude reference="Oqk-YY-J0C"/>
                 </mask>
                 <mask key="constraints">
                     <exclude reference="Feb-Qu-zRD"/>
+                    <exclude reference="K5S-W3-Ik1"/>
                     <exclude reference="MYK-V9-3sF"/>
                     <exclude reference="Q0w-fh-mlH"/>
+                    <exclude reference="dCr-IX-t14"/>
                     <exclude reference="hkW-fw-cHb"/>
                     <exclude reference="iMZ-1Q-7l5"/>
                     <exclude reference="vRy-tL-3Ey"/>
@@ -55,24 +72,35 @@
                     <exclude reference="OZo-6W-oXl"/>
                     <exclude reference="RcB-53-RuK"/>
                     <exclude reference="rgn-3c-JDQ"/>
+                    <exclude reference="Btf-48-34j"/>
+                    <exclude reference="POS-cK-Arb"/>
+                    <exclude reference="giX-Ya-D8H"/>
+                    <exclude reference="n8d-s3-syg"/>
                 </mask>
             </variation>
             <variation key="heightClass=regular-widthClass=compact">
                 <mask key="subviews">
                     <include reference="qNB-Ci-6Ff"/>
                     <include reference="bL5-ea-QSS"/>
+                    <include reference="Oqk-YY-J0C"/>
                 </mask>
                 <mask key="constraints">
                     <include reference="Feb-Qu-zRD"/>
-                    <include reference="MYK-V9-3sF"/>
+                    <include reference="K5S-W3-Ik1"/>
+                    <exclude reference="MYK-V9-3sF"/>
                     <include reference="Q0w-fh-mlH"/>
-                    <include reference="hkW-fw-cHb"/>
-                    <include reference="iMZ-1Q-7l5"/>
-                    <include reference="vRy-tL-3Ey"/>
+                    <include reference="dCr-IX-t14"/>
+                    <exclude reference="hkW-fw-cHb"/>
+                    <exclude reference="iMZ-1Q-7l5"/>
+                    <exclude reference="vRy-tL-3Ey"/>
                     <include reference="B60-OK-ObH"/>
                     <include reference="OZo-6W-oXl"/>
                     <include reference="RcB-53-RuK"/>
                     <include reference="rgn-3c-JDQ"/>
+                    <include reference="Btf-48-34j"/>
+                    <include reference="POS-cK-Arb"/>
+                    <include reference="giX-Ya-D8H"/>
+                    <include reference="n8d-s3-syg"/>
                 </mask>
             </variation>
         </view>

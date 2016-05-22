@@ -42,9 +42,6 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-        Typesetter.Ins.fontSize   = 10
-        Typesetter.Ins.line_space = 2
-
 		loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
 		stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))
 
@@ -66,13 +63,14 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
             
-            let filePath = NSBundle.mainBundle().pathForResource("zx_utf8", ofType: "txt")
+            let filePath = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
             let book = try! Book(fullFilePath: filePath!)
             
             dispatch_async(dispatch_get_main_queue()) {
                 self.readerManager = ReaderManager(b: book, size: self.view.frame.size)
                 
-                self.readerManager.addListener("menu-title") { (chapter: Chapter) in
+                self.readerManager.addListener("MenuTitle", forMonitor: ReaderManager.MonitorName.ChapterChanged){
+                    chapter in
                     self.chapterTitle.text = chapter.title
                 }
                 
@@ -151,15 +149,15 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     func inMenuRegion(p: CGPoint) -> Bool {
-        return size.width / 4 < p.x && p.x < size.width * 3 / 4 && size.height / 4 < p.y && p.y < size.height * 3 / 4
+        return size.width / 3 < p.x && p.x < size.width * 2 / 3 && size.height / 3 < p.y && p.y < size.height * 3 / 3
     }
 
     func inNextRegion(p: CGPoint) -> Bool {
-        return (size.width * 3 / 4 <= p.x) || (size.width / 4 < p.x && size.height * 3 / 4 <= p.y)
+        return (size.width * 3 / 3 <= p.x) || (size.width / 3 < p.x && size.height * 2 / 3 <= p.y)
     }
 
     func inPrevRegion(p: CGPoint) -> Bool {
-        return (p.x <= size.width / 4) || (p.x < size.width * 3 / 4 && p.y <= size.height / 4)
+        return (p.x <= size.width / 3) || (p.x < size.width * 2 / 3 && p.y <= size.height / 3)
     }
 
     func showMenu() {
@@ -193,7 +191,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.btmSubContainer.userInteractionEnabled = false
 
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
-            UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
+            UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Slide)
             self.setNeedsStatusBarAppearanceUpdate()
             self.topBar.frame.origin.y          = -self.topBar.bounds.height
             self.bottomBar.frame.origin.y       = self.view.bounds.height
