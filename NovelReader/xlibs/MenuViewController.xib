@@ -8,6 +8,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MenuViewController" customModule="NovelReader" customModuleProvider="target">
             <connections>
                 <outlet property="bottomBar" destination="qZ7-i4-PC9" id="cqy-pr-oj5"/>
+                <outlet property="brightnessMask" destination="O21-g6-OUH" id="4P5-Vt-q5v"/>
                 <outlet property="btmSubContainer" destination="oFa-wh-znq" id="YFf-5E-PBw"/>
                 <outlet property="chapterTitle" destination="6oO-Mu-Flu" id="dTC-3J-cNH"/>
                 <outlet property="loadingIndicator" destination="faz-EZ-JG6" id="x7g-OE-1Vv"/>
@@ -450,6 +451,10 @@
                         </mask>
                     </variation>
                 </view>
+                <view userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O21-g6-OUH">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <constraints>
@@ -459,10 +464,14 @@
                 <constraint firstAttribute="bottom" secondItem="qZ7-i4-PC9" secondAttribute="bottom" id="KX8-zy-jt0"/>
                 <constraint firstItem="f4c-H5-ake" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="Lm0-6f-css"/>
                 <constraint firstItem="qZ7-i4-PC9" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="NQg-0h-c8y"/>
+                <constraint firstItem="O21-g6-OUH" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="Phf-H3-ySR"/>
                 <constraint firstItem="faz-EZ-JG6" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="VAr-fC-8ik"/>
                 <constraint firstItem="8no-kp-6gh" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="Vay-dK-xTG"/>
+                <constraint firstItem="O21-g6-OUH" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" id="WhB-P6-H4l"/>
+                <constraint firstItem="O21-g6-OUH" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Xe5-gJ-PTb"/>
                 <constraint firstAttribute="trailing" secondItem="oFa-wh-znq" secondAttribute="trailing" id="aYT-0H-Pu6"/>
                 <constraint firstItem="qZ7-i4-PC9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="bda-eY-CcZ"/>
+                <constraint firstItem="O21-g6-OUH" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="bhY-2K-j1o"/>
                 <constraint firstItem="8no-kp-6gh" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="bte-IH-LJS"/>
                 <constraint firstItem="faz-EZ-JG6" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="dpB-I6-OXr"/>
                 <constraint firstItem="8no-kp-6gh" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" id="e3c-D5-Ge4"/>
@@ -479,10 +488,9 @@
                     <exclude reference="qZ7-i4-PC9"/>
                     <exclude reference="faz-EZ-JG6"/>
                     <exclude reference="oFa-wh-znq"/>
+                    <exclude reference="O21-g6-OUH"/>
                 </mask>
                 <mask key="constraints">
-                    <exclude reference="VAr-fC-8ik"/>
-                    <exclude reference="dpB-I6-OXr"/>
                     <exclude reference="C5J-4l-mUu"/>
                     <exclude reference="Vay-dK-xTG"/>
                     <exclude reference="bte-IH-LJS"/>
@@ -491,6 +499,12 @@
                     <exclude reference="kJQ-NY-qut"/>
                     <exclude reference="mOC-Vg-jTC"/>
                     <exclude reference="qFO-Ji-BuX"/>
+                    <exclude reference="Phf-H3-ySR"/>
+                    <exclude reference="WhB-P6-H4l"/>
+                    <exclude reference="Xe5-gJ-PTb"/>
+                    <exclude reference="bhY-2K-j1o"/>
+                    <exclude reference="VAr-fC-8ik"/>
+                    <exclude reference="dpB-I6-OXr"/>
                     <exclude reference="8Uy-tF-Ycu"/>
                     <exclude reference="aYT-0H-Pu6"/>
                     <exclude reference="g32-Q8-3RO"/>
@@ -508,10 +522,9 @@
                     <include reference="qZ7-i4-PC9"/>
                     <include reference="faz-EZ-JG6"/>
                     <include reference="oFa-wh-znq"/>
+                    <include reference="O21-g6-OUH"/>
                 </mask>
                 <mask key="constraints">
-                    <include reference="VAr-fC-8ik"/>
-                    <include reference="dpB-I6-OXr"/>
                     <include reference="C5J-4l-mUu"/>
                     <include reference="Vay-dK-xTG"/>
                     <include reference="bte-IH-LJS"/>
@@ -520,6 +533,12 @@
                     <include reference="kJQ-NY-qut"/>
                     <include reference="mOC-Vg-jTC"/>
                     <include reference="qFO-Ji-BuX"/>
+                    <include reference="Phf-H3-ySR"/>
+                    <include reference="WhB-P6-H4l"/>
+                    <include reference="Xe5-gJ-PTb"/>
+                    <include reference="bhY-2K-j1o"/>
+                    <include reference="VAr-fC-8ik"/>
+                    <include reference="dpB-I6-OXr"/>
                     <include reference="8Uy-tF-Ycu"/>
                     <include reference="aYT-0H-Pu6"/>
                     <include reference="g32-Q8-3RO"/>

@@ -100,7 +100,7 @@
                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="GkR-gS-IOS">
+                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.29999999999999999" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="GkR-gS-IOS">
                     <rect key="frame" x="0.0" y="-15" width="118" height="31"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="28" id="bEu-ne-Nso">
@@ -117,6 +117,9 @@
                             <include reference="bEu-ne-Nso"/>
                         </mask>
                     </variation>
+                    <connections>
+                        <action selector="onBrightnessChanged:" destination="-1" eventType="valueChanged" id="8it-ou-icJ"/>
+                    </connections>
                 </slider>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" momentary="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Cke-9m-gnK">
                     <rect key="frame" x="-60" y="-14" width="121" height="29"/>

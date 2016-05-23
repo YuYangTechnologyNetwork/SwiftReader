@@ -20,6 +20,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var topSubContainer: UIView!
     @IBOutlet weak var btmSubContainer: UIView!
 
+    @IBOutlet weak var brightnessMask: UIView!
     var size: CGSize {
         return self.view.bounds.size
     }
@@ -47,12 +48,17 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
         btmSubContainer.addSubview(stylePanelView)
 
-		Typesetter.Ins.addListener("MenuListener") { field, oldValue in
-			if "Theme" == field {
-				self.hideMenu { self.applyTheme() }
-				Utils.Log(Typesetter.Ins.theme.name)
-			}
-		}
+        Typesetter.Ins.addListener("MenuListener") { observer, oldValue in
+            switch (observer) {
+            case .Theme:
+                self.hideMenu { self.applyTheme() }
+                Utils.Log(Typesetter.Ins.theme.name)
+            case .Brightness:
+                self.applyTheme()
+            default:
+                break
+            }
+        }
 	}
 
     override func viewWillAppear(animated: Bool) {
@@ -95,7 +101,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return Typesetter.Ins.theme.statusBarStyle
     }
-    
+
     func applyTheme() {
         self.topBar.tintColor          = Typesetter.Ins.theme.foregroundColor
         self.bottomBar.tintColor       = Typesetter.Ins.theme.foregroundColor
@@ -103,6 +109,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.chapterTitle.textColor    = Typesetter.Ins.theme.foregroundColor
         self.topBar.backgroundColor    = Typesetter.Ins.theme.menuBackgroundColor
         self.bottomBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+        self.brightnessMask.alpha      = 1 - Typesetter.Ins.brightness
 
 		if let rvc = self.readerController {
 			rvc.applyTheme()

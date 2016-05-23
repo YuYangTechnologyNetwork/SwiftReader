@@ -25,6 +25,8 @@ class StylePanelView: UIView {
     @IBOutlet weak var fontSizeSegment: UISegmentedControl!
     @IBOutlet weak var brightnessMinLabel: UILabel!
     @IBOutlet weak var brightnessMaxLabel: UILabel!
+
+    private var systemBirghtness:CGFloat = 0.5
     
     override init(frame: CGRect) {	
         super.init(frame: frame)
@@ -60,6 +62,7 @@ class StylePanelView: UIView {
 
         self.marginLabel.textColor                  = tp.theme.foregroundColor.newAlpha(0.6)
         self.lineSpaceLabel.textColor               = tp.theme.foregroundColor.newAlpha(0.6)
+        self.brightnessSlider.value                 = Float(tp.brightness)
         self.brightnessMinLabel.textColor           = tp.theme.foregroundColor
         self.brightnessMaxLabel.textColor           = tp.theme.foregroundColor
         self.brightnessSlider.maximumTrackTintColor = tp.theme.foregroundColor.newAlpha(0.1)
@@ -93,4 +96,8 @@ class StylePanelView: UIView {
 	@IBAction func onThemeChanged(sender: AnyObject) {
 		Typesetter.Ins.theme = Theme.forName(Theme.Info(rawValue: themeSegment.selectedSegmentIndex))
 	}
+
+    @IBAction func onBrightnessChanged(sender: AnyObject) {
+        Typesetter.Ins.brightness = CGFloat(brightnessSlider.value / brightnessSlider.maximumValue)
+    }
 }

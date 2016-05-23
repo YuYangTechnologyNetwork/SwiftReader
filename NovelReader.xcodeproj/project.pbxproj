@@ -480,6 +480,7 @@
 				TargetAttributes = {
 					3D49C7091C96F53700DD408F = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = HTS5RJFQNL;
 					};
 					3D49C7181C96F53700DD408F = {
 						CreatedOnToolsVersion = 7.2.1;

@@ -14,6 +14,10 @@ class Typesetter {
         case Horizontal
         case Vertical
     }
+
+    enum Observer:String {
+        case Font, LineSpace, BorderMargin, TextOrentation, Theme, Brightness
+    }
     
     private typealias `Self` = Typesetter
 
@@ -21,6 +25,8 @@ class Typesetter {
     
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 18.0
+
+    static let DEFAULT_BRIGHTNESS: CGFloat = 0.75
     
     /**
      * Default margin: (top, left, bottom, right)
@@ -38,44 +44,51 @@ class Typesetter {
     private init() { }
     
     /*Property changed callbacks*/
-    private var listeners: [String: (_: String, before:Any) -> Void] = [:]
+    private var listeners: [String: (_: Observer, before:Any) -> Void] = [:]
     
     /*Font name code, see FontManager.SupportFonts*/
     var font: FontManager.SupportFonts = Self.DEFAULT_FONT {
-        didSet { for l in listeners.values { l("FontName", before: oldValue) } }
+        didSet { for l in listeners.values { l(.Font, before: oldValue) } }
     }
     
     /*Font size, for CGFloat type*/
     var fontSize: CGFloat = Self.DEFAULT_FONT_SIZE {
-        didSet { for l in listeners.values { l("FontSize", before: oldValue) } }
+        didSet { for l in listeners.values { l(.Font, before: oldValue) } }
     }
     
     /*Line space, for CGFloat type*/
     var line_space: CGFloat = Self.DEFAULT_LINE_SPACE {
-        didSet { for l in listeners.values { l("LineSpace", before: oldValue) } }
+        didSet { for l in listeners.values { l(.LineSpace, before: oldValue) } }
     }
     
     /**
      * Paper border margin: (left, top, right, bottom)
      */
     var margin: UIEdgeInsets = Self.DEFAULT_MARGIN {
-        didSet { for l in listeners.values { l("BorderMargin", before: oldValue) } }
+        didSet { for l in listeners.values { l(.BorderMargin, before: oldValue) } }
     }
 
     /*Text draw direction, see Typesetter.TextOrentation*/
     var textOrentation: TextOrentation = .Horizontal {
-        didSet { for l in listeners.values { l("TextOrentation", before: oldValue) } }
+        didSet { for l in listeners.values { l(.TextOrentation, before: oldValue) } }
     }
 
     var theme: Theme = Self.DEFAULT_THEME {
         didSet {
-            for l in listeners.values { l("Theme", before: oldValue) }
+            for l in listeners.values { l(.Theme, before: oldValue) }
             self.oldTheme = oldValue
+        }
+    }
+
+    var brightness: CGFloat = Self.DEFAULT_BRIGHTNESS {
+        didSet {
+            brightness = min(1, max(0.3, brightness))
+            for l in listeners.values { l(.Brightness, before: oldValue) }
         }
     }
     
     private(set) var oldTheme:Theme? = nil
-    
+
     /*
      * Add the listener to observe Typesetter properties changed
      *
@@ -83,7 +96,7 @@ class Typesetter {
      *
      * @param listener      Any property changed, listener will be called
      */
-    func addListener(name: String, listener: (_: String, before:Any) -> Void) -> Typesetter {
+    func addListener(name: String, listener: (_: Observer, before:Any) -> Void) -> Typesetter {
         if listeners.indexForKey(name) == nil {
             listeners[name] = listener
         }
