@@ -28,29 +28,29 @@ class StylePanelView: UIView {
 
     private var systemBirghtness:CGFloat = 0.5
     
-    override init(frame: CGRect) {	
-        super.init(frame: frame)
-        self.commonInit()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.commonInit()
-    }
-    
-    private func commonInit() {
-        NSBundle.mainBundle().loadNibNamed("StylePanelView", owner: self, options: nil)
-        guard let content = contentView else { return }
-        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(blankAction(_:))))
-        self.addSubview(content)
+	override init(frame: CGRect) {
+		super.init(frame: frame)
+		self.commonInit()
+	}
 
-        content.snp_makeConstraints{ (make) -> Void in
-            make.top.equalTo(self)
-            make.left.equalTo(self)
-            make.right.equalTo(self)
-            make.bottom.equalTo(self)
-        }
-    }
+	required init?(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
+		self.commonInit()
+	}
+    
+	private func commonInit() {
+		NSBundle.mainBundle().loadNibNamed("StylePanelView", owner: self, options: nil)
+
+		self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(blankAction(_:))))
+		self.addSubview(contentView)
+
+		contentView.snp_makeConstraints { (make) -> Void in
+			make.top.equalTo(self)
+			make.left.equalTo(self)
+			make.right.equalTo(self)
+			make.bottom.equalTo(self)
+		}
+	}
 
 	func applyTheme() {
         let tp                                      = Typesetter.Ins
@@ -70,30 +70,16 @@ class StylePanelView: UIView {
         self.brightnessSlider.minimumTrackTintColor = tp.theme.foregroundColor
 
         let trackBness: CGFloat                     = tp.theme == Theme.Night ? 0.35 : 0.16
-
+        
+		self.fontSetBtn.setTitle("\(tp.font.rawValue)         〉", forState: .Normal)
 		self.brightnessSlider.setThumbImage(
-			Utils.color2Img(
-                tp.theme.foregroundColor.newBrightness(trackBness),
-				size: CGSizeMake(20, 20),
-                circle: true
-            ),
-			forState: [.Normal]
-        )
+			Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness), size: CGSizeMake(20, 20), circle: true),
+			forState: .Normal
+		)
 	}
 
-    func blankAction(_:UIView) {}
+	func blankAction(_: UIView) { /*Just ignore */ }
 
-    override func updateConstraints() {
-        super.updateConstraints()
-        guard let content = contentView else { return }
-        content.snp_remakeConstraints { (make) -> Void in
-            make.top.equalTo(self)
-            make.left.equalTo(self)
-            make.right.equalTo(self)
-            make.bottom.equalTo(self)
-        }
-    }
-    
 	@IBAction func onThemeChanged(sender: AnyObject) {
 		Typesetter.Ins.theme = Theme(rawValue: themeSegment.selectedSegmentIndex)!
 	}

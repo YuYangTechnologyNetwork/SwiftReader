@@ -130,14 +130,14 @@ class Typesetter {
     func typeset(text: String, firstLineIsTitle: Bool = false, paperWidth: CGFloat = 0, 
                  startWithNewLine: Bool = false) -> NSMutableAttributedString {
         let attrt  = NSMutableAttributedString(string: text)
-        let yyFont = UIFont(name: FontManager.getFontName(font), size: self.fontSize)
+        let yyFont = UIFont(name: font.postScript, size: self.fontSize)
         var start  = 0
         let range  = text.rangeOfString(FileReader.getNewLineCharater(text))
 
         // Set style for chapter title
         if firstLineIsTitle {
             if let r = range {
-                let titleFont = UIFont(name: FontManager.getFontName(font), size: self.fontSize + 10)
+                let titleFont = UIFont(name: font.postScript, size: self.fontSize + 10)
                 start = text.substringToIndex(r.startIndex).length
                 
                 attrt.yy_setFont(titleFont, range: NSMakeRange(0, start))

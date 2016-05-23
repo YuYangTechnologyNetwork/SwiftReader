@@ -11,24 +11,31 @@ import Foundation
 final class FontManager {
 
     // Supported Fonts
-    enum SupportFonts {
-        case System
-        case Heiti
-        case LanTing
-        case LiShu
-        case KaiTi
-        case SongTi
+    enum SupportFonts:String {
+        case System  = "系统字体"
+        case Heiti   = "华文黑体"
+        case LanTing = "兰亭黑"
+        case LiShu   = "隶书    "
+        case KaiTi   = "楷体    "
+        case SongTi  = "宋体    "
+        
+		var postScript: String {
+			switch self {
+			case .System:
+				return "Helvetica-Light"
+			case .Heiti:
+				return "STHeitiTC-Light"
+			case .KaiTi:
+				return "STKaiti-SC-Regular"
+			case .LanTing:
+				return "FZLTXHK--GBK1-0"
+			case .LiShu:
+				return "STLibian-SC-Regular"
+			case .SongTi:
+				return "STSongti-SC-Regular"
+			}
+		}
     }
-
-    // Define support fonts properties:  [Index : (PostScript Name, Chinese Name)]
-    private static let PostScriptNameTable = [
-        SupportFonts.System  : ("Helvetica-Light", "系统字体"),
-        SupportFonts.LanTing : ("FZLTXHK--GBK1-0", "兰亭黑"),
-        SupportFonts.Heiti   : ("STHeitiTC-Light", "华文黑体"),
-        SupportFonts.KaiTi   : ("STKaiti-SC-Regular", "楷体"),
-        SupportFonts.LiShu   : ("STLibian-SC-Regular", "隶书"),
-        SupportFonts.SongTi  : ("STSongti-SC-Regular", "宋体")
-    ]
 
     /*
      * List all installed font
@@ -59,21 +66,6 @@ final class FontManager {
     }
 
     /*
-     * Get the font name for Enum.SupportFonts
-     *
-     * @param font      See FontManager.SupportFonts
-     *
-     * @return String   If font illegal, system font name will be returned
-     */
-    static func getFontName(font: SupportFonts) -> String{
-        if PostScriptNameTable.indexForKey(font) != nil {
-            return PostScriptNameTable[font]!.0
-        }
-
-        return PostScriptNameTable[SupportFonts.System]!.0
-    }
-
-    /*
      * Download apple listed support fonts.
      * [Ref]: http://developer.applae.com/.../DownloadFont
      * [Ref]: https://support.apple.com/en-us/HT202771
@@ -83,7 +75,7 @@ final class FontManager {
      * @param callback      The downloading callback, will be called on main-thread
      */
     static func asyncDownloadFont(font: SupportFonts, callback: (Bool, String, String) -> Void) {
-        let pname = getFontName(font)
+        let pname = font.postScript
 
         let runInUIThread = { (finish: Bool, font:String, msg: String) in
             dispatch_async(dispatch_get_main_queue()) {
@@ -99,7 +91,6 @@ final class FontManager {
         let attrs = NSMutableDictionary(object: pname, forKey: kCTFontNameAttribute as String)
         let descs = NSMutableArray(object: CTFontDescriptorCreateWithAttributes(attrs))
 
-
         CTFontDescriptorMatchFontDescriptorsWithProgressHandler(descs, nil) {
             (state: CTFontDescriptorMatchingState, paramDict: CFDictionaryRef) in
 
@@ -107,7 +98,7 @@ final class FontManager {
             case .DidBegin:
                 Utils.Log("Begin Matching")
             case .DidFailWithError:
-                runInUIThread(true, pname, "Download \(pname) failed!")
+                runInUIThread(true, pname, "Download \(font) failed!")
             case .WillBeginDownloading:
                 Utils.Log("Begin dowloading")
             case .DidFinishDownloading:

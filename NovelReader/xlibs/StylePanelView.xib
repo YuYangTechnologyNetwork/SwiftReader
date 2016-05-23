@@ -373,6 +373,7 @@
                     <include reference="lcN-Q5-tC4"/>
                 </mask>
             </variation>
+            <point key="canvasLocation" x="-132" y="92"/>
         </view>
     </objects>
 </document>
