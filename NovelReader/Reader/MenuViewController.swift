@@ -10,43 +10,42 @@ import UIKit
 import SnapKit
 
 class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
-
     @IBOutlet weak var topBar: UIView!
     @IBOutlet weak var bottomBar: UIView!
     @IBOutlet weak var maskPanel: UIView!
     @IBOutlet weak var chapterTitle: UILabel!
-    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
-
+    @IBOutlet weak var brightnessMask: UIView!
     @IBOutlet weak var topSubContainer: UIView!
     @IBOutlet weak var btmSubContainer: UIView!
-
-    @IBOutlet weak var brightnessMask: UIView!
-    var size: CGSize {
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
+    
+    @IBAction func onBackBtnClicked(sender: AnyObject) {
+    }
+    
+    private var size: CGSize {
         return self.view.bounds.size
     }
 
-    enum DownZone {
+    private enum DownZone {
         case None
         case Menu
         case Next
         case Prev
     }
 
-    var menuShow: Bool = false
-    var downZone: DownZone = .None
-    var readerManager: ReaderManager!
-    var stylePanelView: StylePanelView!
-    var readerController: ReaderViewController!
-
-    let stylePanelHeight:CGFloat = 190
+    private var readerManager: ReaderManager!
+    private var stylePanelView: StylePanelView!
+    private var readerController: ReaderViewController!
+    
+    private var menuShow: Bool           = false
+    private var downZone: DownZone       = .None
+    private let stylePanelHeight:CGFloat = 190
 
 	override func viewDidLoad() {
-		super.viewDidLoad()
-
-		loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
-		stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))
-
-        btmSubContainer.addSubview(stylePanelView)
+        super.viewDidLoad()
+        
+		self.stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))
+        self.btmSubContainer.addSubview(stylePanelView)
 
         Typesetter.Ins.addListener("MenuListener") { observer, oldValue in
             switch (observer) {
@@ -61,37 +60,42 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 	}
 
     override func viewWillAppear(animated: Bool) {
-        self.applyTheme()
-        self.brightnessMask.alpha = 1 - Typesetter.Ins.brightness
+        self.loadingIndicator.startAnimating()
+        self.brightnessMask.alpha   = 1 - Typesetter.Ins.brightness
+        self.loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
         
         // Start loading
-        self.loadingIndicator.startAnimating()
+		Utils.asyncTask({ () -> Book? in
+			return Book(fullFilePath: NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")!)
+		}) { book in
+			if let b = book {
+				self.readerManager = ReaderManager(b: b, size: self.view.frame.size)
 
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-            let filePath = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
-            let book = Book(fullFilePath: filePath!)
-            dispatch_async(dispatch_get_main_queue()) {
-				if let b = book {
-					self.readerManager = ReaderManager(b: b, size: self.view.frame.size)
-
-					self.readerManager.addListener("MenuTitle", forMonitor: ReaderManager.MonitorName.ChapterChanged) {
-						chapter in
-						self.chapterTitle.text = chapter.title
-					}
-
-					self.readerManager.asyncPrepare({ (chapter: Chapter) in
-						self.attachReaderView(chapter)
-					})
+				self.readerManager.addListener("MenuTitle", forMonitor: ReaderManager.MonitorName.ChapterChanged) {
+					chapter in
+					self.chapterTitle.text = chapter.title
 				}
-            }
-        }
 
-        stylePanelView.snp_makeConstraints { (make) -> Void in
-            make.width.equalTo(self.btmSubContainer.snp_width)
-            make.height.equalTo(stylePanelHeight)
+                FontManager.asyncDownloadFont(Typesetter.Ins.font) { success, fontName, msg in
+                    if !success {
+                        Typesetter.Ins.font = FontManager.SupportFonts.System
+                    }
+                
+                    self.readerManager.asyncPrepare({ chapter in
+                        self.attachReaderView(chapter)
+                    })
+                }
+			}
+		}
+
+        stylePanelView.snp_makeConstraints { make in
             make.top.equalTo(self.btmSubContainer.snp_top)
             make.left.equalTo(self.btmSubContainer.snp_left)
+            make.width.equalTo(self.btmSubContainer.snp_width)
+            make.height.equalTo(self.stylePanelHeight)
         }
+        
+        self.applyTheme()
     }
 
     override func prefersStatusBarHidden() -> Bool {
@@ -117,26 +121,20 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.stylePanelView.applyTheme()
 	}
     
-    func attachReaderView(currChapter: Chapter) {
-        FontManager.asyncDownloadFont(Typesetter.Ins.font) { (success: Bool, fontName: String, msg: String) in
-            self.loadingIndicator.stopAnimating()
-            self.loadingIndicator.hidden = true
-            self.chapterTitle.text       = currChapter.title
-            
-            if !success {
-                Typesetter.Ins.font = FontManager.SupportFonts.System
-            }
+	func attachReaderView(currChapter: Chapter) {
+        self.chapterTitle.text           = currChapter.title
+        self.readerController            = ReaderViewController()
+        self.readerController.readerMgr  = self.readerManager
+        self.readerController.view.frame = self.view.frame
 
-            self.readerController            = ReaderViewController()
-            self.readerController.readerMgr  = self.readerManager
-            self.readerController.view.frame = self.view.frame
-            
-            self.addChildViewController(self.readerController)
-            self.view.addSubview(self.readerController.view)
-            self.view.sendSubviewToBack(self.readerController.view)
-            self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.maskTaped(_:))))
-        }
-    }
+		self.addChildViewController(self.readerController)
+		self.view.addSubview(self.readerController.view)
+		self.view.sendSubviewToBack(self.readerController.view)
+		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.maskTaped(_:))))
+        
+        self.loadingIndicator.hidden     = true
+        self.loadingIndicator.stopAnimating()
+	}
 
     func maskTaped(recognizer: UITapGestureRecognizer) {
         let point = recognizer.locationInView(maskPanel)

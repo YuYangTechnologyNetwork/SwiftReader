@@ -21,7 +21,7 @@ class Typesetter {
     
     private typealias `Self` = Typesetter
 
-    static let DEFAULT_THEME = Theme.Default
+    static let DEFAULT_THEME = Theme.Parchment
     
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 18.0
@@ -37,7 +37,7 @@ class Typesetter {
     static let DEFAULT_LINE_SPACE: CGFloat = 8
     
     /*Default font*/
-    static let DEFAULT_FONT = FontManager.SupportFonts.System
+    static let DEFAULT_FONT = FontManager.SupportFonts.SongTi
     
     /*Singleton*/
     static let Ins = Typesetter()

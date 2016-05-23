@@ -56,6 +56,9 @@
                                             <include reference="nf0-7K-B1G"/>
                                         </mask>
                                     </variation>
+                                    <connections>
+                                        <action selector="onBackBtnClicked:" destination="-1" eventType="touchUpInside" id="g5L-Ms-FU5"/>
+                                    </connections>
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Chapter Title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="6oO-Mu-Flu">
                                     <rect key="frame" x="-42" y="-21" width="42" height="21"/>
@@ -491,20 +494,20 @@
                     <exclude reference="O21-g6-OUH"/>
                 </mask>
                 <mask key="constraints">
+                    <exclude reference="VAr-fC-8ik"/>
+                    <exclude reference="dpB-I6-OXr"/>
                     <exclude reference="C5J-4l-mUu"/>
                     <exclude reference="Vay-dK-xTG"/>
                     <exclude reference="bte-IH-LJS"/>
                     <exclude reference="e3c-D5-Ge4"/>
-                    <exclude reference="Lm0-6f-css"/>
-                    <exclude reference="kJQ-NY-qut"/>
-                    <exclude reference="mOC-Vg-jTC"/>
-                    <exclude reference="qFO-Ji-BuX"/>
                     <exclude reference="Phf-H3-ySR"/>
                     <exclude reference="WhB-P6-H4l"/>
                     <exclude reference="Xe5-gJ-PTb"/>
                     <exclude reference="bhY-2K-j1o"/>
-                    <exclude reference="VAr-fC-8ik"/>
-                    <exclude reference="dpB-I6-OXr"/>
+                    <exclude reference="Lm0-6f-css"/>
+                    <exclude reference="kJQ-NY-qut"/>
+                    <exclude reference="mOC-Vg-jTC"/>
+                    <exclude reference="qFO-Ji-BuX"/>
                     <exclude reference="8Uy-tF-Ycu"/>
                     <exclude reference="aYT-0H-Pu6"/>
                     <exclude reference="g32-Q8-3RO"/>
@@ -525,20 +528,20 @@
                     <include reference="O21-g6-OUH"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="VAr-fC-8ik"/>
+                    <include reference="dpB-I6-OXr"/>
                     <include reference="C5J-4l-mUu"/>
                     <include reference="Vay-dK-xTG"/>
                     <include reference="bte-IH-LJS"/>
                     <include reference="e3c-D5-Ge4"/>
-                    <include reference="Lm0-6f-css"/>
-                    <include reference="kJQ-NY-qut"/>
-                    <include reference="mOC-Vg-jTC"/>
-                    <include reference="qFO-Ji-BuX"/>
                     <include reference="Phf-H3-ySR"/>
                     <include reference="WhB-P6-H4l"/>
                     <include reference="Xe5-gJ-PTb"/>
                     <include reference="bhY-2K-j1o"/>
-                    <include reference="VAr-fC-8ik"/>
-                    <include reference="dpB-I6-OXr"/>
+                    <include reference="Lm0-6f-css"/>
+                    <include reference="kJQ-NY-qut"/>
+                    <include reference="mOC-Vg-jTC"/>
+                    <include reference="qFO-Ji-BuX"/>
                     <include reference="8Uy-tF-Ycu"/>
                     <include reference="aYT-0H-Pu6"/>
                     <include reference="g32-Q8-3RO"/>

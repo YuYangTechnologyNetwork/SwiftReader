@@ -46,7 +46,6 @@
 		3D45B5131CF01D2400FBE46A /* jy_gbk.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3D45B5121CF01D2400FBE46A /* jy_gbk.txt */; };
 		3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C70D1C96F53700DD408F /* AppDelegate.swift */; };
 		3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D49C70F1C96F53700DD408F /* Assets.xcassets */; };
-		3D49C7131C96F53700DD408F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D49C7111C96F53700DD408F /* LaunchScreen.storyboard */; };
 		3D49C71E1C96F53700DD408F /* NovelReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C71D1C96F53700DD408F /* NovelReaderTests.swift */; };
 		3D49C7291C96F53700DD408F /* NovelReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7281C96F53700DD408F /* NovelReaderUITests.swift */; };
 		3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7371C96F60900DD408F /* Typesetter.swift */; };
@@ -146,7 +145,6 @@
 		3D49C70A1C96F53700DD408F /* NovelReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NovelReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D49C70D1C96F53700DD408F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3D49C70F1C96F53700DD408F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		3D49C7121C96F53700DD408F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3D49C7141C96F53700DD408F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D49C7191C96F53700DD408F /* NovelReaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NovelReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D49C71D1C96F53700DD408F /* NovelReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovelReaderTests.swift; sourceTree = "<group>"; };
@@ -343,7 +341,6 @@
 				111B55C61CABD75100070E9C /* BridgingHeader.h */,
 				3D49C70D1C96F53700DD408F /* AppDelegate.swift */,
 				11DAD9991C9FE5D50027F98A /* MainViewController.swift */,
-				3D49C7111C96F53700DD408F /* LaunchScreen.storyboard */,
 				3D49C70F1C96F53700DD408F /* Assets.xcassets */,
 			);
 			path = NovelReader;
@@ -532,7 +529,6 @@
 				3D45B5131CF01D2400FBE46A /* jy_gbk.txt in Resources */,
 				112E9CD31C9FF1B400C5E34C /* JISFreq.tab in Resources */,
 				112E9CCF1C9FF1B400C5E34C /* Big5Freq.tab in Resources */,
-				3D49C7131C96F53700DD408F /* LaunchScreen.storyboard in Resources */,
 				3DC6F2AA1CF1F59800BD44FE /* ReaderViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -676,17 +672,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		3D49C7111C96F53700DD408F /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				3D49C7121C96F53700DD408F /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		3D49C72B1C96F53700DD408F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -774,6 +759,7 @@
 			baseConfigurationReference = 5D86706A83D49EB45C6AA878 /* Pods-NovelReader.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
@@ -796,6 +782,7 @@
 			baseConfigurationReference = BA06C410D81CC3AB39D968E4 /* Pods-NovelReader.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
