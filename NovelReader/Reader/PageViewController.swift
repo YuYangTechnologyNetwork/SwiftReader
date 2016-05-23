@@ -32,6 +32,7 @@ class PageViewController: UIViewController {
 	}
 
 	override func viewWillAppear(animated: Bool) {
+        boardMaskView.alpha = Typesetter.Ins.theme.boardMaskNeeded ? 1 : 0
 		if self.needRefresh {
 			needRefresh = false
 			if let p = self.paper {
@@ -54,43 +55,44 @@ class PageViewController: UIViewController {
 		return self
 	}
 
-	func applyTheme(withAnim: Bool = true) {
-		if let c = self.containerView {
-			if let p = paper {
-				p.attachToView(c)
-			}
-		}
+    func applyTheme(withAnim: Bool = true) {
+        if let c = self.containerView {
+            if let p = paper {
+                p.attachToView(c)
+            }
+        }
 
-		var maskNeedDisapplear = true
+        let cT = Typesetter.Ins.theme
+        let oT = Typesetter.Ins.oldTheme
 
-		if Theme.Info.Parchment.name == Typesetter.Ins.oldTheme?.name {
-			self.view.backgroundColor = Typesetter.Ins.oldTheme!.menuBackgroundColor
+        var notParchemnt = true
+        if cT == Theme.Night || oT == Theme.Night {
+            notParchemnt = true
+        } else {
+            notParchemnt = oT != .Parchment && cT != .Parchment
+        }
 
-			if let mask = self.boardMaskView {
-				mask.alpha = Typesetter.Ins.theme.boardMaskNeeded ? 1 : 0
-			}
+        if withAnim && notParchemnt {
+            UIView.animateWithDuration(0.3) {
+                if cT == .Night && oT != nil {
+                    self.view.backgroundColor = oT!.menuBackgroundColor
+                }
 
-			maskNeedDisapplear = false
-		}
+                if let mask = self.boardMaskView {
+                    mask.alpha = Typesetter.Ins.theme.boardMaskNeeded ? 1 : 0
+                }
 
-		let doChange = { () -> Void in
-			self.view.backgroundColor = Typesetter.Ins.theme.backgroundColor
-
-			if maskNeedDisapplear {
-				if let mask = self.boardMaskView {
-					mask.alpha = Typesetter.Ins.theme.boardMaskNeeded ? 1 : 0
-				}
-			}
-		}
-
-		if withAnim {
-			UIView.animateWithDuration(0.3) {
-				doChange()
-			}
-		} else {
-			doChange()
-		}
-	}
+                self.view.backgroundColor = Typesetter.Ins.theme.backgroundColor
+            }
+        } else {
+            self.view.backgroundColor = Typesetter.Ins.theme.backgroundColor
+            if let mask = self.boardMaskView {
+                UIView.animateWithDuration(0.3) {
+                    mask.alpha = Typesetter.Ins.theme.boardMaskNeeded ? 1 : 0
+                }
+            }
+        }
+    }
 
 	func bindPaper(paper: Paper?, doAnimation: Bool = false) -> PageViewController? {
 		if let p = paper {

@@ -18,7 +18,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reading_parchment_border" translatesAutoresizingMaskIntoConstraints="NO" id="qNB-Ci-6Ff">
+                <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reading_parchment_border" translatesAutoresizingMaskIntoConstraints="NO" id="qNB-Ci-6Ff">
                     <rect key="frame" x="0.0" y="0.0" width="600" height="575"/>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.054235910404624277" colorSpace="custom" customColorSpace="sRGB"/>
                 </imageView>
@@ -29,9 +29,6 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Oqk-YY-J0C" customClass="YYLabel">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="80" y="336" width="240" height="128"/>
-                    </variation>
                 </view>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -60,6 +57,10 @@
                     <exclude reference="Oqk-YY-J0C"/>
                 </mask>
                 <mask key="constraints">
+                    <exclude reference="Btf-48-34j"/>
+                    <exclude reference="POS-cK-Arb"/>
+                    <exclude reference="giX-Ya-D8H"/>
+                    <exclude reference="n8d-s3-syg"/>
                     <exclude reference="Feb-Qu-zRD"/>
                     <exclude reference="K5S-W3-Ik1"/>
                     <exclude reference="MYK-V9-3sF"/>
@@ -72,10 +73,6 @@
                     <exclude reference="OZo-6W-oXl"/>
                     <exclude reference="RcB-53-RuK"/>
                     <exclude reference="rgn-3c-JDQ"/>
-                    <exclude reference="Btf-48-34j"/>
-                    <exclude reference="POS-cK-Arb"/>
-                    <exclude reference="giX-Ya-D8H"/>
-                    <exclude reference="n8d-s3-syg"/>
                 </mask>
             </variation>
             <variation key="heightClass=regular-widthClass=compact">
@@ -85,6 +82,10 @@
                     <include reference="Oqk-YY-J0C"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="Btf-48-34j"/>
+                    <include reference="POS-cK-Arb"/>
+                    <include reference="giX-Ya-D8H"/>
+                    <include reference="n8d-s3-syg"/>
                     <include reference="Feb-Qu-zRD"/>
                     <include reference="K5S-W3-Ik1"/>
                     <exclude reference="MYK-V9-3sF"/>
@@ -97,10 +98,6 @@
                     <include reference="OZo-6W-oXl"/>
                     <include reference="RcB-53-RuK"/>
                     <include reference="rgn-3c-JDQ"/>
-                    <include reference="Btf-48-34j"/>
-                    <include reference="POS-cK-Arb"/>
-                    <include reference="giX-Ya-D8H"/>
-                    <include reference="n8d-s3-syg"/>
                 </mask>
             </variation>
         </view>

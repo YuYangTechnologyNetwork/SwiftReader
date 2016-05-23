@@ -59,6 +59,7 @@ class StylePanelView: UIView {
 
         self.vSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)
         self.hSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)
+        self.themeSegment.selectedSegmentIndex      = tp.theme.rawValue
 
         self.marginLabel.textColor                  = tp.theme.foregroundColor.newAlpha(0.6)
         self.lineSpaceLabel.textColor               = tp.theme.foregroundColor.newAlpha(0.6)
@@ -68,7 +69,7 @@ class StylePanelView: UIView {
         self.brightnessSlider.maximumTrackTintColor = tp.theme.foregroundColor.newAlpha(0.1)
         self.brightnessSlider.minimumTrackTintColor = tp.theme.foregroundColor
 
-        let trackBness: CGFloat                     = tp.theme.name == Theme.NIGHT ? 0.35 : 0.16
+        let trackBness: CGFloat                     = tp.theme == Theme.Night ? 0.35 : 0.16
 
 		self.brightnessSlider.setThumbImage(
 			Utils.color2Img(
@@ -94,7 +95,7 @@ class StylePanelView: UIView {
     }
     
 	@IBAction func onThemeChanged(sender: AnyObject) {
-		Typesetter.Ins.theme = Theme.forName(Theme.Info(rawValue: themeSegment.selectedSegmentIndex))
+		Typesetter.Ins.theme = Theme(rawValue: themeSegment.selectedSegmentIndex)!
 	}
 
     @IBAction func onBrightnessChanged(sender: AnyObject) {

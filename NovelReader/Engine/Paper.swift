@@ -31,7 +31,7 @@ class Paper:Equatable {
     private var size: CGSize!
     private var firstLineIsTitle     = false
     private var startWithNewLine     = false
-    private var firstTypesetterTheme = ""
+    private var firstTypesetterTheme:Theme!
     private var cachedText           = ""     /// Cached text for switch Theme
     
     init(size: CGSize) {
@@ -97,7 +97,7 @@ class Paper:Equatable {
             tmpTxtLy  = YYTextLayout(container: self.textContainer, text: attrText)
         }
 
-        self.firstTypesetterTheme = Typesetter.Ins.theme.name
+        self.firstTypesetterTheme = Typesetter.Ins.theme
         self.startWithNewLine     = startWithNewLine
         self.firstLineIsTitle     = firstLineIsTitle
         self.endWithNewLine       = (vLines.last?.isEmpty)!
@@ -137,7 +137,7 @@ class Paper:Equatable {
      */
 	func attachToView(yyLabel: YYLabel, applyTheme: Bool = false) {
 		if self.textLayout != nil {
-			if firstTypesetterTheme != Typesetter.Ins.theme.name {
+			if firstTypesetterTheme != Typesetter.Ins.theme {
                 if !cachedText.isEmpty {
                     let attrText = Typesetter.Ins.typeset(
                         cachedText,
@@ -147,7 +147,7 @@ class Paper:Equatable {
                     )
 
                     self.textLayout           = YYTextLayout(container: textContainer, text: attrText)
-                    self.firstTypesetterTheme = Typesetter.Ins.theme.name
+                    self.firstTypesetterTheme = Typesetter.Ins.theme
                 }
             }
 

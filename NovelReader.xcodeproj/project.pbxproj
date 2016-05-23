@@ -12,7 +12,6 @@
 		111B55C51CABD6C700070E9C /* Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111B55C31CABD6C700070E9C /* Extentions.swift */; };
 		111B55C81CABD77600070E9C /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111B55C71CABD77600070E9C /* Book.swift */; };
 		112B9D791CAD4AF200D0F9AB /* Paper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112B9D781CAD4AF200D0F9AB /* Paper.swift */; };
-		112B9D7B1CAD4BBF00D0F9AB /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */; };
 		112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */ = {isa = PBXBuildFile; fileRef = 112E9C8A1C9FF1B400C5E34C /* LangModels */; };
 		112E9CBB1C9FF1B400C5E34C /* CharDistribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 112E9C8B1C9FF1B400C5E34C /* CharDistribution.cpp */; };
 		112E9CBC1C9FF1B400C5E34C /* JpCntx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 112E9C8D1C9FF1B400C5E34C /* JpCntx.cpp */; };
@@ -60,6 +59,7 @@
 		3DC6F2AF1CF1F5F700BD44FE /* MenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */; };
 		3DC6F2B01CF1F5F700BD44FE /* PageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */; };
 		3DC6F2B21CF1F64A00BD44FE /* ReaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */; };
+		3F7052F01CF2F74C00235D48 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052EF1CF2F74C00235D48 /* Themes.swift */; };
 		B151B56F286167A47FDE50DE /* Pods_NovelReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A41B0B2B8FBA5B7898CADA0 /* Pods_NovelReader.framework */; };
 /* End PBXBuildFile section */
 
@@ -87,7 +87,6 @@
 		111B55C61CABD75100070E9C /* BridgingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		111B55C71CABD77600070E9C /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Book.swift; path = Models/Book.swift; sourceTree = "<group>"; };
 		112B9D781CAD4AF200D0F9AB /* Paper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Paper.swift; path = Engine/Paper.swift; sourceTree = "<group>"; };
-		112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = Engine/Theme.swift; sourceTree = "<group>"; };
 		112E9C8A1C9FF1B400C5E34C /* LangModels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LangModels; path = ThirdParty/Uchardet/LangModels; sourceTree = "<group>"; };
 		112E9C8B1C9FF1B400C5E34C /* CharDistribution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CharDistribution.cpp; path = ThirdParty/Uchardet/CharDistribution.cpp; sourceTree = "<group>"; };
 		112E9C8C1C9FF1B400C5E34C /* CharDistribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CharDistribution.h; path = ThirdParty/Uchardet/CharDistribution.h; sourceTree = "<group>"; };
@@ -165,6 +164,7 @@
 		3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MenuViewController.xib; path = xlibs/MenuViewController.xib; sourceTree = "<group>"; };
 		3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PageViewController.xib; path = xlibs/PageViewController.xib; sourceTree = "<group>"; };
 		3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReaderManager.swift; path = Engine/ReaderManager.swift; sourceTree = "<group>"; };
+		3F7052EF1CF2F74C00235D48 /* Themes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Themes.swift; path = Engine/Themes.swift; sourceTree = "<group>"; };
 		5D86706A83D49EB45C6AA878 /* Pods-NovelReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.debug.xcconfig"; sourceTree = "<group>"; };
 		9A41B0B2B8FBA5B7898CADA0 /* Pods_NovelReader.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NovelReader.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA06C410D81CC3AB39D968E4 /* Pods-NovelReader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.release.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.release.xcconfig"; sourceTree = "<group>"; };
@@ -372,9 +372,9 @@
 			children = (
 				3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */,
 				112B9D781CAD4AF200D0F9AB /* Paper.swift */,
-				112B9D7A1CAD4BBF00D0F9AB /* Theme.swift */,
 				3D49C7371C96F60900DD408F /* Typesetter.swift */,
 				1156F1861CA3BB88006B5848 /* FileReader.swift */,
+				3F7052EF1CF2F74C00235D48 /* Themes.swift */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
@@ -624,12 +624,12 @@
 				3DC6F2A61CF1F57200BD44FE /* BookMark.swift in Sources */,
 				112E9CCC1C9FF1B400C5E34C /* nsUniversalDetector.cpp in Sources */,
 				112E9CC11C9FF1B400C5E34C /* nsEUCJPProber.cpp in Sources */,
-				112B9D7B1CAD4BBF00D0F9AB /* Theme.swift in Sources */,
 				112E9CBC1C9FF1B400C5E34C /* JpCntx.cpp in Sources */,
 				112E9CC51C9FF1B400C5E34C /* nsHebrewProber.cpp in Sources */,
 				112E9CC21C9FF1B400C5E34C /* nsEUCKRProber.cpp in Sources */,
 				3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */,
 				111B55C41CABD6C700070E9C /* Constants.swift in Sources */,
+				3F7052F01CF2F74C00235D48 /* Themes.swift in Sources */,
 				3DC6F2A41CF1F56200BD44FE /* ReaderViewController.swift in Sources */,
 				3D2554B01CD79A2C00A4330C /* StylePanelView.swift in Sources */,
 				112E9CBB1C9FF1B400C5E34C /* CharDistribution.cpp in Sources */,

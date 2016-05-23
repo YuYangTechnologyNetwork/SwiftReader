@@ -21,7 +21,7 @@ class Typesetter {
     
     private typealias `Self` = Typesetter
 
-    static let DEFAULT_THEME = Theme.Parchment()
+    static let DEFAULT_THEME = Theme.Default
     
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 18.0
@@ -75,8 +75,8 @@ class Typesetter {
 
     var theme: Theme = Self.DEFAULT_THEME {
         didSet {
-            for l in listeners.values { l(.Theme, before: oldValue) }
             self.oldTheme = oldValue
+            for l in listeners.values { l(.Theme, before: oldValue) }
         }
     }
 

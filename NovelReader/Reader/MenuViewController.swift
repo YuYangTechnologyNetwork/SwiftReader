@@ -52,9 +52,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             switch (observer) {
             case .Theme:
                 self.hideMenu { self.applyTheme() }
-                Utils.Log(Typesetter.Ins.theme.name)
             case .Brightness:
-                self.applyTheme()
+                self.brightnessMask.alpha = 1 - Typesetter.Ins.brightness
             default:
                 break
             }
@@ -63,6 +62,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
     override func viewWillAppear(animated: Bool) {
         self.applyTheme()
+        self.brightnessMask.alpha = 1 - Typesetter.Ins.brightness
         
         // Start loading
         self.loadingIndicator.startAnimating()
@@ -99,7 +99,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return Typesetter.Ins.theme.statusBarStyle
+        return .Default
     }
 
     func applyTheme() {
@@ -109,7 +109,6 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.chapterTitle.textColor    = Typesetter.Ins.theme.foregroundColor
         self.topBar.backgroundColor    = Typesetter.Ins.theme.menuBackgroundColor
         self.bottomBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
-        self.brightnessMask.alpha      = 1 - Typesetter.Ins.brightness
 
 		if let rvc = self.readerController {
 			rvc.applyTheme()

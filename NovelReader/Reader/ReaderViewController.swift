@@ -158,7 +158,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
      - parameter scrollView: UIScrollView
      */
     func scrollViewDidScroll(scrollView: UIScrollView) {
-		if Typesetter.Ins.theme.name == Theme.PARCHMENT {
+		if Typesetter.Ins.theme == Theme.Parchment {
 			let xOffset = scrollView.contentOffset.x - view.frame.width
 
             var justify = false

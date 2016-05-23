@@ -17,7 +17,7 @@ final class Utils {
      - parameter fun:    Logging function name
      - parameter line:   Logging line
      */
-    static func Log(anyObj: AnyObject?, file: String = #file, fun: String = #function, line: Int = #line) {
+    static func Log(anyObj: Any?, file: String = #file, fun: String = #function, line: Int = #line) {
         #if DEBUG
             let paths = file.componentsSeparatedByString("/").last!.componentsSeparatedByString(".")
             let funcs = fun.componentsSeparatedByString("(")
