@@ -13,14 +13,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(application: UIApplication, didFinishLaunchingWithOptions _: [NSObject: AnyObject]?) -> Bool {
         self.window                     = UIWindow(frame: UIScreen.mainScreen().bounds)
+        self.window?.rootViewController = LaunchViewController(mainController: MenuViewController()) { hideSplash in
+            Utils.asyncTask({
+                sleep(1)
+            }) {
+                hideSplash()
+            }
+        }
 
-        self.window?.rootViewController = MenuViewController()
-//        self.window?.rootViewController = MainViewController()
-
-        self.window!.backgroundColor    = UIColor.blackColor()
-        self.window!.makeKeyAndVisible()
+        self.window?.makeKeyAndVisible()
         return true
     }
 
@@ -45,7 +48,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
 }
 

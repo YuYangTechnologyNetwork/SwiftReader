@@ -59,6 +59,9 @@
 		3DC6F2B01CF1F5F700BD44FE /* PageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */; };
 		3DC6F2B21CF1F64A00BD44FE /* ReaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */; };
 		3F7052F01CF2F74C00235D48 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052EF1CF2F74C00235D48 /* Themes.swift */; };
+		3F7052F21CF4089400235D48 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */; };
+		3F7052F51CF4753800235D48 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052F31CF4753800235D48 /* LaunchViewController.swift */; };
+		3F7052F61CF4753800235D48 /* LaunchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F7052F41CF4753800235D48 /* LaunchViewController.xib */; };
 		B151B56F286167A47FDE50DE /* Pods_NovelReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A41B0B2B8FBA5B7898CADA0 /* Pods_NovelReader.framework */; };
 /* End PBXBuildFile section */
 
@@ -163,6 +166,9 @@
 		3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PageViewController.xib; path = xlibs/PageViewController.xib; sourceTree = "<group>"; };
 		3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReaderManager.swift; path = Engine/ReaderManager.swift; sourceTree = "<group>"; };
 		3F7052EF1CF2F74C00235D48 /* Themes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Themes.swift; path = Engine/Themes.swift; sourceTree = "<group>"; };
+		3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = xlibs/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3F7052F31CF4753800235D48 /* LaunchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LaunchViewController.swift; path = Reader/LaunchViewController.swift; sourceTree = "<group>"; };
+		3F7052F41CF4753800235D48 /* LaunchViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LaunchViewController.xib; path = Reader/LaunchViewController.xib; sourceTree = "<group>"; };
 		5D86706A83D49EB45C6AA878 /* Pods-NovelReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.debug.xcconfig"; sourceTree = "<group>"; };
 		9A41B0B2B8FBA5B7898CADA0 /* Pods_NovelReader.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NovelReader.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA06C410D81CC3AB39D968E4 /* Pods-NovelReader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovelReader.release.xcconfig"; path = "Pods/Target Support Files/Pods-NovelReader/Pods-NovelReader.release.xcconfig"; sourceTree = "<group>"; };
@@ -280,6 +286,8 @@
 				3DC6F2A11CF1F56200BD44FE /* PageViewController.swift */,
 				3DC6F2A21CF1F56200BD44FE /* ReaderViewController.swift */,
 				11F32CD61CD0D68000543CF3 /* MenuViewController.swift */,
+				3F7052F31CF4753800235D48 /* LaunchViewController.swift */,
+				3F7052F41CF4753800235D48 /* LaunchViewController.xib */,
 			);
 			name = Reader;
 			sourceTree = "<group>";
@@ -292,6 +300,7 @@
 				3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */,
 				3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */,
 				3DC6F2A91CF1F59800BD44FE /* ReaderViewController.xib */,
+				3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */,
 			);
 			name = xlibs;
 			sourceTree = "<group>";
@@ -519,6 +528,8 @@
 				3DC6F2B01CF1F5F700BD44FE /* PageViewController.xib in Resources */,
 				112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */,
 				3DC6F2AE1CF1F5F700BD44FE /* MainViewController.xib in Resources */,
+				3F7052F61CF4753800235D48 /* LaunchViewController.xib in Resources */,
+				3F7052F21CF4089400235D48 /* LaunchScreen.storyboard in Resources */,
 				3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */,
 				112E9CD21C9FF1B400C5E34C /* GB2312Freq.tab in Resources */,
 				112E9CD11C9FF1B400C5E34C /* EUCTWFreq.tab in Resources */,
@@ -612,6 +623,7 @@
 				112E9CCB1C9FF1B400C5E34C /* nsSJISProber.cpp in Sources */,
 				112B9D791CAD4AF200D0F9AB /* Paper.swift in Sources */,
 				112E9CBD1C9FF1B400C5E34C /* nsBig5Prober.cpp in Sources */,
+				3F7052F51CF4753800235D48 /* LaunchViewController.swift in Sources */,
 				112E9CC81C9FF1B400C5E34C /* nsMBCSSM.cpp in Sources */,
 				3DC6F2A81CF1F58500BD44FE /* Utils.swift in Sources */,
 				3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */,

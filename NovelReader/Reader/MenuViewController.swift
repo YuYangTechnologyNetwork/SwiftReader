@@ -22,6 +22,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBAction func onBackBtnClicked(sender: AnyObject) {
     }
     
+    @IBOutlet weak var loadingBoardMask: UIImageView!
+
     private var size: CGSize {
         return self.view.bounds.size
     }
@@ -46,6 +48,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         
 		self.stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))
         self.btmSubContainer.addSubview(stylePanelView)
+        self.loadingBoardMask.hidden = !Typesetter.Ins.theme.boardMaskNeeded
 
         Typesetter.Ins.addListener("MenuListener") { observer, oldValue in
             switch (observer) {
@@ -131,8 +134,17 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 		self.view.addSubview(self.readerController.view)
 		self.view.sendSubviewToBack(self.readerController.view)
 		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.maskTaped(_:))))
-        
-        self.loadingIndicator.hidden     = true
+
+        if !self.loadingBoardMask.hidden {
+            UIView.animateWithDuration(0.3, animations: {
+                self.loadingBoardMask.alpha = 0
+            }) { end in
+                self.loadingBoardMask.hidden = true
+                self.loadingBoardMask.alpha = 1
+            }
+        }
+
+        self.loadingIndicator.hidden = true
         self.loadingIndicator.stopAnimating()
 	}
 

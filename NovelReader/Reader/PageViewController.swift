@@ -28,11 +28,11 @@ class PageViewController: UIViewController {
         containerView.ignoreCommonProperties       = true
         bufferContainerView.textVerticalAlignment  = .Top
         bufferContainerView.ignoreCommonProperties = true
+        boardMaskView.alpha                        = Typesetter.Ins.theme.boardMaskNeeded ? 1 : 0
 		applyTheme(false)
 	}
 
 	override func viewWillAppear(animated: Bool) {
-        boardMaskView.alpha = Typesetter.Ins.theme.boardMaskNeeded ? 1 : 0
 		if self.needRefresh {
 			needRefresh = false
 			if let p = self.paper {
@@ -97,8 +97,8 @@ class PageViewController: UIViewController {
 	func bindPaper(paper: Paper?, doAnimation: Bool = false) -> PageViewController? {
 		if let p = paper {
 			if p != self.paper {
-				let lp = self.paper
-				self.paper = p
+                let lp     = self.paper
+                self.paper = p
 				if let c = self.containerView {
 					if doAnimation {
                         if let l = lp {
@@ -110,7 +110,7 @@ class PageViewController: UIViewController {
                         containerView.alpha       = 0
                         p.attachToView(c)
 
-						UIView.animateWithDuration(0.3) {
+						UIView.animateWithDuration(0.2) {
                             self.containerView.alpha       = 1
                             self.bufferContainerView.alpha = 0
 						}
