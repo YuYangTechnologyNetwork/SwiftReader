@@ -130,7 +130,10 @@ class Typesetter {
     func typeset(text: String, firstLineIsTitle: Bool = false, paperWidth: CGFloat = 0, 
                  startWithNewLine: Bool = false) -> NSMutableAttributedString {
         let attrt  = NSMutableAttributedString(string: text)
-        let yyFont = UIFont(name: font.postScript, size: self.fontSize)
+        let yyFont = UIFont(
+            name: font.postScript,
+            size: self.fontSize) ?? UIFont(name: FontManager.SupportFonts.System.postScript, size: self.fontSize)
+        
         var start  = 0
         let range  = text.rangeOfString(FileReader.getNewLineCharater(text))
 

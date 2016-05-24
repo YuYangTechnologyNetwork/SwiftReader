@@ -9,15 +9,18 @@
 import UIKit
 
 final class LaunchViewController: UIViewController {
+    @IBOutlet weak var progressLabel: UILabel!
+    @IBOutlet weak var topContainerView: UIView!
+    @IBOutlet weak var progressView: UIProgressView!
 
     private var loaded: Bool = false
     private var splashvc: UIViewController?
-    private var asyncTask: ((() -> Void) -> Void)? = nil
-    private var readerMainCtrl: UIViewController!
+    private var asyncTask: ((LaunchViewController) -> Void)? = nil
+    private var mainViewCtrler: UIViewController!
 
-    init(mainController: UIViewController, loading task: ((() -> Void) -> Void)? = nil) {
+    init(mainController: UIViewController, loading task: ((LaunchViewController) -> Void)? = nil) {
         super.init(nibName: nil, bundle: nil)
-        readerMainCtrl = mainController
+        mainViewCtrler = mainController
         self.asyncTask = task
     }
 
@@ -31,11 +34,11 @@ final class LaunchViewController: UIViewController {
     }
 
     override func prefersStatusBarHidden() -> Bool {
-        return !self.loaded && readerMainCtrl.prefersStatusBarHidden()
+        return !self.loaded || mainViewCtrler.prefersStatusBarHidden()
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return readerMainCtrl.preferredStatusBarStyle()
+        return mainViewCtrler.preferredStatusBarStyle()
     }
 
     private func showSplash() {
@@ -48,28 +51,60 @@ final class LaunchViewController: UIViewController {
                     splashvc!.view.frame = self.view.frame
                     self.view.addSubview(splashvc!.view)
                     self.addChildViewController(splashvc!)
-
-                    task {
-                        self.displayMainController()
+                    self.view.bringSubviewToFront(self.topContainerView)
+                    self.topContainerView.alpha = 0
+                    
+                    UIView.animateWithDuration(0.3) {
+                        self.topContainerView.alpha = 1
                     }
+
+                    task(self)
                 }
             }
         }
     }
+    
+    func setProgressText(label: String?) {
+        progressLabel.text = label
+    }
+    
+    func setProgressValue(value:Float) {
+        progressView.setProgress(value, animated: true)
+    }
 
     func displayMainController() {
-        readerMainCtrl.view.frame = self.view.frame
-        self.addChildViewController(readerMainCtrl)
-        self.view.addSubview(readerMainCtrl.view)
-        self.view.sendSubviewToBack(readerMainCtrl.view)
+        mainViewCtrler.view.frame = self.view.frame
+        self.addChildViewController(mainViewCtrler)
+        self.view.addSubview(mainViewCtrler.view)
+        self.view.sendSubviewToBack(mainViewCtrler.view)
 
         if let splash = splashvc {
+            mainViewCtrler.view.alpha = 0
             UIView.animateWithDuration(0.3, animations: {
-                splash.view.alpha = 0
+                self.topContainerView.alpha    = 0
+                self.mainViewCtrler.view.alpha = 1
+                splash.view.alpha              = 0
             }) { finish in
+                self.topContainerView.removeFromSuperview()
                 splash.view.removeFromSuperview()
                 splash.removeFromParentViewController()
             }
         }
+        
+        self.loaded = true
     }
+    
+	func displayMainControllerWithDelay(delay: NSTimeInterval) {
+		if delay > 0 {
+			NSTimer.scheduledTimerWithTimeInterval(
+				delay,
+				target: self,
+				selector: #selector(displayMainController),
+				userInfo: nil,
+				repeats: false
+			)
+		} else {
+			displayMainController()
+		}
+	}
 }

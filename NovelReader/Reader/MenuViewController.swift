@@ -74,20 +74,14 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 			if let b = book {
 				self.readerManager = ReaderManager(b: b, size: self.view.frame.size)
 
-				self.readerManager.addListener("MenuTitle", forMonitor: ReaderManager.MonitorName.ChapterChanged) {
+				self.readerManager.addListener("MenuTitle", forMonitor: .ChapterChanged) {
 					chapter in
 					self.chapterTitle.text = chapter.title
 				}
 
-                FontManager.asyncDownloadFont(Typesetter.Ins.font) { success, fontName, msg in
-                    if !success {
-                        Typesetter.Ins.font = FontManager.SupportFonts.System
-                    }
-                
-                    self.readerManager.asyncPrepare({ chapter in
-                        self.attachReaderView(chapter)
-                    })
-                }
+				self.readerManager.asyncPrepare({ chapter in
+					self.attachReaderView(chapter)
+				})
 			}
 		}
 

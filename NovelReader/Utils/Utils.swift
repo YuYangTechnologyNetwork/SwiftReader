@@ -70,4 +70,10 @@ final class Utils {
 			}
 		}
 	}
+    
+	static func runUITask(task: () -> Void) {
+		dispatch_async(dispatch_get_main_queue()) {
+			task()
+		}
+	}
 }

@@ -14,7 +14,7 @@ final class FontManager {
     enum SupportFonts:String {
         case System  = "系统字体"
         case Heiti   = "华文黑体"
-        case LanTing = "兰亭黑"
+        case LanTing = "兰亭黑  "
         case LiShu   = "隶书    "
         case KaiTi   = "楷体    "
         case SongTi  = "宋体    "
@@ -35,6 +35,10 @@ final class FontManager {
 				return "STSongti-SC-Regular"
 			}
 		}
+    }
+    
+    enum State {
+        case Downloading, Success, Failure, Matched
     }
 
     /*
@@ -74,45 +78,45 @@ final class FontManager {
      *
      * @param callback      The downloading callback, will be called on main-thread
      */
-    static func asyncDownloadFont(font: SupportFonts, callback: (Bool, String, String) -> Void) {
+    static func asyncDownloadFont(font: SupportFonts, callback: (State, String, String?) -> Void) {
         let pname = font.postScript
 
-        let runInUIThread = { (finish: Bool, font:String, msg: String) in
+        let runInUIThread = { (finish: State, font:String, msg: String?) in
             dispatch_async(dispatch_get_main_queue()) {
                 callback(finish, font, msg)
             }
         }
 
         if isAvailable(pname) {
-            runInUIThread(true, pname, pname)
+            runInUIThread(.Matched, pname, nil)
             return
         }
 
         let attrs = NSMutableDictionary(object: pname, forKey: kCTFontNameAttribute as String)
         let descs = NSMutableArray(object: CTFontDescriptorCreateWithAttributes(attrs))
 
-        CTFontDescriptorMatchFontDescriptorsWithProgressHandler(descs, nil) {
-            (state: CTFontDescriptorMatchingState, paramDict: CFDictionaryRef) in
-
+        CTFontDescriptorMatchFontDescriptorsWithProgressHandler(descs, nil) { state, paramDict in
+            let progress = (paramDict as NSDictionary).objectForKey(kCTFontDescriptorMatchingPercentage)?.doubleValue
+            
             switch state {
             case .DidBegin:
                 Utils.Log("Begin Matching")
             case .DidFailWithError:
-                runInUIThread(true, pname, "Download \(font) failed!")
+                runInUIThread(State.Failure , pname, nil)
             case .WillBeginDownloading:
-                Utils.Log("Begin dowloading")
+                runInUIThread(State.Downloading, pname, "\(progress)")
             case .DidFinishDownloading:
-                Utils.Log("Finish downloading")
+                runInUIThread(State.Downloading, pname, "\(progress)")
             case .WillBeginQuerying:
                 Utils.Log("Begin querying")
             case .Stalled:
                 Utils.Log("Stalled")
             case .Downloading:
-                Utils.Log("Downloading")
+                runInUIThread(State.Downloading, pname, "\(progress)")
             case .DidMatch:
-                Utils.Log("Finish Matching")
+                runInUIThread(State.Matched, pname, nil)
             case .DidFinish:
-                runInUIThread(true, pname, pname)
+                runInUIThread(State.Success, pname, nil)
             }
 
             return true

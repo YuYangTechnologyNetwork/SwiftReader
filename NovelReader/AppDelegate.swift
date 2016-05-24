@@ -14,18 +14,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions _: [NSObject: AnyObject]?) -> Bool {
-        self.window                     = UIWindow(frame: UIScreen.mainScreen().bounds)
-        self.window?.rootViewController = LaunchViewController(mainController: MenuViewController()) { hideSplash in
-            Utils.asyncTask({
-                sleep(1)
-            }) {
-                hideSplash()
-            }
-        }
+        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        
+		self.window?.rootViewController = LaunchViewController(mainController: MenuViewController()) { splash in
+            // Download font
+			splash.setProgressText("Matching font...")
+			FontManager.asyncDownloadFont(Typesetter.Ins.font) { state, font, msg in
+				if state == FontManager.State.Downloading {
+					Utils.Log(msg)
+					let progress = ((msg ?? "0") as NSString).floatValue
+					splash.setProgressText(String(format: "Downloading font...%.2f", progress * 100) + "%")
+					splash.setProgressValue(progress * 0.2)
+                    
+				} else {
+                    // Extract chapters
+					splash.setProgressText("Extract chapters...")
+					splash.setProgressValue(0.2)
+                    
+					Utils.asyncTask({
+                        let filePath = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
+                        let book     = Book(fullFilePath: filePath!)!
+                        let file     = fopen(filePath!, "r")
+                        let reader   = FileReader()
+                        let encoding = FileReader.Encodings[book.encoding]!
 
-        self.window?.makeKeyAndVisible()
-        return true
-    }
+						reader.logOff.fetchChaptersOfFile(file, encoding: encoding) { chapters in
+							if !chapters.isEmpty {
+								Utils.runUITask {
+									let p = Float(chapters.last!.range.end) / Float(book.size)
+									splash.setProgressText(String(format: "Extract chapters...%.2f", p * 100) + "%")
+									splash.setProgressValue(p * 0.8 + 0.2)
+								}
+							}
+						}
+
+						fclose(file)
+
+						Utils.runUITask {
+                            splash.setProgressValue(1)
+                        }
+                        
+                        // Anymore...
+					}) {
+                        // Dismiss splash
+                        splash.displayMainController()
+                    }
+				}
+			}
+		}
+
+		self.window?.makeKeyAndVisible()
+		return true
+	}
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
