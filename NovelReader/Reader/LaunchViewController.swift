@@ -44,7 +44,6 @@ final class LaunchViewController: UIViewController {
     private func showSplash() {
         if let task = asyncTask {
             if let splashStr = NSBundle.mainBundle().infoDictionary?["UILaunchStoryboardName"] as? String {
-                Utils.Log(splashStr)
                 let launchStoryboard = UIStoryboard(name: splashStr, bundle: nil)
                 if let splashController = launchStoryboard.instantiateInitialViewController() {
                     splashvc = splashController
@@ -94,7 +93,7 @@ final class LaunchViewController: UIViewController {
         self.loaded = true
     }
     
-	func displayMainControllerWithDelay(delay: NSTimeInterval) {
+	func displayMainControllerDelay(delay: NSTimeInterval) {
 		if delay > 0 {
 			NSTimer.scheduledTimerWithTimeInterval(
 				delay,

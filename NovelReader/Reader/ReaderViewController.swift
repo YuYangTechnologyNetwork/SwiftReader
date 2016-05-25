@@ -14,6 +14,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     private var swipeCtrls: [PageViewController]!
     private var pageViewCtrl: UIPageViewController!
     private var dataIsPrefect:Bool = false
+    private var completeCalled:Bool = false
 
     private var head: Bool {
         return self.readerMgr.isHead || self.readerMgr.prevPaper == nil
@@ -131,6 +132,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
     func pageViewController(pageViewController: UIPageViewController,
                             willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
         dataIsPrefect = true
+        completeCalled = false
     }
 
 	/*UIPageViewControllerDelegate*/
@@ -149,6 +151,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
 				}
 
                 dataIsPrefect = false
+                completeCalled = true
             }
 	}
 
@@ -172,7 +175,8 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
             
             if xOffset % view.frame.width == 0 {
                 overScrollView.hidden = !justify
-                if !dataIsPrefect {
+                if !dataIsPrefect && !completeCalled {
+                    completeCalled = true
                     refreshPages()
                 }
 			} else {

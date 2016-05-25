@@ -381,17 +381,18 @@ extension FileReader {
      - parameter slice:    A closure to get slice chapters
      */
     func fetchChaptersOfFile(file: UnsafeMutablePointer<FILE>, encoding: UInt, slice: ([BookMark]) -> Void) {
-        var start = 0, scale = 0
+        var start = 0, scale = 1
         let fileSize = getFileSize(file)
 
         while true {
-            let scope = NSMakeRange(max(start - Self.BUFFER_SIZE * scale, 0), Self.BUFFER_SIZE * (scale + 1))
-            var chapters = fetchChaptersInRange(file, range: scope, encoding: encoding)
-            chapters.sortInPlace { $0.0.range.loc < $0.1.range.loc }
+            let loc   = max(start - 1024, 0)
+            let end   = min(loc + Self.BUFFER_SIZE * 2 * scale, fileSize)
+            let scope = NSMakeRange(loc, end - loc)
+            let chs   = fetchChaptersInRange(file, range: scope, encoding: encoding).sort { $0.range.loc < $1.range.loc }
 
             var s = [BookMark]()
-            for (i, ch) in chapters.enumerate() {
-                if (i < chapters.count - 1 || scope.end >= fileSize) && ch.range.loc >= start {
+            for (i, ch) in chs.enumerate() {
+                if (i < chs.count - 1 || scope.end >= fileSize) && ch.range.loc >= start {
                     s.append(ch)
                 }
             }
@@ -399,7 +400,7 @@ extension FileReader {
             if s.isEmpty {
                 scale += 1
             } else {
-                scale = 0
+                scale = 1
                 start = s.last!.range.end
                 slice(s)
             }

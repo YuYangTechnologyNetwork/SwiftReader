@@ -19,13 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		self.window?.rootViewController = LaunchViewController(mainController: MenuViewController()) { splash in
             // Download font
 			splash.setProgressText("Matching font...")
-			FontManager.asyncDownloadFont(Typesetter.Ins.font) { state, font, msg in
+			FontManager.asyncDownloadFont(Typesetter.Ins.font) { state, font, progress in
 				if state == FontManager.State.Downloading {
-					Utils.Log(msg)
-					let progress = ((msg ?? "0") as NSString).floatValue
 					splash.setProgressText(String(format: "Downloading font...%.2f", progress * 100) + "%")
 					splash.setProgressValue(progress * 0.2)
-                    
 				} else {
                     // Extract chapters
 					splash.setProgressText("Extract chapters...")
@@ -46,6 +43,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 									splash.setProgressValue(p * 0.8 + 0.2)
 								}
 							}
+                            
+                            for ch in chapters {
+                                Utils.Log(ch)
+                            }
 						}
 
 						fclose(file)

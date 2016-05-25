@@ -26,7 +26,7 @@ class Typesetter {
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 18.0
 
-    static let DEFAULT_BRIGHTNESS: CGFloat = 0.8
+    static let DEFAULT_BRIGHTNESS: CGFloat = 1
     
     /**
      * Default margin: (top, left, bottom, right)

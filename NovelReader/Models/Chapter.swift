@@ -159,7 +159,7 @@ class Chapter: BookMark {
 
         var ready = chapters.count > 0
         
-        chapters.sortInPlace { $0.0.range.loc < $0.1.range.loc }
+        chapters.sortInPlace { $0.range.loc < $1.range.loc }
 
         // Get chapter
         if ready {

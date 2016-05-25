@@ -110,7 +110,7 @@ class PageViewController: UIViewController {
                         containerView.alpha       = 0
                         p.attachToView(c)
 
-						UIView.animateWithDuration(0.2) {
+						UIView.animateWithDuration(0.3) {
                             self.containerView.alpha       = 1
                             self.bufferContainerView.alpha = 0
 						}
