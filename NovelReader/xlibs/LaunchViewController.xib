@@ -50,12 +50,12 @@
                             <exclude reference="0ei-Vq-CQF"/>
                         </mask>
                         <mask key="constraints">
-                            <exclude reference="uEF-5w-bWZ"/>
                             <exclude reference="9Hp-Kx-P04"/>
                             <exclude reference="Aui-M0-xTB"/>
                             <exclude reference="Mxh-6M-dBk"/>
                             <exclude reference="bLf-si-7ns"/>
                             <exclude reference="sQP-4U-Od2"/>
+                            <exclude reference="uEF-5w-bWZ"/>
                         </mask>
                     </variation>
                     <variation key="heightClass=regular-widthClass=compact">
@@ -64,12 +64,12 @@
                             <include reference="0ei-Vq-CQF"/>
                         </mask>
                         <mask key="constraints">
-                            <include reference="uEF-5w-bWZ"/>
                             <include reference="9Hp-Kx-P04"/>
                             <include reference="Aui-M0-xTB"/>
                             <include reference="Mxh-6M-dBk"/>
                             <include reference="bLf-si-7ns"/>
                             <include reference="sQP-4U-Od2"/>
+                            <include reference="uEF-5w-bWZ"/>
                         </mask>
                     </variation>
                 </view>

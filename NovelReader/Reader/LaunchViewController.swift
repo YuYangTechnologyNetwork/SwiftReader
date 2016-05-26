@@ -19,7 +19,7 @@ final class LaunchViewController: UIViewController {
     private var mainViewCtrler: UIViewController!
 
     init(mainController: UIViewController, loading task: ((LaunchViewController) -> Void)? = nil) {
-        super.init(nibName: nil, bundle: nil)
+        super.init(nibName: "LaunchViewController", bundle: nil)
         mainViewCtrler = mainController
         self.asyncTask = task
     }

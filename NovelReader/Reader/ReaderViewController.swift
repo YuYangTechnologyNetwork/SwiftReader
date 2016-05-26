@@ -66,7 +66,12 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
 	}
 
     func bindPages() {
-        swipeCtrls = [PageViewController().index(0), PageViewController().index(1), PageViewController().index(2)]
+        swipeCtrls = [
+            PageViewController(nibName:"PageViewController", bundle: nil).index(0),
+            PageViewController(nibName:"PageViewController", bundle: nil).index(1),
+            PageViewController(nibName:"PageViewController", bundle: nil).index(2)
+        ]
+
         swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, doAnimation: true)
 
         if readerMgr.isHead {

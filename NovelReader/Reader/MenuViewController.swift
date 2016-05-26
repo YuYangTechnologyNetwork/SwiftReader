@@ -120,7 +120,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     
 	func attachReaderView(currChapter: Chapter) {
         self.chapterTitle.text           = currChapter.title
-        self.readerController            = ReaderViewController()
+        self.readerController            = ReaderViewController(nibName: "ReaderViewController", bundle: nil)
         self.readerController.readerMgr  = self.readerManager
         self.readerController.view.frame = self.view.frame
 
