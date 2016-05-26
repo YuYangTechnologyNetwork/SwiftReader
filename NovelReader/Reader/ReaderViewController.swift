@@ -52,27 +52,19 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         }
     }
 
-    override func viewWillAppear(animated: Bool) {
-        overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
-        bindPages()
-    }
-    
-	func refreshPages() {
-		if let pages = self.swipeCtrls {
-			pages[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
-			pages[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
-			pageViewCtrl.setViewControllers([pages[self.currIndex]], direction: .Forward, animated: false) { e in }
-		}
+	override func viewWillAppear(animated: Bool) {
+		overScrollView.backgroundColor = Typesetter.Ins.theme.backgroundColor
+        loadPapers(true)
 	}
 
-    func bindPages() {
+    func loadPapers(withAnimation: Bool = false) {
         swipeCtrls = [
             PageViewController(nibName:"PageViewController", bundle: nil).index(0),
             PageViewController(nibName:"PageViewController", bundle: nil).index(1),
             PageViewController(nibName:"PageViewController", bundle: nil).index(2)
         ]
 
-        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, doAnimation: true)
+        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, doAnimation: withAnimation)
 
         if readerMgr.isHead {
             swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
@@ -85,6 +77,20 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
         
         pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false, completion: nil)
     }
+    
+    private func refreshPages() {
+        if let pages = self.swipeCtrls {
+            pages[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+            pages[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
+            pageViewCtrl.setViewControllers([pages[self.currIndex]], direction: .Forward, animated: false) { e in }
+        }
+    }
+    
+	func applyFormat() {
+		if let curr = pageViewCtrl.viewControllers?[0] as? PageViewController {
+			curr.applyFormat()
+		}
+	}
     
     func applyTheme() {
 		swipeCtrls[currIndex].applyTheme()
@@ -112,7 +118,7 @@ class ReaderViewController: UIViewController, UIPageViewControllerDataSource, UI
             }
         }
     }
-
+    
     private func nextIndex(index: Int) -> Int {
         return index < 2 ? index + 1: 0
     }

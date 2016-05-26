@@ -24,9 +24,16 @@ class Typesetter {
     static let DEFAULT_THEME = Theme.Parchment
     
     /*Default font size*/
-    static let DEFAULT_FONT_SIZE: CGFloat = 18.0
+    static let DEFAULT_FONT_SIZE: CGFloat = 18
 
     static let DEFAULT_BRIGHTNESS: CGFloat = 1
+    
+    static let FontSize_Min:CGFloat    = 12
+    static let FontSize_Max:CGFloat    = 24
+    static let Margin_Min:UIEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
+    static let Margin_Max:UIEdgeInsets = UIEdgeInsetsMake(50, 50, 50, 50)
+    static let LineSpace_Min:CGFloat   = 0
+    static let LineSpace_Max:CGFloat   = 20
     
     /**
      * Default margin: (top, left, bottom, right)

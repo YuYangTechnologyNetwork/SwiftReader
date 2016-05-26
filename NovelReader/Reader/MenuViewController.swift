@@ -40,6 +40,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     private var readerController: ReaderViewController!
     
     private var menuShow: Bool           = false
+    private var needReload: Bool         = false
     private var downZone: DownZone       = .None
     private let stylePanelHeight:CGFloat = 190
 
@@ -57,6 +58,10 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             case .Brightness:
                 self.brightnessMask.alpha = 1 - Typesetter.Ins.brightness
             default:
+				if let reader = self.readerController {
+					reader.applyFormat()
+				}
+                self.needReload = true
                 break
             }
         }
@@ -79,7 +84,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 					self.chapterTitle.text = chapter.title
 				}
 
-				self.readerManager.asyncPrepare({ chapter in
+				self.readerManager.asyncLoading({ chapter in
 					self.attachReaderView(chapter)
 				})
 			}
@@ -102,7 +107,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .Default
     }
-
+    
     func applyTheme() {
         self.topBar.tintColor          = Typesetter.Ins.theme.foregroundColor
         self.bottomBar.tintColor       = Typesetter.Ins.theme.foregroundColor
@@ -199,6 +204,19 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     func hideMenu(animationCompeted:(()->Void)? = nil ) {
         self.menuShow = false
         self.btmSubContainer.userInteractionEnabled = false
+        
+        if needReload {
+            needReload = false
+            self.loadingIndicator.hidden = false
+            self.loadingIndicator.startAnimating()
+            self.brightnessMask.userInteractionEnabled = true
+			readerManager.asyncLoading { _ in
+                self.readerController.loadPapers()
+				self.loadingIndicator.startAnimating()
+                self.loadingIndicator.hidden = true
+                self.brightnessMask.userInteractionEnabled = false
+			}
+        }
 
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Slide)

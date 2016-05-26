@@ -87,4 +87,61 @@ class StylePanelView: UIView {
     @IBAction func onBrightnessChanged(sender: AnyObject) {
         Typesetter.Ins.brightness = CGFloat(brightnessSlider.value / brightnessSlider.maximumValue)
     }
+    
+    @IBAction func onFontSizeChanged(sender: AnyObject) {
+        let selected = fontSizeSegment.selectedSegmentIndex
+        let fontSize = min(
+            Typesetter.FontSize_Max,
+            max(
+                Typesetter.FontSize_Min,
+                Typesetter.Ins.fontSize + 2 * (selected > 0 ? 1 : -1)
+            )
+        )
+        
+        if fontSize <= Typesetter.FontSize_Min {
+            fontSizeSegment.setEnabled(false, forSegmentAtIndex: 0)
+        } else if fontSize >= Typesetter.FontSize_Max {
+            fontSizeSegment.setEnabled(false, forSegmentAtIndex: 1)
+        } else {
+            fontSizeSegment.setEnabled(true, forSegmentAtIndex: 0)
+            fontSizeSegment.setEnabled(true, forSegmentAtIndex: 1)
+        }
+        
+        Typesetter.Ins.fontSize = fontSize
+    }
+    
+	@IBAction func decreaseLineSpace(sender: AnyObject) {
+        Typesetter.Ins.line_space = max(Typesetter.LineSpace_Min, Typesetter.Ins.line_space - 1)
+        lineSpaceDecBtn.enabled   = Typesetter.Ins.line_space > Typesetter.LineSpace_Min
+        lineSpaceIncBtn.enabled   = true
+	}
+
+	@IBAction func increaseLineSpace(sender: AnyObject) {
+        Typesetter.Ins.line_space = min(Typesetter.LineSpace_Max, Typesetter.Ins.line_space + 1)
+        lineSpaceIncBtn.enabled   = Typesetter.Ins.line_space < Typesetter.LineSpace_Max
+        lineSpaceDecBtn.enabled   = true
+	}
+    
+	@IBAction func descreaseBoardMargin(sender: AnyObject) {
+        var margin = Typesetter.Ins.margin
+        margin.increase(-5, t: -5, r: -5, b: -5)
+        margin.clamp(Typesetter.Margin_Min, up: Typesetter.Margin_Max)
+        
+        Typesetter.Ins.margin = margin
+        marginDecBtn.enabled  = margin != Typesetter.Margin_Min
+        marginIncBtn.enabled  = true
+	}
+    
+    @IBAction func increaseBoardMargin(sender: AnyObject) {
+        var margin = Typesetter.Ins.margin
+        margin.increase(5, t: 5, r: 5, b: 5)
+        margin.clamp(Typesetter.Margin_Min, up: Typesetter.Margin_Max)
+
+        Typesetter.Ins.margin = margin
+        marginIncBtn.enabled  = margin != Typesetter.Margin_Max
+        marginDecBtn.enabled  = true
+	}
+    
+	@IBAction func toSelectFontFamily(sender: AnyObject) {
+	}
 }

@@ -32,6 +32,9 @@
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RNr-hJ-40H">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                     <state key="normal" title="系统字体         〉"/>
+                    <connections>
+                        <action selector="toSelectFontFamily:" destination="-1" eventType="touchUpInside" id="iu9-fH-akP"/>
+                    </connections>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xy3-xY-a0L">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
@@ -75,10 +78,16 @@
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="81l-Ir-tDB">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                     <state key="normal" title="▽"/>
+                    <connections>
+                        <action selector="decreaseLineSpace:" destination="-1" eventType="touchUpInside" id="qbY-XP-zUi"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ip8-N4-foO">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                     <state key="normal" title="△"/>
+                    <connections>
+                        <action selector="increaseLineSpace:" destination="-1" eventType="touchUpInside" id="2m9-Ct-R4n"/>
+                    </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="行距" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H3s-dk-GS9">
                     <rect key="frame" x="-42" y="-21" width="42" height="21"/>
@@ -89,10 +98,16 @@
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PQL-QV-zwO">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                     <state key="normal" title="▽"/>
+                    <connections>
+                        <action selector="descreaseBoardMargin:" destination="-1" eventType="touchUpInside" id="AHE-oJ-qXv"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7dL-mp-hwT">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                     <state key="normal" title="△"/>
+                    <connections>
+                        <action selector="increaseBoardMargin:" destination="-1" eventType="touchUpInside" id="gzW-bs-sEH"/>
+                    </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="边距" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cQ7-e7-Du6">
                     <rect key="frame" x="-42" y="-21" width="42" height="21"/>
@@ -121,7 +136,7 @@
                         <action selector="onBrightnessChanged:" destination="-1" eventType="valueChanged" id="8it-ou-icJ"/>
                     </connections>
                 </slider>
-                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" momentary="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Cke-9m-gnK">
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bordered" momentary="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Cke-9m-gnK">
                     <rect key="frame" x="-60" y="-14" width="121" height="29"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="36" id="gq4-mu-MOz">
@@ -142,6 +157,9 @@
                             <include reference="gq4-mu-MOz"/>
                         </mask>
                     </variation>
+                    <connections>
+                        <action selector="onFontSizeChanged:" destination="-1" eventType="valueChanged" id="mfW-ic-Hz0"/>
+                    </connections>
                 </segmentedControl>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="OEE-AF-d8i">
                     <rect key="frame" x="-60" y="-14" width="121" height="29"/>

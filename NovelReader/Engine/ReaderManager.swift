@@ -27,7 +27,13 @@ class ReaderManager: NSObject {
     private var encoding: UInt!
     private var paperSize: CGSize = EMPTY_SIZE
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
-    private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
+    
+    private var currChapter: Chapter = Chapter.EMPTY_CHAPTER {
+        didSet {
+            self.book.bookMark = currChapter
+        }
+    }
+    
     private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var listeners: [MonitorName: [String:(chpater: Chapter) -> Void]] = [:]
 
@@ -111,8 +117,8 @@ class ReaderManager: NSObject {
 
      - parameter callback: Will be call on prepare finish or error
      */
-    func asyncPrepare(callback: (_: Chapter) -> Void) {
-        if let bm = book.bookMark() {
+    func asyncLoading(callback: (_: Chapter) -> Void) {
+        if let bm = book.bookMark {
             currChapter = Chapter(bm: bm)
         } else {
             currChapter = Chapter(range: NSMakeRange(0, CHAPTER_SIZE))
@@ -123,6 +129,9 @@ class ReaderManager: NSObject {
             self.currChapter.loadInRange(self, reverse: false, book: self.book)
             
             if self.currChapter.status == Chapter.Status.Success {
+                // Goto bookmark
+                // self.currChapter.locateTo(self.currBookMark.range.loc)
+                
                 // Load prev chapter
                 var loc = max(self.currChapter.range.loc - CHAPTER_SIZE, 0)
                 var len = min(self.currChapter.range.loc - loc, CHAPTER_SIZE - 1)

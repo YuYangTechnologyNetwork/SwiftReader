@@ -112,6 +112,22 @@ extension NSRange {
     }
 }
 
+extension UIEdgeInsets {
+	mutating func increase(l: CGFloat, t: CGFloat, r: CGFloat, b: CGFloat) {
+		self.top += t
+		self.left += l
+		self.right += r
+		self.bottom += b
+	}
+    
+	mutating func clamp(down: UIEdgeInsets, up: UIEdgeInsets) {
+        self.top = min(up.top, max(self.top, down.top))
+        self.left = min(up.left, max(self.left, down.left))
+        self.right = min(up.right, max(self.right, down.right))
+        self.bottom = min(up.bottom, max(self.bottom, down.bottom))
+	}
+}
+
 extension UIColor {
     /**
      Hex int to UIColor, eg: #7FFFFF -> UIColor(r,g,b)

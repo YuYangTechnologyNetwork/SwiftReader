@@ -226,4 +226,30 @@ class Chapter: BookMark {
         _offset = _papers.count - 1
         return self
     }
+    
+	func locateTo(location: Int) -> Chapter? {
+		var sum = 0
+
+		for (i, p) in _papers.enumerate() {
+			if range.loc + sum + p.realLen > location {
+				_offset = i
+				return self
+			}
+
+			sum += p.realLen
+		}
+
+		return nil
+	}
+    
+	func originalOffset() -> Int {
+		if !self._papers.isEmpty && _offset > 0 {
+			var sum = 0
+			for i in 0 ... (_offset - 1) {
+				sum += _papers[i].realLen
+			}
+		}
+
+		return 0
+	}
 }

@@ -93,6 +93,14 @@ class PageViewController: UIViewController {
             }
         }
     }
+    
+    func applyFormat() {
+        if let p = self.paper {
+            if let c = containerView {
+                p.attachToView(c, reTypesetting: true)
+            }
+        }
+    }
 
 	func bindPaper(paper: Paper?, doAnimation: Bool = false) -> PageViewController? {
 		if let p = paper {
@@ -119,7 +127,7 @@ class PageViewController: UIViewController {
 					}
 				} else {
 					self.needRefresh = true
-                    self.dispalyWithAnimation = true
+                    self.dispalyWithAnimation = doAnimation
 				}
 			}
 

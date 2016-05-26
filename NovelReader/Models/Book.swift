@@ -26,6 +26,8 @@ class Book: NSObject {
 
     /* File size by bytes */
     var size: Int = 0
+    
+    var bookMark: BookMark? = nil //BookMark(range: NSMakeRange(764027, CHAPTER_SIZE))
 
     /*!
      * @param fullFilePath  Full file path
@@ -69,9 +71,5 @@ class Book: NSObject {
 
     override var hashValue: Int {
         return description.hashValue
-    }
-
-    func bookMark() -> BookMark? {
-        return nil//BookMark(range: NSMakeRange(764027, CHAPTER_SIZE))
     }
 }
