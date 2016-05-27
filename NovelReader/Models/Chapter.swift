@@ -196,6 +196,42 @@ class Chapter: BookMark {
         return self.status
     }
 
+    func load(readerMgr: ReaderManager, reverse: Bool, book: Book) -> Status {
+        if range.loc < 0 || range.end > book.size {
+            self.status = .Blank
+            return .Failure
+        }
+
+        let file     = fopen((book.fullFilePath), "r")
+        let encoding = FileReader.Encodings[book.encoding]
+        let reader   = FileReader()
+        let fetched  = reader.fetchChapterAtLocation(file, location: range.loc, encoding: encoding!)
+
+        if let chapter = fetched {
+            range = chapter.range
+            title = chapter.title
+
+            let content = reader.fetchRange(file, range, encoding!).0
+            if !content.isEmpty {
+                _papers = readerMgr.paging(content, firstListIsTitle: title != NO_TITLE)
+                if title == NO_TITLE {
+                    title = content.componentsSeparatedByString(FileReader.getNewLineCharater(content)).first!
+                }
+
+                self.status = .Success
+            } else {
+                self.status = .Failure
+            }
+        } else {
+            self.status = .Failure
+        }
+
+        // Close file
+        fclose(file)
+
+        return self.status
+    }
+
     func trash() {
         if let t = asyncTask {
             if dispatch_block_testcancel(t) == 0 {
@@ -242,14 +278,16 @@ class Chapter: BookMark {
 		return nil
 	}
     
-	func originalOffset() -> Int {
-		if !self._papers.isEmpty && _offset > 0 {
-			var sum = 0
-			for i in 0 ... (_offset - 1) {
-				sum += _papers[i].realLen
-			}
-		}
+    func originalOffset() -> Int {
+        if !self._papers.isEmpty && _offset > 0 {
+            var sum = 0
+            for i in 0 ... (_offset - 1) {
+                sum += _papers[i].realLen
+            }
 
-		return 0
-	}
+            return range.loc + sum
+        }
+
+        return 0
+    }
 }

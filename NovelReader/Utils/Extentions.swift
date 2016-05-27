@@ -52,6 +52,10 @@ extension String {
         return characters.map { String($0) }
     }
 
+    func pickFirst(count: Int) -> String {
+        return (self as NSString).substringToIndex(min(count, length - 1))
+    }
+
     /**
      Calculate the similarity between self and othrer via LD(Levenshtein Distance) arithmetic
      

@@ -21,6 +21,8 @@ class Paper:Equatable {
     /*Visible text*/
     private(set) var text: String!
 
+    private(set) var firstLineText: String?
+
     /*paper's length in origin book file*/
     private(set) var realLen: Int = 0
 
@@ -100,10 +102,11 @@ class Paper:Equatable {
         self.firstTypesetterTheme = Typesetter.Ins.theme
         self.startWithNewLine     = startWithNewLine
         self.firstLineIsTitle     = firstLineIsTitle
-        self.endWithNewLine       = (vLines.last?.isEmpty)!
+        self.endWithNewLine       = vLines.last!.isEmpty
         self.cachedText           = attrText.string
         self.textLayout           = tmpTxtLy
         self.realLen              = visibleLengthInOriginalText(text, visibleLines: vLines)
+        self.firstLineText        = vLines.first
         self.text                 = attrText.attributedSubstringFromRange(textLayout.visibleRange).string
     }
     

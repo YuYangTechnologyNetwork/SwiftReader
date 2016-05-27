@@ -28,11 +28,7 @@ class ReaderManager: NSObject {
     private var paperSize: CGSize = EMPTY_SIZE
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
     
-    private var currChapter: Chapter = Chapter.EMPTY_CHAPTER {
-        didSet {
-            self.book.bookMark = currChapter
-        }
-    }
+    private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
     
     private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var listeners: [MonitorName: [String:(chpater: Chapter) -> Void]] = [:]
@@ -84,6 +80,20 @@ class ReaderManager: NSObject {
     }
 
     /**
+     Upadte bookmark
+     */
+    func updateBookMark() {
+        if let cp = currPaper {
+            book.bookMark = BookMark(
+                title: cp.firstLineText?.pickFirst(10) ?? NO_TITLE,
+                range: NSMakeRange(currChapter.originalOffset(), cp.realLen)
+            )
+
+            Utils.Log(book.bookMark)
+        }
+    }
+
+    /**
      Add listener that will be called on current chpater is changed
 
      - parameter name:     The listener name
@@ -126,11 +136,15 @@ class ReaderManager: NSObject {
 
         Utils.asyncTask({
             // Load current chapter
-            self.currChapter.loadInRange(self, reverse: false, book: self.book)
+            self.currChapter.load(self, reverse: false, book: self.book)
             
             if self.currChapter.status == Chapter.Status.Success {
-                // Goto bookmark
-                // self.currChapter.locateTo(self.currBookMark.range.loc)
+                // Jump to bookmark
+                if let bm = self.book.bookMark {
+                    self.currChapter.locateTo(bm.range.loc)
+                } else {
+                    self.currChapter.setHead()
+                }
                 
                 // Load prev chapter
                 var loc = max(self.currChapter.range.loc - CHAPTER_SIZE, 0)
@@ -223,6 +237,9 @@ class ReaderManager: NSObject {
                     }
                 })
             }
+
+            // Auto record bookmark
+            updateBookMark()
         }
     }
 
@@ -257,6 +274,9 @@ class ReaderManager: NSObject {
                     }
                 })
             }
+
+            // Auto record bookmark
+            updateBookMark()
         }
     }
 }

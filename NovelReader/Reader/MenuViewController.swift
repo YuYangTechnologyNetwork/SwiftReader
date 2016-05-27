@@ -205,14 +205,16 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.menuShow = false
         self.btmSubContainer.userInteractionEnabled = false
         
-        if needReload {
-            needReload = false
+        if self.needReload {
+            self.needReload = false
             self.loadingIndicator.hidden = false
-            self.loadingIndicator.startAnimating()
             self.brightnessMask.userInteractionEnabled = true
-			readerManager.asyncLoading { _ in
+            self.loadingIndicator.startAnimating()
+
+            // Async reload
+			self.readerManager.asyncLoading { _ in
                 self.readerController.loadPapers()
-				self.loadingIndicator.startAnimating()
+				self.loadingIndicator.stopAnimating()
                 self.loadingIndicator.hidden = true
                 self.brightnessMask.userInteractionEnabled = false
 			}
@@ -241,9 +243,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.stylePanelView.hidden    = true
             self.btmSubContainer.hidden   = true
             
-            if let end = animationCompeted {
-                end()
-            }
+            if let end = animationCompeted { end() }
         }
     }
     
