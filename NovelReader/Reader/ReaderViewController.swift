@@ -64,8 +64,17 @@ UIPageViewControllerDelegate, UIScrollViewDelegate {
         loadPapers()
 	}
 
-    func loadPapers() {
-        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, doAnimation: true)
+    func clearTextStyle() {
+        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, doAnimation: true, hiText: nil, reTypesetting: true)
+    }
+
+    func loadPapers(flashBookMark: Bool = false) {
+        swipeCtrls[currIndex].bindPaper(
+            readerMgr.currPaper,
+            doAnimation: true,
+            hiText: flashBookMark ? readerMgr.currBookMark?.title: nil,
+            reTypesetting: readerMgr.currBookMark?.title != nil
+        )
 
         if readerMgr.isHead {
             swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
@@ -77,6 +86,16 @@ UIPageViewControllerDelegate, UIScrollViewDelegate {
         }
 
         pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false) { e in }
+
+        if flashBookMark {
+            NSTimer.scheduledTimerWithTimeInterval(
+                1,
+                target: self,
+                selector: #selector(clearTextStyle),
+                userInfo: nil,
+                repeats: false
+            )
+        }
     }
 
 	func applyFormat() {

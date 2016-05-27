@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import YYText
 
 class Typesetter {
     /*Text draw direction*/
@@ -134,8 +135,14 @@ class Typesetter {
      
      - returns: NSMutableAttributedString wrapped the typesetted text
      */
-    func typeset(text: String, firstLineIsTitle: Bool = false, paperWidth: CGFloat = 0, 
-                 startWithNewLine: Bool = false) -> NSMutableAttributedString {
+    func typeset(
+        text: String,
+        firstLineIsTitle: Bool = false,
+        paperWidth: CGFloat = 0,
+        startWithNewLine: Bool = false,
+        underLineText: [String]? = nil,
+        board: Bool = true
+    ) -> NSMutableAttributedString {
         let attrt  = NSMutableAttributedString(string: text)
         let yyFont = UIFont(
             name: font.postScript,
@@ -179,6 +186,32 @@ class Typesetter {
 
         attrt.yy_setFont(yyFont, range: NSMakeRange(start, attrt.length - start))
         attrt.yy_setAlignment(.Justified, range: NSMakeRange(start, attrt.length - start))
+
+        // Set under line style
+        if let underlines = underLineText {
+            let nsStr   = attrt.string as NSString
+            let yyBoard = YYTextBorder(
+                lineStyle: [.PatternSolid, .Single],
+                lineWidth: board ? 1 : 0.5,
+                strokeColor: theme.styleLineColor
+            )
+
+            if !board {
+                yyBoard.insets       = UIEdgeInsetsMake(yyFont!.capHeight * 2, 0, 0, 0)
+                yyBoard.fillColor    = theme.styleLineColor
+            } else {
+                yyBoard.cornerRadius = 2
+            }
+
+            var searchRange = NSMakeRange(0, nsStr.length)
+            for l in underlines {
+                let r = nsStr.rangeOfString(l, options: .CaseInsensitiveSearch, range: searchRange)
+                if r.length > 0 {
+                    attrt.yy_setTextBorder(yyBoard, range: r)
+                    searchRange = NSMakeRange(r.end, nsStr.length - r.end)
+                }
+            }
+        }
 
         attrt.yy_color            = theme.foregroundColor
         attrt.yy_lineSpacing      = line_space

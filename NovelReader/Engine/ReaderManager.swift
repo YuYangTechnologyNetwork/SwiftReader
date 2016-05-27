@@ -53,7 +53,11 @@ class ReaderManager: NSObject {
         }
     }
 
-    var currBookMark: BookMark {
+    var currBookMark: BookMark? {
+        return book.bookMark
+    }
+
+    var currSelection: Chapter {
         return currChapter
     }
 
@@ -85,7 +89,7 @@ class ReaderManager: NSObject {
     func updateBookMark() {
         if let cp = currPaper {
             book.bookMark = BookMark(
-                title: cp.firstLineText?.pickFirst(10) ?? NO_TITLE,
+                title: cp.firstLineText?.pickFirst(5) ?? NO_TITLE,
                 range: NSMakeRange(currChapter.originalOffset(), cp.realLen)
             )
 

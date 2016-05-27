@@ -138,7 +138,7 @@ class Paper:Equatable {
      - parameter yyLabel:    View to show paper
      - parameter applyTheme: Theme changed or not
      */
-	func attachToView(yyLabel: YYLabel, reTypesetting: Bool = false) {
+    func attachToView(yyLabel: YYLabel, reTypesetting: Bool = false, hiText: String? = nil) {
 		if self.textLayout != nil {
 			if firstTypesetterTheme != Typesetter.Ins.theme || reTypesetting {
                 if !cachedText.isEmpty {
@@ -146,7 +146,8 @@ class Paper:Equatable {
                         cachedText,
                         firstLineIsTitle: firstLineIsTitle,
                         paperWidth: size.width,
-                        startWithNewLine: startWithNewLine
+                        startWithNewLine: startWithNewLine,
+                        underLineText: hiText == nil ? nil : [hiText!]
                     )
                     
                     var paperMargin           = UIEdgeInsetsZero

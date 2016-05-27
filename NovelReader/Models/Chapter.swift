@@ -134,7 +134,7 @@ class Chapter: BookMark {
         let encoding = FileReader.Encodings[book.encoding]
         let reader   = FileReader()
 
-		var chapters: [BookMark]!, loc = range.loc, len = range.len + readerMgr.currBookMark.range.len / 2, scale = 0
+		var chapters: [BookMark]!, loc = range.loc, len = range.len + readerMgr.currSelection.range.len / 2, scale = 0
 		repeat {
 			chapters = reader.fetchChaptersInRange(file, range: NSMakeRange(loc, len), encoding: encoding!)
 
@@ -150,7 +150,7 @@ class Chapter: BookMark {
 
 			if reverse {
 				loc = max(range.loc - CHAPTER_SIZE * scale, 0)
-				len = range.end - loc + readerMgr.currBookMark.range.len / 2
+				len = range.end - loc + readerMgr.currSelection.range.len / 2
 			} else {
 				loc = range.loc
 				len = min(CHAPTER_SIZE * scale, book.size - loc)
@@ -165,7 +165,7 @@ class Chapter: BookMark {
         if ready {
 			if reverse {
 				for (i, c) in chapters.enumerate() {
-					if c.title == readerMgr.currBookMark.title {
+					if c.title == readerMgr.currSelection.title {
 						range = chapters[i - 1].range
 						title = chapters[i - 1].title
 						break
@@ -288,6 +288,6 @@ class Chapter: BookMark {
             return range.loc + sum
         }
 
-        return 0
+        return range.loc
     }
 }

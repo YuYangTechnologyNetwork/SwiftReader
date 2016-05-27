@@ -102,9 +102,10 @@ class PageViewController: UIViewController {
         }
     }
 
-	func bindPaper(paper: Paper?, doAnimation: Bool = false) -> PageViewController? {
+    func bindPaper(paper: Paper?, doAnimation: Bool = false,
+                   hiText: String? = nil, reTypesetting: Bool = false) -> PageViewController? {
 		if let p = paper {
-			if p != self.paper {
+			if p != self.paper || reTypesetting {
                 let lp     = self.paper
                 self.paper = p
 				if let c = self.containerView {
@@ -116,7 +117,7 @@ class PageViewController: UIViewController {
                         
                         bufferContainerView.alpha = 1
                         containerView.alpha       = 0
-                        p.attachToView(c)
+                        p.attachToView(c, reTypesetting: reTypesetting, hiText: hiText)
 
 						UIView.animateWithDuration(0.3) {
                             self.containerView.alpha       = 1

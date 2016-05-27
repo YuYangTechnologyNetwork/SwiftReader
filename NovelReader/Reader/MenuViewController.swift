@@ -213,7 +213,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
             // Async reload
 			self.readerManager.asyncLoading { _ in
-                self.readerController.loadPapers()
+                self.readerController.loadPapers(true)
 				self.loadingIndicator.stopAnimating()
                 self.loadingIndicator.hidden = true
                 self.brightnessMask.userInteractionEnabled = false
