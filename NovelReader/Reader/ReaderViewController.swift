@@ -64,39 +64,40 @@ UIPageViewControllerDelegate, UIScrollViewDelegate {
         loadPapers()
 	}
 
-    func clearTextStyle() {
-        swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, doAnimation: true, hiText: nil, reTypesetting: true)
-    }
+	func clearPaperBlink() {
+		swipeCtrls[currIndex].bindPaper(readerMgr.currPaper?.blink(), doAnimation: true)
+	}
 
-    func loadPapers(flashBookMark: Bool = false) {
-        swipeCtrls[currIndex].bindPaper(
-            readerMgr.currPaper,
-            doAnimation: true,
-            hiText: flashBookMark ? readerMgr.currBookMark?.title: nil,
-            reTypesetting: readerMgr.currBookMark?.title != nil
-        )
+	func loadPapers(withBlink: Bool = false) {
+		if let p = readerMgr.currPaper {
+			p.blink(readerMgr.currBookMark != nil && withBlink ? [readerMgr.currBookMark!.title]: [])
+            
+			if p.properties.needReformatPaper {
+				NSTimer.scheduledTimerWithTimeInterval(
+					1.5,
+					target: self,
+					selector: #selector(clearPaperBlink),
+					userInfo: nil,
+					repeats: false
+				)
+			}
+            
+			swipeCtrls[currIndex].bindPaper(p, doAnimation: true)
+		} else {
+			swipeCtrls[currIndex].bindPaper(readerMgr.currPaper, doAnimation: true)
+		}
 
-        if readerMgr.isHead {
-            swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
-        } else if readerMgr.isTail {
-            swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
-        } else {
-            swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
-            swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
-        }
+		if readerMgr.isHead {
+			swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+		} else if readerMgr.isTail {
+			swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
+		} else {
+			swipeCtrls[nextIndex(currIndex)].bindPaper(readerMgr.nextPaper)
+			swipeCtrls[prevIndex(currIndex)].bindPaper(readerMgr.prevPaper)
+		}
 
-        pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false) { e in }
-
-        if flashBookMark {
-            NSTimer.scheduledTimerWithTimeInterval(
-                1,
-                target: self,
-                selector: #selector(clearTextStyle),
-                userInfo: nil,
-                repeats: false
-            )
-        }
-    }
+		pageViewCtrl.setViewControllers([swipeCtrls[currIndex]], direction: .Forward, animated: false) { e in }
+	}
 
 	func applyFormat() {
 		if let curr = pageViewCtrl.viewControllers?[0] as? PageViewController {

@@ -135,14 +135,8 @@ class Typesetter {
      
      - returns: NSMutableAttributedString wrapped the typesetted text
      */
-    func typeset(
-        text: String,
-        firstLineIsTitle: Bool = false,
-        paperWidth: CGFloat = 0,
-        startWithNewLine: Bool = false,
-        underLineText: [String]? = nil,
-        board: Bool = true
-    ) -> NSMutableAttributedString {
+	func typeset(text: String, paperWidth: CGFloat, firstLineIsTitle: Bool, startWithNewLine: Bool,
+		blinkSnipptes: [String] = [], notedSnipptes: [String] = []) -> NSMutableAttributedString {
         let attrt  = NSMutableAttributedString(string: text)
         let yyFont = UIFont(
             name: font.postScript,
@@ -174,7 +168,7 @@ class Typesetter {
             }
         }
 
-        // Set indent for first line at paragraph
+        // Set indent for first line of paragraph
         if startWithNewLine {
             attrt.yy_firstLineHeadIndent = CGFloat(fontSize * 2)
         } else {
@@ -187,24 +181,46 @@ class Typesetter {
         attrt.yy_setFont(yyFont, range: NSMakeRange(start, attrt.length - start))
         attrt.yy_setAlignment(.Justified, range: NSMakeRange(start, attrt.length - start))
 
-        // Set under line style
-        if let underlines = underLineText {
-            let nsStr   = attrt.string as NSString
-            let yyBoard = YYTextBorder(
-                lineStyle: [.PatternSolid, .Single],
-                lineWidth: board ? 1 : 0.5,
-                strokeColor: theme.styleLineColor
-            )
-
-            if !board {
-                yyBoard.insets       = UIEdgeInsetsMake(yyFont!.capHeight * 2, 0, 0, 0)
-                yyBoard.fillColor    = theme.styleLineColor
-            } else {
-                yyBoard.cornerRadius = 2
+        // Set noted snipptes
+        if !notedSnipptes.isEmpty {
+            let nsStr           = attrt.string as NSString
+            let yyBoard         = YYTextBorder()
+            yyBoard.lineStyle   = [.PatternSolid, .Single]
+            yyBoard.fillColor   = theme.styleLineColor
+            yyBoard.strokeColor = theme.styleLineColor
+            yyBoard.strokeWidth = 0.5
+            yyBoard.insets      = UIEdgeInsetsMake(yyFont!.capHeight * 2, 0, 0, 0)
+            var searchRange     = NSMakeRange(0, nsStr.length)
+            
+            for l in notedSnipptes {
+                if l.isEmpty || l.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet()).isEmpty {
+                    continue
+                }
+                
+                let r = nsStr.rangeOfString(l, options: .CaseInsensitiveSearch, range: searchRange)
+                if r.length > 0 {
+                    attrt.yy_setTextBorder(yyBoard, range: r)
+                    searchRange = NSMakeRange(r.end, nsStr.length - r.end)
+                }
             }
-
-            var searchRange = NSMakeRange(0, nsStr.length)
-            for l in underlines {
+        }
+        
+        // Set blink snipptes
+        if !blinkSnipptes.isEmpty {
+            let nsStr            = attrt.string as NSString
+            let yyBoard          = YYTextBorder()
+            yyBoard.lineStyle    = [.PatternSolid, .Single]
+            yyBoard.strokeWidth  = 1
+            yyBoard.strokeColor  = theme.styleLineColor
+            yyBoard.cornerRadius = yyFont!.capHeight / 2
+            yyBoard.insets       = UIEdgeInsetsMake(1, 0, 0, 0)
+            var searchRange      = NSMakeRange(0, nsStr.length)
+            
+            for l in blinkSnipptes {
+                if l.isEmpty || l.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet()).isEmpty {
+                    continue
+                }
+                
                 let r = nsStr.rangeOfString(l, options: .CaseInsensitiveSearch, range: searchRange)
                 if r.length > 0 {
                     attrt.yy_setTextBorder(yyBoard, range: r)

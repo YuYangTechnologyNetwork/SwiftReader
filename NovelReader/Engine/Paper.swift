@@ -9,32 +9,42 @@
 import Foundation
 import YYText
 
-class Paper:Equatable {
-    /*For YYLabel*/
-    private var textLayout: YYTextLayout!
+class Paper: Equatable {
+    
+    struct Properties:Equatable {
+        private(set) var needReformatPaper: Bool = false
+        private(set) var startWithNewLine: Bool = false
+        private(set) var endedWithNewLine: Bool = false
+        
+        private(set) var blinkSnipptes: [String] = [] {
+			didSet {
+				needReformatPaper = oldValue != blinkSnipptes
+			}
+		}
 
-    /*For YYLabel*/
-    private let textContainer: YYTextContainer!
-
-    private var rangeInFile: NSRange = EMPTY_RANGE
-
-    /*Visible text*/
+		private(set) var notedSnipptes: [String] = [] {
+			didSet {
+				needReformatPaper = oldValue != notedSnipptes
+			}
+		}
+        
+		private(set) var applyTheme: Theme! {
+			didSet {
+				needReformatPaper = applyTheme != nil && oldValue != applyTheme
+			}
+		}
+	}
+    
+    private(set) var realLen: Int
     private(set) var text: String!
-
+    private(set) var properties:Properties!
     private(set) var firstLineText: String?
-
-    /*paper's length in origin book file*/
-    private(set) var realLen: Int = 0
-
-    /*The first line is the paragraph start*/
-    private(set) var endWithNewLine: Bool = false
-
-    /*Paper text bounds*/
+    
     private var size: CGSize!
-    private var firstLineIsTitle     = false
-    private var startWithNewLine     = false
-    private var firstTypesetterTheme:Theme!
-    private var cachedText           = ""     /// Cached text for switch Theme
+    private var cachedText:String!
+    private var textLayout: YYTextLayout!
+    private let textContainer: YYTextContainer!
+    private var firstLineIsTitle:Bool!
     
     init(size: CGSize) {
         var paperMargin                        = UIEdgeInsetsZero
@@ -44,9 +54,45 @@ class Paper:Equatable {
         paperMargin.bottom                     = Typesetter.Ins.margin.bottom
 
         self.size                              = size
+        self.realLen                           = 0
+        self.properties                        = Properties()
         self.textContainer                     = YYTextContainer(size: size, insets: paperMargin)
         self.textContainer.verticalForm        = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
         self.textContainer.maximumNumberOfRows = 0
+    }
+    
+	init(paper: Paper) {
+        self.size                              = paper.size
+        self.text                              = paper.text
+        self.cachedText                        = paper.cachedText
+        self.realLen                           = paper.realLen
+        self.properties                        = paper.properties
+        self.firstLineText                     = paper.firstLineText
+        self.firstLineIsTitle                  = paper.firstLineIsTitle
+        self.textContainer                     = YYTextContainer(size: size, insets: paper.textContainer.insets)
+        self.textContainer.verticalForm        = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
+        self.textContainer.maximumNumberOfRows = paper.textContainer.maximumNumberOfRows
+        self.textLayout                        = YYTextLayout(container: textContainer, text: paper.textLayout.text)
+	}
+    
+	func blink(snippets: [String] = []) -> Paper {
+		properties.blinkSnipptes = snippets
+		return self
+	}
+
+	func noted(snippets: [String] = []) -> Paper {
+		properties.notedSnipptes = snippets
+		return self
+	}
+    
+	func applyTheme() -> Paper {
+		properties.applyTheme = Typesetter.Ins.theme
+		return self
+	}
+    
+    func applyFormat() -> Paper {
+        properties.needReformatPaper = true
+        return self
     }
 
     /**
@@ -77,8 +123,8 @@ class Paper:Equatable {
         // Get the visible text
         var attrText = Typesetter.Ins.typeset(
             reIndentText,
-            firstLineIsTitle: firstLineIsTitle,
             paperWidth: size.width,
+            firstLineIsTitle: firstLineIsTitle,
             startWithNewLine: startWithNewLine
         )
 
@@ -91,18 +137,19 @@ class Paper:Equatable {
             let scope = NSMakeRange(vRange.loc, min(vRange.length + 20, attrText.length - vRange.loc))
             attrText  = Typesetter.Ins.typeset(
                 attrText.attributedSubstringFromRange(scope).string,
-                firstLineIsTitle: firstLineIsTitle,
                 paperWidth: size.width,
+                firstLineIsTitle: firstLineIsTitle,
                 startWithNewLine: startWithNewLine
             )
 
             tmpTxtLy  = YYTextLayout(container: self.textContainer, text: attrText)
         }
-
-        self.firstTypesetterTheme = Typesetter.Ins.theme
-        self.startWithNewLine     = startWithNewLine
+        
+        self.properties.startWithNewLine = startWithNewLine
+        self.properties.endedWithNewLine = vLines.last!.isEmpty
+        self.properties.applyTheme       = Typesetter.Ins.theme
+        
         self.firstLineIsTitle     = firstLineIsTitle
-        self.endWithNewLine       = vLines.last!.isEmpty
         self.cachedText           = attrText.string
         self.textLayout           = tmpTxtLy
         self.realLen              = visibleLengthInOriginalText(text, visibleLines: vLines)
@@ -131,35 +178,34 @@ class Paper:Equatable {
         
         return text.substringToIndex(startIndex).length
     }
-
+    
     /**
      Attach this paper to a YYLabel to show
 
      - parameter yyLabel:    View to show paper
      - parameter applyTheme: Theme changed or not
      */
-    func attachToView(yyLabel: YYLabel, reTypesetting: Bool = false, hiText: String? = nil) {
+    func attachToView(yyLabel: YYLabel) {
 		if self.textLayout != nil {
-			if firstTypesetterTheme != Typesetter.Ins.theme || reTypesetting {
-                if !cachedText.isEmpty {
-                    let attrText = Typesetter.Ins.typeset(
-                        cachedText,
-                        firstLineIsTitle: firstLineIsTitle,
-                        paperWidth: size.width,
-                        startWithNewLine: startWithNewLine,
-                        underLineText: hiText == nil ? nil : [hiText!]
-                    )
-                    
-                    var paperMargin           = UIEdgeInsetsZero
-                    paperMargin.left          = Typesetter.Ins.margin.left
-                    paperMargin.top           = Typesetter.Ins.margin.top + Typesetter.Ins.line_space / 2
-                    paperMargin.right         = Typesetter.Ins.margin.right
-                    paperMargin.bottom        = Typesetter.Ins.margin.bottom
+			if properties.needReformatPaper && !cachedText.isEmpty {
+                let attrText = Typesetter.Ins.typeset(
+                    cachedText,
+                    paperWidth: size.width,
+                    firstLineIsTitle: firstLineIsTitle,
+                    startWithNewLine: properties.startWithNewLine,
+                    blinkSnipptes: properties.blinkSnipptes,
+                    notedSnipptes: properties.notedSnipptes
+                )
+                
+                var paperMargin                  = UIEdgeInsetsZero
+                paperMargin.left                 = Typesetter.Ins.margin.left
+                paperMargin.top                  = Typesetter.Ins.margin.top + Typesetter.Ins.line_space / 2
+                paperMargin.right                = Typesetter.Ins.margin.right
+                paperMargin.bottom               = Typesetter.Ins.margin.bottom
 
-                    self.textContainer.insets = paperMargin
-                    self.textLayout           = YYTextLayout(container: textContainer, text: attrText)
-                    self.firstTypesetterTheme = Typesetter.Ins.theme
-                }
+                self.textContainer.insets        = paperMargin
+                self.textLayout                  = YYTextLayout(container: textContainer, text: attrText)
+                self.properties.needReformatPaper = false
             }
 
 			yyLabel.textLayout = self.textLayout;
@@ -167,6 +213,11 @@ class Paper:Equatable {
 	}
 }
 
+func == (lhs: Paper.Properties, rhs: Paper.Properties) -> Bool {
+	return lhs.endedWithNewLine == lhs.endedWithNewLine && lhs.startWithNewLine == lhs.startWithNewLine &&
+	lhs.blinkSnipptes == rhs.blinkSnipptes && lhs.notedSnipptes == rhs.notedSnipptes
+}
+
 func == (lhs: Paper, rhs: Paper) -> Bool {
-	return lhs.textLayout?.text == rhs.textLayout?.text
+	return lhs.textLayout?.text == rhs.textLayout?.text && lhs.properties == rhs.properties
 }

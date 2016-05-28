@@ -201,7 +201,7 @@ class ReaderManager: NSObject {
                 break
             }
 
-            lastEndWithNewLine = paper.endWithNewLine
+            lastEndWithNewLine = paper.properties.endedWithNewLine
             index = paper.realLen + index
 
             papers.append(paper)
