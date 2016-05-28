@@ -71,6 +71,11 @@ final class Utils {
 		}
 	}
     
+    /**
+     Convenient for dispatch async to execute UI task
+     
+     - parameter task: This closure will run on main thread
+     */
 	static func runUITask(task: () -> Void) {
 		dispatch_async(dispatch_get_main_queue()) {
 			task()

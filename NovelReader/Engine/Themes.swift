@@ -26,7 +26,7 @@ enum Theme: Int {
                 let patch1 = UIImage(named: "reading_parchment1")
                 let patch2 = UIImage(named: "reading_parchment2")
                 let patch3 = UIImage(named: "reading_parchment3")
-                let border = (patch1?.size.width)!
+                let border = patch1!.size.width
                 let size = CGSizeMake(border * 2, 2 * border)
 
                 UIGraphicsBeginImageContext(size);

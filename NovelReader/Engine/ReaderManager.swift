@@ -14,22 +14,11 @@ class ReaderManager: NSObject {
         case AsyncLoadFinish
     }
     
-    private class Buffer {
-		var relativeChapter: Chapter!
-		var data: Chapter? = nil
-
-		init(relative: Chapter) {
-			relativeChapter = relative
-		}
-    }
-
     private var book: Book!
     private var encoding: UInt!
     private var paperSize: CGSize = EMPTY_SIZE
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
-    
     private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
-    
     private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var listeners: [MonitorName: [String:(chpater: Chapter) -> Void]] = [:]
 
@@ -138,9 +127,10 @@ class ReaderManager: NSObject {
             currChapter = Chapter(range: NSMakeRange(0, CHAPTER_SIZE))
         }
 
-        Utils.asyncTask({
+        Utils.asyncTask({ () -> (Bool, Bool) in
             // Load current chapter
             self.currChapter.load(self, reverse: false, book: self.book)
+            var lazy = (false, false)
             
             if self.currChapter.status == Chapter.Status.Success {
                 // Jump to bookmark
@@ -158,7 +148,11 @@ class ReaderManager: NSObject {
                 if ran.isLogical {
                     self.prevChapter = Chapter(range: ran)
                     self.prevChapter.setTail()
-                    self.prevChapter.loadInRange(self, reverse: true, book: self.book)
+                    
+                    if !self.currChapter.canLazyLeft {
+                        self.prevChapter.loadInRange(self, reverse: true, book: self.book)
+                        lazy.0 = true
+                    }
                 }
                 
                 // Load next chapter
@@ -169,13 +163,43 @@ class ReaderManager: NSObject {
                 if ran.isLogical {
                     self.nextChapter = Chapter(range: ran)
                     self.nextChapter.setHead()
-                    self.nextChapter.loadInRange(self, reverse: false, book: self.book)
+                    
+                    if !self.currChapter.canLazyRight {
+                        self.nextChapter.loadInRange(self, reverse: false, book: self.book)
+                        lazy.1 = true
+                    }
                 }
             }
-        }) {
-            Utils.Log(self)
-            callback(self.currChapter)
-        }
+            
+            return lazy
+		}) { lazy in
+			Utils.Log(self)
+			callback(self.currChapter)
+
+			if lazy.0 {
+				self.prevChapter.asyncLoadInRange(self, reverse: true, book: self.book) { s in
+					if s == Chapter.Status.Success {
+						if let ms = self.listeners[MonitorName.AsyncLoadFinish] {
+							for l in ms.values {
+								l(chpater: self.prevChapter)
+							}
+						}
+					}
+				}
+			}
+
+			if lazy.1 {
+				self.nextChapter.asyncLoadInRange(self, reverse: false, book: self.book) { s in
+					if s == Chapter.Status.Success {
+						if let ms = self.listeners[MonitorName.AsyncLoadFinish] {
+							for l in ms.values {
+								l(chpater: self.prevChapter)
+							}
+						}
+					}
+				}
+			}
+		}
     }
 
     /**

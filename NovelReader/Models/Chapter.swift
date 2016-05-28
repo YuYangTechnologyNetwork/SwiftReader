@@ -53,6 +53,14 @@ class Chapter: BookMark {
     var tailPage: Paper? {
         return isEmpty ? nil : _papers[_papers.count - 1]
     }
+    
+    var canLazyLeft: Bool {
+        return _offset > 1
+    }
+    
+    var canLazyRight: Bool {
+        return _papers.count - _offset > 2
+    }
 
     override var description: String {
         return isEmpty ? "Blank" : super.description
@@ -106,7 +114,7 @@ class Chapter: BookMark {
             // Back to main thread
             dispatch_async(dispatch_get_main_queue()) {
                 // Logging
-                // Utils.Log("Loaded: \(self)")
+                 Utils.Log("Loaded: \(self)")
 
                 // Reset async task
                 self.asyncTask = nil

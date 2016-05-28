@@ -187,6 +187,8 @@ class Paper: Equatable {
      */
     func attachToView(yyLabel: YYLabel) {
 		if self.textLayout != nil {
+            self.properties.applyTheme = Typesetter.Ins.theme
+            
 			if properties.needReformatPaper && !cachedText.isEmpty {
                 let attrText = Typesetter.Ins.typeset(
                     cachedText,

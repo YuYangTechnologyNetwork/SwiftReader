@@ -39,10 +39,10 @@ class Typesetter {
     /**
      * Default margin: (top, left, bottom, right)
      */
-    static let DEFAULT_MARGIN: UIEdgeInsets = UIEdgeInsetsMake(20, 20, 20, 20)
+    static let DEFAULT_MARGIN: UIEdgeInsets = UIEdgeInsetsMake(30, 30, 30, 30)
     
     /*Default line space*/
-    static let DEFAULT_LINE_SPACE: CGFloat = 8
+    static let DEFAULT_LINE_SPACE: CGFloat = 12
     
     /*Default font*/
     static let DEFAULT_FONT = FontManager.SupportFonts.SongTi
