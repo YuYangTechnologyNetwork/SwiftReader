@@ -11,7 +11,7 @@ import UIKit
 enum Theme: Int {
     case Default = 0, Parchment, Eyeshield, Night
 
-    static var PBgColor: UIColor!
+    private static var PBgColor: UIColor!
 
     var backgroundColor: UIColor {
         switch self {

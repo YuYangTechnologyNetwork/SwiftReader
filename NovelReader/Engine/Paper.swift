@@ -187,7 +187,9 @@ class Paper: Equatable {
      */
     func attachToView(yyLabel: YYLabel) {
 		if self.textLayout != nil {
-            self.properties.applyTheme = Typesetter.Ins.theme
+            if !properties.needReformatPaper {
+                self.properties.applyTheme = Typesetter.Ins.theme
+            }
             
 			if properties.needReformatPaper && !cachedText.isEmpty {
                 let attrText = Typesetter.Ins.typeset(
@@ -199,14 +201,15 @@ class Paper: Equatable {
                     notedSnipptes: properties.notedSnipptes
                 )
                 
-                var paperMargin                  = UIEdgeInsetsZero
-                paperMargin.left                 = Typesetter.Ins.margin.left
-                paperMargin.top                  = Typesetter.Ins.margin.top + Typesetter.Ins.line_space / 2
-                paperMargin.right                = Typesetter.Ins.margin.right
-                paperMargin.bottom               = Typesetter.Ins.margin.bottom
+                var paperMargin                   = UIEdgeInsetsZero
+                paperMargin.left                  = Typesetter.Ins.margin.left
+                paperMargin.top                   = Typesetter.Ins.margin.top + Typesetter.Ins.line_space / 2
+                paperMargin.right                 = Typesetter.Ins.margin.right
+                paperMargin.bottom                = Typesetter.Ins.margin.bottom
 
-                self.textContainer.insets        = paperMargin
-                self.textLayout                  = YYTextLayout(container: textContainer, text: attrText)
+                self.textContainer.insets         = paperMargin
+                self.textLayout                   = YYTextLayout(container: textContainer, text: attrText)
+                self.properties.applyTheme        = Typesetter.Ins.theme
                 self.properties.needReformatPaper = false
             }
 
