@@ -13,7 +13,7 @@ class Book: NSObject {
     var name: String = ""
 
     /* TXT file encoding */
-    var encoding: String = FileReader.UNKNOW_ENCODING
+    var encoding: FileReader.Encoding = FileReader.Encoding.UNKNOW
 
     /* File subfix */
     var type: String = ""
@@ -55,9 +55,9 @@ class Book: NSObject {
         }
 
         let reader = FileReader()
-        self.encoding = reader.guessFileEncoding(file)
+        self.encoding = reader.guessEncoding(file)
 
-        if reader.isSupportEncding(self.encoding) {
+        if self.encoding != .UNKNOW {
             self.size = reader.getFileSize(file)
         }
 

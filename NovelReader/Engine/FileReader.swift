@@ -42,17 +42,17 @@ class FileReader {
     ]
     
     // Supported encodings
-    static let Encodings: [String: UInt] = [
-        ENCODING_UTF8: NSUTF8StringEncoding,
-        ENCODING_GB18030: CFStringConvertEncodingToNSStringEncoding(UInt32(CFStringEncodings.GB_18030_2000.rawValue))
-    ]
-    
+    //static let Encodings: [String: UInt] = [
+        //ENCODING_UTF8: NSUTF8StringEncoding,
+        //ENCODING_GB18030: CFStringConvertEncodingToNSStringEncoding(UInt32(CFStringEncodings.GB_18030_2000.rawValue))
+    //]
+
 	enum Encoding: String {
-        case UNKNOW = "Unknow"
-		case UTF8 = "UTF-8"
-		case GB18030 = "GB18030"
+        case UNKNOW  = "Unknow"
+        case UTF8    = "UTF-8"
+        case GB18030 = "GB18030"
         
-		func value() -> UInt {
+		func code() -> UInt {
 			switch self {
 			case .UTF8:
 				return NSUTF8StringEncoding
@@ -123,7 +123,7 @@ class FileReader {
      * @return Bool         If encoding is defined in Self.Encodings, true will be returned
      */
     func isSupportEncding(encoding: String) -> Bool {
-        return Self.Encodings.indexForKey(encoding) != nil;
+        return Encoding(rawValue: encoding) != nil
     }
     
     /*
@@ -145,7 +145,7 @@ class FileReader {
      *
      * @return          If got a word border success, the correct position will be returned. Failed return -1
      */
-    func getWordBorder(file: UnsafeMutablePointer<FILE>, fuzzyPos: Int, encoding: UInt) -> Int {
+    func getWordBorder(file: UnsafeMutablePointer<FILE>, fuzzyPos: Int, encoding: Encoding) -> Int {
         var valid_pos = -1
         let buffer_size = 64
         let file_size = self.getFileSize(file)
@@ -158,9 +158,9 @@ class FileReader {
         
         if valid_len > 0 {
             switch encoding {
-            case Self.Encodings[Self.ENCODING_UTF8]!:
+            case .UTF8:
                 valid_pos = self.detectUTF8Border(buffer, len: valid_len)
-            case Self.Encodings[Self.ENCODING_GB18030]!:
+            case .GB18030:
                 valid_pos = self.detectGB18030_2000Border(buffer, len: valid_len)
                 // TODO: add new encoding type support
             default: break
@@ -214,7 +214,7 @@ class FileReader {
         
         let check = { (arr: UnsafeMutablePointer<UInt8>, offset: Int, len: Int) -> Bool in
             let buf = arr + offset
-            let str = String(data: NSData(bytes: buf, length: len), encoding: Self.Encodings[Self.ENCODING_GB18030]!)
+            let str = String(data: NSData(bytes: buf, length: len), encoding: Encoding.GB18030.code())
             return str != nil && str?.length == 1
         }
         
@@ -279,7 +279,7 @@ extension FileReader {
 
      - returns: Tuple that wrapped the snippet string and the reader NSRange
      */
-    func fetchRange(file: UnsafeMutablePointer<FILE>, _ r: NSRange, _ encoding: UInt) -> (String, NSRange) {
+    func fetchRange(file: UnsafeMutablePointer<FILE>, _ r: NSRange, _ encoding: Encoding) -> (String, NSRange) {
         var snippet: String? = nil, scope: NSRange!, head = 0, tail = 0
         let fileSize = getFileSize(file)
 
@@ -302,7 +302,7 @@ extension FileReader {
 
             fseek(file, scope.loc, SEEK_SET)
             let readed = fread(buf, sizeof(UInt8), scope.len, file)
-            snippet    = readed > 0 ? String(data: NSData(bytes: buf, length: readed), encoding: encoding) : nil
+            snippet    = readed > 0 ? String(data: NSData(bytes: buf, length: readed), encoding: encoding.code()) : nil
 
             if snippet == nil {
                 if tail > head {
@@ -335,7 +335,7 @@ extension FileReader {
 
      - returns: nil or found chapter<BookMark>
      */
-    func fetchChapterAtLocation(file: UnsafeMutablePointer<FILE>, location: Int, encoding: UInt) -> BookMark? {
+    func fetchChapterAtLocation(file: UnsafeMutablePointer<FILE>, location: Int, encoding: Encoding) -> BookMark? {
         let fileSize = getFileSize(file)
         var loc = 0, len = 0, scale = 1
 
@@ -380,7 +380,7 @@ extension FileReader {
      - parameter encoding: File encoding, eg: NSUTF8StringEncoding
      - parameter slice:    A closure to get slice chapters
      */
-    func fetchChaptersOfFile(file: UnsafeMutablePointer<FILE>, encoding: UInt, slice: ([BookMark]) -> Void) {
+    func fetchChaptersOfFile(file: UnsafeMutablePointer<FILE>, encoding: Encoding, slice: ([BookMark]) -> Void) {
         var start = 0, scale = 1
         let fileSize = getFileSize(file)
 
@@ -422,7 +422,7 @@ extension FileReader {
      *
      * @return (Title, location)    If range or encoding is illegal, [] will be returned
      */
-    func fetchChaptersInRange(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: UInt) -> [BookMark] {
+    func fetchChaptersInRange(file: UnsafeMutablePointer<FILE>, range: NSRange, encoding: Encoding) -> [BookMark] {
         let fetchRed = fetchRange(file, range, encoding)
         let snippet  = fetchRed.0
         let scope    = fetchRed.1
@@ -444,7 +444,7 @@ extension FileReader {
                         range: Range<String.Index>(index ..< snippet.endIndex),
                         locale: nil)
                     
-                    loc       = scope.location + snippet.substringToIndex((tr?.startIndex)!).length(encoding)
+                    loc       = scope.location + snippet.substringToIndex((tr?.startIndex)!).length(encoding.code())
                     index     = (tr?.endIndex)!
                     let t     = str.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
                     
@@ -461,7 +461,7 @@ extension FileReader {
                 title.append(BookMark(range: scope))
             } else {
                 let l = title.last!
-                title.last!.range = NSMakeRange(l.range.loc, scope.loc + snippet.length(encoding) - l.range.loc)
+                title.last!.range = NSMakeRange(l.range.loc, scope.loc + snippet.length(encoding.code()) - l.range.loc)
             }
             
             if title[0].range.location > scope.location {
@@ -469,7 +469,7 @@ extension FileReader {
             }
         }
         
-        return merge(title, encoding: encoding)
+        return merge(title, encoding: encoding.code())
     }
     
     /*

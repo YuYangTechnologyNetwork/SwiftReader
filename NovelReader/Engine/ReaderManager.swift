@@ -15,7 +15,6 @@ class ReaderManager: NSObject {
     }
     
     private var book: Book!
-    private var encoding: UInt!
     private var paperSize: CGSize = EMPTY_SIZE
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
@@ -69,7 +68,6 @@ class ReaderManager: NSObject {
     init(b: Book, size: CGSize) {
         book = b
         paperSize = size
-        encoding = FileReader.Encodings[self.book.encoding]
     }
 
     /**

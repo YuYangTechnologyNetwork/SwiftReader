@@ -23,22 +23,21 @@ class MainViewController: UIViewController {
                 let book     = Book(fullFilePath: filePath!)!
                 let file     = fopen(filePath!, "r")
                 let reader   = FileReader()
-                let encoding = FileReader.Encodings[book.encoding]!
 
                 Utils.Log(book)
 
                 let range    = NSMakeRange(0, FileReader.BUFFER_SIZE)
-                let result   = reader.fetchRange(file, range, encoding)
+                let result   = reader.fetchRange(file, range, book.encoding)
                 Utils.Log("InOut: \(range)→\(result.1)")
 
                 let paper    = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
                 paper.writtingLineByLine(result.0, firstLineIsTitle: false, startWithNewLine: result.1.loc == 0)
 
                 let location = 4680//382
-                let chapter  = reader.fetchChapterAtLocation(file, location: location, encoding: encoding)
+                let chapter  = reader.fetchChapterAtLocation(file, location: location, encoding: book.encoding)
                 Utils.Log("Chapter: \(chapter!) at loc: \(location)")
 
-                reader.logOff.fetchChaptersOfFile(file, encoding: encoding) { chapters in
+                reader.logOff.fetchChaptersOfFile(file, encoding: book.encoding) { chapters in
                     for ch in chapters {
                         Utils.Log(ch)
                     }

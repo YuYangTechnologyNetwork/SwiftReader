@@ -139,12 +139,11 @@ class Chapter: BookMark {
 
         self.status  = .Loading
         let file     = fopen((book.fullFilePath), "r")
-        let encoding = FileReader.Encodings[book.encoding]
         let reader   = FileReader()
 
 		var chapters: [BookMark]!, loc = range.loc, len = range.len + readerMgr.currSelection.range.len / 2, scale = 0
 		repeat {
-			chapters = reader.fetchChaptersInRange(file, range: NSMakeRange(loc, len), encoding: encoding!)
+			chapters = reader.fetchChaptersInRange(file, range: NSMakeRange(loc, len), encoding: book.encoding)
 
 			if chapters.count > 0 && self.range.loc > 0 && chapters.first!.title == NO_TITLE {
 				chapters.removeFirst()
@@ -184,7 +183,7 @@ class Chapter: BookMark {
 				title = chapters[0].title
 			}
 
-            let content = reader.fetchRange(file, range, encoding!).0
+            let content = reader.fetchRange(file, range, book.encoding).0
 
             if !content.isEmpty {
                 _papers = readerMgr.paging(content, firstListIsTitle: self.title != NO_TITLE)
@@ -211,15 +210,14 @@ class Chapter: BookMark {
         }
 
         let file     = fopen((book.fullFilePath), "r")
-        let encoding = FileReader.Encodings[book.encoding]
         let reader   = FileReader()
-        let fetched  = reader.fetchChapterAtLocation(file, location: range.loc, encoding: encoding!)
+        let fetched  = reader.fetchChapterAtLocation(file, location: range.loc, encoding: book.encoding)
 
         if let chapter = fetched {
             range = chapter.range
             title = chapter.title
 
-            let content = reader.fetchRange(file, range, encoding!).0
+            let content = reader.fetchRange(file, range, book.encoding).0
             if !content.isEmpty {
                 _papers = readerMgr.paging(content, firstListIsTitle: title != NO_TITLE)
                 if title == NO_TITLE {

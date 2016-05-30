@@ -34,9 +34,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         let book     = Book(fullFilePath: filePath!)!
                         let file     = fopen(filePath!, "r")
                         let reader   = FileReader()
-                        let encoding = FileReader.Encodings[book.encoding]!
 
-						reader.logOff.fetchChaptersOfFile(file, encoding: encoding) { chapters in
+						reader.logOff.fetchChaptersOfFile(file, encoding: book.encoding) { chapters in
 							if !chapters.isEmpty {
 								Utils.runUITask {
 									let p = Float(chapters.last!.range.end) / Float(book.size)
