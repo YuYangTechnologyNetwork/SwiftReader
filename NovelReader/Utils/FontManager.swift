@@ -35,6 +35,10 @@ final class FontManager {
 				return "STSongti-SC-Regular"
 			}
 		}
+
+        static var cases: [SupportFonts] {
+            return [.System, .Heiti, .LanTing, .LiShu, .KaiTi, .SongTi]
+        }
 	}
 
 	enum State {

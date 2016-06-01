@@ -38,6 +38,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     private var readerManager: ReaderManager!
     private var stylePanelView: StylePanelView!
     private var readerController: ReaderViewController!
+    private var styleFontsListView: StyleFontsListView!
     
     private var menuShow: Bool           = false
     private var needReload: Bool         = false
@@ -46,8 +47,16 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
 	override func viewDidLoad() {
         super.viewDidLoad()
-        
-		self.stylePanelView = StylePanelView(frame: CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight))
+
+        let styleMenuRect = CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight)
+        self.stylePanelView = StylePanelView(frame: styleMenuRect).onShowFontsList {
+            self.showFontsList()
+        }
+
+        self.styleFontsListView = StyleFontsListView(frame: styleMenuRect)
+        self.styleFontsListView.hidden = true
+
+        self.btmSubContainer.addSubview(styleFontsListView)
         self.btmSubContainer.addSubview(stylePanelView)
         self.loadingBoardMask.hidden = !Typesetter.Ins.theme.boardMaskNeeded
 
@@ -121,6 +130,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 		}
 
         self.stylePanelView.applyTheme()
+        self.styleFontsListView.applyTheme()
 	}
     
 	func attachReaderView(currChapter: Chapter) {
@@ -229,19 +239,22 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.maskPanel.alpha                = 0
             self.topSubContainer.alpha          = 0
         }) { finish  in
-            self.topBar.frame.origin.y    = -self.topBar.bounds.height
-            self.bottomBar.frame.origin.y = self.view.bounds.height
+            self.topBar.frame.origin.y             = -self.topBar.bounds.height
+            self.bottomBar.frame.origin.y          = self.view.bounds.height
+            self.stylePanelView.frame.origin.x     = 0
+            self.styleFontsListView.frame.origin.x = self.view.frame.width
 
-            self.bottomBar.alpha          = 1
-            self.maskPanel.alpha          = 0.0
-            self.btmSubContainer.alpha    = 0
-            self.topSubContainer.alpha    = 0.0
+            self.bottomBar.alpha                   = 1
+            self.maskPanel.alpha                   = 0.0
+            self.btmSubContainer.alpha             = 0
+            self.topSubContainer.alpha             = 0.0
 
-            self.topBar.hidden            = true
-            self.bottomBar.hidden         = true
-            self.maskPanel.hidden         = true
-            self.stylePanelView.hidden    = true
-            self.btmSubContainer.hidden   = true
+            self.topBar.hidden                     = true
+            self.bottomBar.hidden                  = true
+            self.maskPanel.hidden                  = true
+            self.stylePanelView.hidden             = true
+            self.btmSubContainer.hidden            = true
+            self.styleFontsListView.hidden         = true
             
             if let end = animationCompeted { end() }
         }
@@ -262,6 +275,16 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.bottomBar.alpha                = 0
             self.btmSubContainer.alpha          = 1
             self.btmSubContainer.frame.origin.y = self.view.bounds.height - self.stylePanelHeight
+        }) { finish in }
+    }
+
+    func showFontsList() {
+        self.styleFontsListView.frame.origin.x = self.view.frame.width
+        self.styleFontsListView.hidden = false
+
+        UIView.animateWithDuration(0.3, animations: {
+            self.stylePanelView.frame.origin.x = -self.view.frame.width
+            self.styleFontsListView.frame.origin.x = 0
         }) { finish in }
     }
 }

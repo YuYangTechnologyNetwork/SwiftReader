@@ -59,6 +59,8 @@
 		3DC6F2AF1CF1F5F700BD44FE /* MenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */; };
 		3DC6F2B01CF1F5F700BD44FE /* PageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */; };
 		3DC6F2B21CF1F64A00BD44FE /* ReaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */; };
+		3F06E0451CFE9F500063E8C4 /* StyleFontsListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F06E0441CFE9F500063E8C4 /* StyleFontsListView.xib */; };
+		3F06E0471CFE9FDF0063E8C4 /* StyleFontsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F06E0461CFE9FDF0063E8C4 /* StyleFontsListView.swift */; };
 		3F7052F01CF2F74C00235D48 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052EF1CF2F74C00235D48 /* Themes.swift */; };
 		3F7052F21CF4089400235D48 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */; };
 		3F7052F51CF4753800235D48 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052F31CF4753800235D48 /* LaunchViewController.swift */; };
@@ -166,6 +168,8 @@
 		3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MenuViewController.xib; path = xlibs/MenuViewController.xib; sourceTree = "<group>"; };
 		3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PageViewController.xib; path = xlibs/PageViewController.xib; sourceTree = "<group>"; };
 		3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReaderManager.swift; path = Engine/ReaderManager.swift; sourceTree = "<group>"; };
+		3F06E0441CFE9F500063E8C4 /* StyleFontsListView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StyleFontsListView.xib; path = xlibs/StyleFontsListView.xib; sourceTree = "<group>"; };
+		3F06E0461CFE9FDF0063E8C4 /* StyleFontsListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StyleFontsListView.swift; path = Views/StyleFontsListView.swift; sourceTree = "<group>"; };
 		3F7052EF1CF2F74C00235D48 /* Themes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Themes.swift; path = Engine/Themes.swift; sourceTree = "<group>"; };
 		3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = xlibs/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3F7052F31CF4753800235D48 /* LaunchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LaunchViewController.swift; path = Reader/LaunchViewController.swift; sourceTree = "<group>"; };
@@ -295,6 +299,7 @@
 			isa = PBXGroup;
 			children = (
 				3D2554B11CD79A5400A4330C /* StylePanelView.xib */,
+				3F06E0441CFE9F500063E8C4 /* StyleFontsListView.xib */,
 				3DC6F2AB1CF1F5F700BD44FE /* MainViewController.xib */,
 				3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */,
 				3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */,
@@ -309,6 +314,7 @@
 			isa = PBXGroup;
 			children = (
 				3D2554AF1CD79A2C00A4330C /* StylePanelView.swift */,
+				3F06E0461CFE9FDF0063E8C4 /* StyleFontsListView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -526,6 +532,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DC6F2B01CF1F5F700BD44FE /* PageViewController.xib in Resources */,
+				3F06E0451CFE9F500063E8C4 /* StyleFontsListView.xib in Resources */,
 				112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */,
 				3DC6F2AE1CF1F5F700BD44FE /* MainViewController.xib in Resources */,
 				3D9B572D1CF49B0A005FFB35 /* LaunchViewController.xib in Resources */,
@@ -626,6 +633,7 @@
 				3F7052F51CF4753800235D48 /* LaunchViewController.swift in Sources */,
 				112E9CC81C9FF1B400C5E34C /* nsMBCSSM.cpp in Sources */,
 				3DC6F2A81CF1F58500BD44FE /* Utils.swift in Sources */,
+				3F06E0471CFE9FDF0063E8C4 /* StyleFontsListView.swift in Sources */,
 				3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */,
 				112E9CCD1C9FF1B400C5E34C /* nsUTF8Prober.cpp in Sources */,
 				111B55C01CABD64900070E9C /* FontManager.swift in Sources */,

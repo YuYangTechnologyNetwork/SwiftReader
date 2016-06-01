@@ -26,7 +26,7 @@ class StylePanelView: UIView {
     @IBOutlet weak var brightnessMinLabel: UILabel!
     @IBOutlet weak var brightnessMaxLabel: UILabel!
 
-    private var systemBirghtness:CGFloat = 0.5
+    private var showFontsList: (() -> Void)? = nil
     
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -51,6 +51,11 @@ class StylePanelView: UIView {
 			make.bottom.equalTo(self)
 		}
 	}
+
+    func onShowFontsList(action: () -> Void) -> StylePanelView {
+        self.showFontsList = action
+        return self
+    }
 
 	func applyTheme() {
         let tp                                      = Typesetter.Ins
@@ -143,5 +148,8 @@ class StylePanelView: UIView {
 	}
     
 	@IBAction func toSelectFontFamily(sender: AnyObject) {
+        if let s = showFontsList {
+            s()
+        }
 	}
 }
