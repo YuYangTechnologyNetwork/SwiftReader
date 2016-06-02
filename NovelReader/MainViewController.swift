@@ -17,7 +17,7 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         self.progressIndicator.startAnimating()
 
-        FontManager.asyncDownloadFont(Typesetter.Ins.font) { (_: FontManager.State, _: String, _: Float) in
+        FontManager.asyncDownloadFont(Typesetter.Ins.font) { s, f, p in
             Utils.asyncTask({ () -> Paper in
                 let filePath = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
                 let book     = Book(fullFilePath: filePath!)!

@@ -19,48 +19,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		self.window?.rootViewController = LaunchViewController(
         mainController: MenuViewController(nibName: "MenuViewController", bundle: nil)) { splash in
             // Download font
-			splash.setProgressText("Matching font...")
+			splash.setProgressText("Matching \(Typesetter.Ins.font)")
+            
 			FontManager.asyncDownloadFont(Typesetter.Ins.font) { state, font, progress in
 				if state == FontManager.State.Downloading {
-					splash.setProgressText(String(format: "Downloading font...%.2f", progress * 100) + "%")
-					splash.setProgressValue(progress * 0.2)
-				} else {
-                    // Extract chapters
-					splash.setProgressText("Extract chapters...")
-					splash.setProgressValue(0.2)
-                    
-					Utils.asyncTask({
-                        let filePath = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
-                        let book     = Book(fullFilePath: filePath!)!
-                        let file     = fopen(filePath!, "r")
-                        let reader   = FileReader()
-
-						reader.logOff.fetchChaptersOfFile(file, encoding: book.encoding) { chapters in
-							if !chapters.isEmpty {
-								Utils.runUITask {
-									let p = Float(chapters.last!.range.end) / Float(book.size)
-									splash.setProgressText(String(format: "Extract chapters...%.2f", p * 100) + "%")
-									splash.setProgressValue(p * 0.8 + 0.2)
-								}
-							}
-                            
-                            for ch in chapters {
-                                Utils.Log(ch)
-                            }
-						}
-
-						fclose(file)
-
-						Utils.runUITask {
-                            splash.setProgressValue(1)
-                        }
-                        
-                        // Anymore...
-					}) {
-                        // Dismiss splash
-                        splash.displayMainController()
-                    }
-				}
+					splash.setProgressText("Downloading  \(Typesetter.Ins.font) \(progress)%")
+					splash.setProgressValue(progress / 100)
+				} else if state.completed {
+                    splash.setProgressValue(1)
+                    splash.displayMainController()
+                    FontManager.tryToLoadAll()
+                } else {
+                    splash.setProgressText("\(state) \(font)")
+                }
 			}
 		}
 

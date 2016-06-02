@@ -35,9 +35,6 @@
                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
-                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                <rect key="frame" x="179" y="0.0" width="42" height="21"/>
-                            </variation>
                         </label>
                         <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="vEH-6o-fJf">
                             <rect key="frame" x="-10" y="-10" width="20" height="20"/>
@@ -51,8 +48,7 @@
                                     <exclude reference="dAK-Eg-Y8B"/>
                                 </mask>
                             </variation>
-                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                <rect key="frame" x="151.5" y="2.5" width="20" height="20"/>
+                            <variation key="heightClass=regular-widthClass=compact">
                                 <mask key="constraints">
                                     <include reference="Wvl-Gd-mfY"/>
                                     <include reference="dAK-Eg-Y8B"/>
@@ -83,8 +79,7 @@
                             <exclude reference="h2E-lN-mQC"/>
                         </mask>
                     </variation>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="0.0" y="0.0" width="400" height="23"/>
+                    <variation key="heightClass=regular-widthClass=compact">
                         <mask key="subviews">
                             <include reference="cux-C8-jGT"/>
                             <include reference="vEH-6o-fJf"/>
@@ -585,10 +580,16 @@
                     <exclude reference="O21-g6-OUH"/>
                 </mask>
                 <mask key="constraints">
+                    <exclude reference="VAr-fC-8ik"/>
+                    <exclude reference="dpB-I6-OXr"/>
                     <exclude reference="C5J-4l-mUu"/>
                     <exclude reference="Vay-dK-xTG"/>
                     <exclude reference="bte-IH-LJS"/>
                     <exclude reference="e3c-D5-Ge4"/>
+                    <exclude reference="1PC-gn-dfX"/>
+                    <exclude reference="8PB-x7-Ykj"/>
+                    <exclude reference="94k-2g-TcH"/>
+                    <exclude reference="h3Y-37-dV4"/>
                     <exclude reference="Phf-H3-ySR"/>
                     <exclude reference="WhB-P6-H4l"/>
                     <exclude reference="Xe5-gJ-PTb"/>
@@ -601,12 +602,6 @@
                     <exclude reference="fQD-uV-FKV"/>
                     <exclude reference="jRg-yN-Op4"/>
                     <exclude reference="z5B-4C-B3h"/>
-                    <exclude reference="1PC-gn-dfX"/>
-                    <exclude reference="8PB-x7-Ykj"/>
-                    <exclude reference="94k-2g-TcH"/>
-                    <exclude reference="h3Y-37-dV4"/>
-                    <exclude reference="VAr-fC-8ik"/>
-                    <exclude reference="dpB-I6-OXr"/>
                     <exclude reference="8Uy-tF-Ycu"/>
                     <exclude reference="aYT-0H-Pu6"/>
                     <exclude reference="g32-Q8-3RO"/>
@@ -629,10 +624,16 @@
                     <include reference="O21-g6-OUH"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="VAr-fC-8ik"/>
+                    <include reference="dpB-I6-OXr"/>
                     <include reference="C5J-4l-mUu"/>
                     <include reference="Vay-dK-xTG"/>
                     <include reference="bte-IH-LJS"/>
                     <include reference="e3c-D5-Ge4"/>
+                    <include reference="1PC-gn-dfX"/>
+                    <include reference="8PB-x7-Ykj"/>
+                    <include reference="94k-2g-TcH"/>
+                    <include reference="h3Y-37-dV4"/>
                     <include reference="Phf-H3-ySR"/>
                     <include reference="WhB-P6-H4l"/>
                     <include reference="Xe5-gJ-PTb"/>
@@ -645,12 +646,6 @@
                     <include reference="fQD-uV-FKV"/>
                     <include reference="jRg-yN-Op4"/>
                     <include reference="z5B-4C-B3h"/>
-                    <include reference="1PC-gn-dfX"/>
-                    <include reference="8PB-x7-Ykj"/>
-                    <include reference="94k-2g-TcH"/>
-                    <include reference="h3Y-37-dV4"/>
-                    <include reference="VAr-fC-8ik"/>
-                    <include reference="dpB-I6-OXr"/>
                     <include reference="8Uy-tF-Ycu"/>
                     <include reference="aYT-0H-Pu6"/>
                     <include reference="g32-Q8-3RO"/>

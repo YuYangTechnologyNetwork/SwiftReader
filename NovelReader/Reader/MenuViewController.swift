@@ -61,17 +61,20 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.hideMenu {
                     self.topActivityIndicator.startAnimating()
                     self.topActivityIndicatorContainer.hidden = false
+                    self.needReload = false
                     FontManager.asyncDownloadFont(font) { s, f, p in
                         if s == FontManager.State.Downloading {
-                            let l = String(format: "Downloading \(font) %.2f", p * 100) + "%"
+                            let l = "Downloading \(font) \(p)%"
                             self.topActivityIndicatorLabel.text = l
                             Utils.Log(l)
-                        } else {
+                        } else if s.completed {
                             self.topActivityIndicator.stopAnimating()
                             self.topActivityIndicatorContainer.hidden = true
                             if s == FontManager.State.Finish {
                                 Typesetter.Ins.font = font
                             }
+                        } else {
+                            self.topActivityIndicatorLabel.text = "Querying \(font)"
                         }
                     }
                 }
@@ -106,11 +109,9 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 	}
 
     override func viewWillAppear(animated: Bool) {
-        self.loadingIndicator.startAnimating()
-        self.brightnessMask.alpha   = 1 - Typesetter.Ins.brightness
-        self.loadingIndicator.color = Typesetter.Ins.theme.foregroundColor
-        
         // Start loading
+        self.loadingIndicator.startAnimating()
+        
 		Utils.asyncTask({ () -> Book? in
 			return Book(fullFilePath: NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")!)
 		}) { book in
@@ -163,16 +164,15 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.loadingIndicator.stopAnimating()
             self.brightnessMask.userInteractionEnabled = false
         }
-
-        self.stylePanelView.applyTheme()
-        self.styleFontsListView.applyTheme()
     }
     
     func applyTheme() {
         self.topBar.tintColor                    = Typesetter.Ins.theme.foregroundColor
         self.bottomBar.tintColor                 = Typesetter.Ins.theme.foregroundColor
         self.view.backgroundColor                = Typesetter.Ins.theme.backgroundColor
+        self.brightnessMask.alpha                = 1 - Typesetter.Ins.brightness
         self.chapterTitle.textColor              = Typesetter.Ins.theme.foregroundColor
+        self.loadingIndicator.color              = Typesetter.Ins.theme.foregroundColor
         self.topBar.backgroundColor              = Typesetter.Ins.theme.menuBackgroundColor
         self.bottomBar.backgroundColor           = Typesetter.Ins.theme.menuBackgroundColor
         self.topActivityIndicator.color          = Typesetter.Ins.theme.foregroundColor.newAlpha(0.5)
@@ -181,9 +181,6 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 		if let rvc = self.readerController {
 			rvc.applyTheme()
 		}
-
-        self.stylePanelView.applyTheme()
-        self.styleFontsListView.applyTheme()
 	}
     
 	func attachReaderView(currChapter: Chapter) {
@@ -248,7 +245,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.topBar.hidden            = false
         self.bottomBar.hidden         = false
         self.maskPanel.hidden         = false
-
+        
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .Slide)
             self.setNeedsStatusBarAppearanceUpdate()
@@ -268,11 +265,6 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.menuShow = false
         self.btmSubContainer.userInteractionEnabled = false
         
-        if self.needReload {
-            self.needReload = false
-            self.reloadReader()
-        }
-
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Slide)
             self.setNeedsStatusBarAppearanceUpdate()
@@ -287,19 +279,24 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.stylePanelView.frame.origin.x     = 0
             self.styleFontsListView.frame.origin.x = self.view.frame.width
 
-            self.bottomBar.alpha                   = 1
-            self.maskPanel.alpha                   = 0.0
-            self.btmSubContainer.alpha             = 0
-            self.topSubContainer.alpha             = 0.0
+            self.bottomBar.alpha       = 1
+            self.maskPanel.alpha       = 0
+            self.btmSubContainer.alpha = 0
+            self.topSubContainer.alpha = 0
 
-            self.topBar.hidden                     = true
-            self.bottomBar.hidden                  = true
-            self.maskPanel.hidden                  = true
-            self.stylePanelView.hidden             = true
-            self.btmSubContainer.hidden            = true
-            self.styleFontsListView.hidden         = true
+            self.topBar.hidden             = true
+            self.bottomBar.hidden          = true
+            self.maskPanel.hidden          = true
+            self.stylePanelView.hidden     = true
+            self.btmSubContainer.hidden    = true
+            self.styleFontsListView.hidden = true
             
             if let end = animationCompeted { end() }
+            
+            if self.needReload {
+                self.needReload = false
+                self.reloadReader()
+            }
         }
     }
     
@@ -308,10 +305,10 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         btmSubContainer.hidden                 = false
         btmSubContainer.frame.origin.y         = self.view.bounds.height
         btmSubContainer.userInteractionEnabled = true
-        showStylePanel()
-    }
-    
-    func showStylePanel() {
+        
+        self.stylePanelView.applyTheme()
+        self.styleFontsListView.applyTheme()
+        
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
             self.setNeedsStatusBarAppearanceUpdate()
@@ -324,7 +321,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     func showFontsList() {
         self.styleFontsListView.frame.origin.x = self.view.frame.width
         self.styleFontsListView.hidden = false
-
+        
         UIView.animateWithDuration(0.3, animations: {
             self.stylePanelView.frame.origin.x = -self.view.frame.width
             self.styleFontsListView.frame.origin.x = 0

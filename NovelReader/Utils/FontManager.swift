@@ -22,7 +22,7 @@ final class FontManager {
 		var postScript: String {
 			switch self {
 			case .System:
-				return "Helvetica-Light"
+				return UIFont.systemFontOfSize(1).familyName
 			case .Heiti:
 				return "STHeitiTC-Light"
 			case .KaiTi:
@@ -36,13 +36,21 @@ final class FontManager {
 			}
 		}
 
-        static var cases: [SupportFonts] {
-            return [.System, .Heiti, .LanTing, .LiShu, .KaiTi, .SongTi]
-        }
+		static var cases: [SupportFonts] {
+			return [.System, .SongTi, .LanTing, .KaiTi, .Heiti, .LiShu]
+		}
+        
+		func forSize(size: CGFloat) -> UIFont {
+			return UIFont(name: self.postScript, size: size) ?? UIFont.systemFontOfSize(size)
+		}
 	}
 
 	enum State {
-		case Downloading, Finish, Failure
+		case Downloading, Finish, Querying, Failure
+        
+        var completed: Bool {
+            return self == .Failure || self == .Finish
+        }
 	}
     
 	private static let tips = [
@@ -81,7 +89,7 @@ final class FontManager {
 	 * @return Bool
 	 */
 	static func isAvailable(font: SupportFonts) -> Bool {
-		let aFont = UIFont(name: font.postScript, size: 10)
+		let aFont = UIFont(name: font.postScript, size: 1)
 		return aFont != nil
 	}
 
@@ -94,21 +102,19 @@ final class FontManager {
 	 *
 	 * @param callback      The downloading callback, will be called on main-thread
 	 */
-	static func asyncDownloadFont(font: SupportFonts, callback: (State, String, Float) -> Void) {
-		let pname = font.postScript
-
-		let runInUIThread = { (finish: State, font: String, progress: Float) in
+	static func asyncDownloadFont(font: SupportFonts, callback: (State, SupportFonts, Float) -> Void) {
+		let runInUIThread = { (finish: State, font: SupportFonts, progress: Float) in
 			dispatch_async(dispatch_get_main_queue()) {
 				callback(finish, font, progress)
 			}
 		}
 
 		if isAvailable(font) {
-			runInUIThread(.Finish, pname, 1)
+			runInUIThread(.Finish, font, 1)
 			return
 		}
 
-		let attrs = NSMutableDictionary(object: pname, forKey: kCTFontNameAttribute as String)
+		let attrs = NSMutableDictionary(object: font.postScript, forKey: kCTFontNameAttribute as String)
 		let descs = NSMutableArray(object: CTFontDescriptorCreateWithAttributes(attrs))
 
 		CTFontDescriptorMatchFontDescriptorsWithProgressHandler(descs, nil) { state, paramDict in
@@ -118,17 +124,24 @@ final class FontManager {
 			switch state {
 			case .DidFinish:
 				s = .Finish
-			case .DidFailWithError:
+			case .DidFailWithError, .Stalled:
 				s = .Failure
-			default:
+			case .WillBeginDownloading, .Downloading, .DidFinishDownloading:
 				s = .Downloading
+			default:
+				s = .Querying
 			}
             
-            Utils.Log(tips[Int(state.rawValue)])
+            Utils.Log(tips[Int(state.rawValue)] + "\(font)")
+            runInUIThread(s, font, progress ?? 0)
 
-            runInUIThread(s, pname, progress ?? 0)
-
-			return s == .Downloading
+			return !s.completed
+		}
+	}
+    
+	static func tryToLoadAll() {
+		for f in SupportFonts.cases {
+			FontManager.asyncDownloadFont(f) { s, f, p in }
 		}
 	}
 }

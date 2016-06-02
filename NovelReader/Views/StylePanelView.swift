@@ -59,12 +59,13 @@ class StylePanelView: UIView {
 
 	func applyTheme() {
         let tp                                      = Typesetter.Ins
-        self.tintColor                              = tp.theme.foregroundColor.newAlpha(0.8)
+        self.tintColor                              = tp.theme.foregroundColor
         self.backgroundColor                        = tp.theme.menuBackgroundColor
 
         self.vSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)
         self.hSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)
         self.themeSegment.selectedSegmentIndex      = tp.theme.rawValue
+        self.fontSetBtn.titleLabel?.font            = tp.font.forSize(15)
 
         self.marginLabel.textColor                  = tp.theme.foregroundColor.newAlpha(0.6)
         self.lineSpaceLabel.textColor               = tp.theme.foregroundColor.newAlpha(0.6)

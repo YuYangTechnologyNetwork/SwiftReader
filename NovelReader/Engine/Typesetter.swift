@@ -17,12 +17,12 @@ class Typesetter {
     }
 
     enum Observer:String {
-        case Font, LineSpace, BorderMargin, TextOrentation, Theme, Brightness
+		case Font, FontSize, LineSpace, BorderMargin, TextOrentation, Theme, Brightness
     }
     
     private typealias `Self` = Typesetter
 
-    static let DEFAULT_THEME = Theme.Parchment
+    static let DEFAULT_THEME = Theme.Default
     
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 18
@@ -31,7 +31,7 @@ class Typesetter {
     
     static let FontSize_Min:CGFloat    = 12
     static let FontSize_Max:CGFloat    = 24
-    static let Margin_Min:UIEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
+    static let Margin_Min:UIEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10)
     static let Margin_Max:UIEdgeInsets = UIEdgeInsetsMake(50, 50, 50, 50)
     static let LineSpace_Min:CGFloat   = 0
     static let LineSpace_Max:CGFloat   = 20
@@ -45,7 +45,7 @@ class Typesetter {
     static let DEFAULT_LINE_SPACE: CGFloat = 12
     
     /*Default font*/
-    static let DEFAULT_FONT = FontManager.SupportFonts.SongTi
+    static let DEFAULT_FONT = FontManager.SupportFonts.System
     
     /*Singleton*/
     static let Ins = Typesetter()
@@ -61,7 +61,7 @@ class Typesetter {
     
     /*Font size, for CGFloat type*/
     var fontSize: CGFloat = Self.DEFAULT_FONT_SIZE {
-        didSet { for l in listeners.values { l(.Font, before: oldValue) } }
+        didSet { for l in listeners.values { l(.FontSize, before: oldValue) } }
     }
     
     /*Line space, for CGFloat type*/
@@ -138,9 +138,7 @@ class Typesetter {
 	func typeset(text: String, paperWidth: CGFloat, firstLineIsTitle: Bool, startWithNewLine: Bool,
 		blinkSnipptes: [String] = [], notedSnipptes: [String] = []) -> NSMutableAttributedString {
         let attrt  = NSMutableAttributedString(string: text)
-        let yyFont = UIFont(
-            name: font.postScript,
-            size: self.fontSize) ?? UIFont(name: FontManager.SupportFonts.System.postScript, size: self.fontSize)
+        let yyFont = self.font.forSize(self.fontSize)
         
         var start  = 0
         let range  = text.rangeOfString(FileReader.getNewLineCharater(text))
@@ -148,7 +146,7 @@ class Typesetter {
         // Set style for chapter title
         if firstLineIsTitle {
             if let r = range {
-                let titleFont = UIFont(name: font.postScript, size: self.fontSize + 10)
+                let titleFont = self.font.forSize(self.fontSize + 10)
                 start = text.substringToIndex(r.startIndex).length
                 
                 attrt.yy_setFont(titleFont, range: NSMakeRange(0, start))
@@ -162,7 +160,7 @@ class Typesetter {
                     line,
                     contentMode: .Center,
                     attachmentSize: line.bounds.size,
-                    alignToFont: yyFont!, alignment: .Center)
+                    alignToFont: yyFont, alignment: .Center)
                 
                 attrt.insertAttributedString(lineStr, atIndex: start)
             }
@@ -189,7 +187,7 @@ class Typesetter {
             yyBoard.fillColor   = theme.styleLineColor
             yyBoard.strokeColor = theme.styleLineColor
             yyBoard.strokeWidth = 0.5
-            yyBoard.insets      = UIEdgeInsetsMake(yyFont!.capHeight * 2, 0, 0, 0)
+            yyBoard.insets      = UIEdgeInsetsMake(yyFont.capHeight * 2, 0, 0, 0)
             var searchRange     = NSMakeRange(0, nsStr.length)
             
             for l in notedSnipptes {
@@ -212,7 +210,7 @@ class Typesetter {
             yyBoard.lineStyle    = [.PatternSolid, .Single]
             yyBoard.strokeWidth  = 1
             yyBoard.strokeColor  = theme.styleLineColor
-            yyBoard.cornerRadius = yyFont!.capHeight / 2
+            yyBoard.cornerRadius = yyFont.capHeight / 2
             yyBoard.insets       = UIEdgeInsetsMake(1, 0, 0, 0)
             var searchRange      = NSMakeRange(0, nsStr.length)
             

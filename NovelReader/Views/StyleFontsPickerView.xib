@@ -21,31 +21,64 @@
                 <pickerView contentMode="scaleToFill" showsSelectionIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Tq-d8-TJc">
                     <rect key="frame" x="0.0" y="-216" width="320" height="216"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="0.0" y="0.0" width="400" height="768"/>
-                    </variation>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="OeT-jX-DQl"/>
                         <outlet property="delegate" destination="-1" id="je7-By-kKV"/>
                     </connections>
                 </pickerView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0N8-QA-Wbd">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0N8-QA-Wbd">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="40" id="BhT-Q7-Aix">
+                            <variation key="heightClass=regular-widthClass=compact" constant="64"/>
+                        </constraint>
+                        <constraint firstAttribute="height" constant="40" id="fvF-Q2-OvB">
+                            <variation key="heightClass=regular-widthClass=compact" constant="64"/>
+                        </constraint>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <inset key="contentEdgeInsets" minX="12" minY="10" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="取消"/>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="8" y="8" width="46" height="30"/>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="BhT-Q7-Aix"/>
+                            <exclude reference="fvF-Q2-OvB"/>
+                        </mask>
+                    </variation>
+                    <variation key="heightClass=regular-widthClass=compact">
+                        <mask key="constraints">
+                            <include reference="BhT-Q7-Aix"/>
+                            <include reference="fvF-Q2-OvB"/>
+                        </mask>
                     </variation>
                     <connections>
                         <action selector="onCancelBtnClicked:" destination="-1" eventType="touchUpInside" id="EaP-Hl-IaR"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JBm-QH-BZV">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JBm-QH-BZV">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="63" id="eOh-Zh-Nhh">
+                            <variation key="heightClass=regular-widthClass=compact" constant="64"/>
+                        </constraint>
+                        <constraint firstAttribute="width" constant="40" id="jKh-p0-qFL">
+                            <variation key="heightClass=regular-widthClass=compact" constant="64"/>
+                        </constraint>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <inset key="contentEdgeInsets" minX="0.0" minY="10" maxX="12" maxY="0.0"/>
                     <state key="normal" title="选定"/>
-                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                        <rect key="frame" x="346" y="8" width="46" height="30"/>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="eOh-Zh-Nhh"/>
+                            <exclude reference="jKh-p0-qFL"/>
+                        </mask>
+                    </variation>
+                    <variation key="heightClass=regular-widthClass=compact">
+                        <mask key="constraints">
+                            <include reference="eOh-Zh-Nhh"/>
+                            <include reference="jKh-p0-qFL"/>
+                        </mask>
                     </variation>
                     <connections>
                         <action selector="onSelectBtnClicked:" destination="-1" eventType="touchUpInside" id="rvO-p2-06b"/>
@@ -58,17 +91,17 @@
                     <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                 </constraint>
                 <constraint firstAttribute="trailing" secondItem="JBm-QH-BZV" secondAttribute="trailing" constant="8" id="7Lv-g5-RzY">
-                    <variation key="heightClass=regular-widthClass=compact" constant="12"/>
+                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                 </constraint>
                 <constraint firstItem="0N8-QA-Wbd" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="BHn-dH-EDN">
-                    <variation key="heightClass=regular-widthClass=compact" constant="12"/>
+                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                 </constraint>
                 <constraint firstItem="2Tq-d8-TJc" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="EGf-4Y-FnR"/>
                 <constraint firstItem="JBm-QH-BZV" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="8" id="EKu-sa-jqZ">
-                    <variation key="heightClass=regular-widthClass=compact" constant="4"/>
+                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                 </constraint>
                 <constraint firstItem="0N8-QA-Wbd" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="8" id="LF2-GB-jz5">
-                    <variation key="heightClass=regular-widthClass=compact" constant="4"/>
+                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                 </constraint>
                 <constraint firstAttribute="bottom" secondItem="2Tq-d8-TJc" secondAttribute="bottom" constant="268" id="P2C-RC-EYu">
                     <variation key="heightClass=regular-widthClass=compact" constant="32"/>

@@ -88,13 +88,13 @@ class StyleFontsPickerView: UIView, UIPickerViewDataSource, UIPickerViewDelegate
         var label = v as? UILabel
         if label == nil {
             label = UILabel(frame: CGRectMake(0, 0, pickerView.frame.width, 32))
-            label?.font = UIFont.systemFontOfSize(17)
             label?.textColor = Typesetter.Ins.theme.foregroundColor
             label?.textAlignment = .Center
         }
 
         let font = Fonts.cases[r % Fonts.cases.count]
-
+        label?.font = font.forSize(17)
+        
         if font == Typesetter.Ins.font {
             label?.text = font.rawValue + "✓"
         } else {
