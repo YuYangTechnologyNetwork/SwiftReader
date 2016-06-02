@@ -79,7 +79,7 @@ class StylePanelView: UIView {
         
 		self.fontSetBtn.setTitle("\(tp.font.rawValue)         〉", forState: .Normal)
 		self.brightnessSlider.setThumbImage(
-			Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness), size: CGSizeMake(20, 20), circle: true),
+			Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness), size: CGSizeMake(16, 16), circle: true),
 			forState: .Normal
 		)
 	}

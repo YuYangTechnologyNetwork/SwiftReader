@@ -12,12 +12,12 @@ final class FontManager {
 
 	// Supported Fonts
 	enum SupportFonts: String {
-		case System = "系统字体"
-		case Heiti = "华文黑体"
-		case LanTing = "兰亭黑"
-		case LiShu = "隶书"
-		case KaiTi = "楷体"
-		case SongTi = "宋体"
+        case System  = "系统字体"
+        case Heiti   = "华文黑体"
+        case LanTing = "兰亭黑"
+        case LiShu   = "隶书"
+        case KaiTi   = "楷体"
+        case SongTi  = "宋体"
 
 		var postScript: String {
 			switch self {
@@ -53,16 +53,16 @@ final class FontManager {
         }
 	}
     
-	private static let tips = [
-		"DidBegin",
-		"DidFinish",
-		"WillBeginQuerying",
-		"Stalled",
-		"WillBeginDownloading",
-		"Downloading",
-		"DidFinishDownloading",
-		"DidMatch",
-		"DidFailWithError"
+	private static let StatusMap: [CTFontDescriptorMatchingState: String] = [
+			.DidBegin               : "DidBegin",
+			.DidFinish              : "DidFinish",
+			.WillBeginQuerying      : "WillBeginQuerying",
+			.Stalled                : "Stalled",
+			.WillBeginDownloading   : "WillBeginDownloading",
+			.Downloading            : "Downloading",
+			.DidFinishDownloading   : "DidFinishDownloading",
+			.DidMatch               : "DidMatch",
+			.DidFailWithError       : "DidFailWithError"
 	]
 
 	/*
@@ -89,8 +89,7 @@ final class FontManager {
 	 * @return Bool
 	 */
 	static func isAvailable(font: SupportFonts) -> Bool {
-		let aFont = UIFont(name: font.postScript, size: 1)
-		return aFont != nil
+		return UIFont(name: font.postScript, size: 1) != nil
 	}
 
 	/*
@@ -132,7 +131,7 @@ final class FontManager {
 				s = .Querying
 			}
             
-            Utils.Log(tips[Int(state.rawValue)] + "\(font)")
+            Utils.Log(StatusMap[state]! + " \(font)")
             runInUIThread(s, font, progress ?? 0)
 
 			return !s.completed
