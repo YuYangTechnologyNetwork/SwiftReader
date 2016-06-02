@@ -18,6 +18,9 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var topSubContainer: UIView!
     @IBOutlet weak var btmSubContainer: UIView!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var topActivityIndicatorContainer: UIView!
+    @IBOutlet weak var topActivityIndicatorLabel: UILabel!
+    @IBOutlet weak var topActivityIndicator: UIActivityIndicatorView!
     
     @IBAction func onBackBtnClicked(sender: AnyObject) {
     }
@@ -53,9 +56,31 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.showFontsList()
         }
 
-        self.styleFontsListView = StyleFontsPickerView(frame: styleMenuRect)
-        self.styleFontsListView.hidden = true
+        self.styleFontsListView = StyleFontsPickerView(frame: styleMenuRect).onFontsChanged { changed, font in
+            if changed && Typesetter.Ins.font != font {
+                self.hideMenu {
+                    self.topActivityIndicator.startAnimating()
+                    self.topActivityIndicatorContainer.hidden = false
+                    FontManager.asyncDownloadFont(font) { s, f, p in
+                        if s == FontManager.State.Downloading {
+                            let l = String(format: "Downloading \(font) %.2f", p * 100) + "%"
+                            self.topActivityIndicatorLabel.text = l
+                            Utils.Log(l)
+                        } else {
+                            self.topActivityIndicator.stopAnimating()
+                            self.topActivityIndicatorContainer.hidden = true
+                            if s == FontManager.State.Finish {
+                                Typesetter.Ins.font = font
+                            }
+                        }
+                    }
+                }
+            } else {
+                self.hideMenu()
+            }
+        }
 
+        self.styleFontsListView.hidden = true
         self.btmSubContainer.addSubview(styleFontsListView)
         self.btmSubContainer.addSubview(stylePanelView)
         self.loadingBoardMask.hidden = !Typesetter.Ins.theme.boardMaskNeeded
@@ -66,6 +91,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.hideMenu { self.applyTheme() }
             case .Brightness:
                 self.brightnessMask.alpha = 1 - Typesetter.Ins.brightness
+            case .Font:
+                self.reloadReader()
             default:
 				if let reader = self.readerController {
 					reader.applyFormat()
@@ -74,6 +101,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                 break
             }
         }
+
+        self.topActivityIndicator.transform = CGAffineTransformMakeScale(0.5, 0.5)
 	}
 
     override func viewWillAppear(animated: Bool) {
@@ -123,14 +152,31 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .Default
     }
+
+    func reloadReader() {
+        self.brightnessMask.userInteractionEnabled = true
+        self.loadingIndicator.startAnimating()
+
+        // Async reload
+        self.readerManager.asyncLoading { _ in
+            self.readerController.loadPapers(true)
+            self.loadingIndicator.stopAnimating()
+            self.brightnessMask.userInteractionEnabled = false
+        }
+
+        self.stylePanelView.applyTheme()
+        self.styleFontsListView.applyTheme()
+    }
     
     func applyTheme() {
-        self.topBar.tintColor          = Typesetter.Ins.theme.foregroundColor
-        self.bottomBar.tintColor       = Typesetter.Ins.theme.foregroundColor
-        self.view.backgroundColor      = Typesetter.Ins.theme.backgroundColor
-        self.chapterTitle.textColor    = Typesetter.Ins.theme.foregroundColor
-        self.topBar.backgroundColor    = Typesetter.Ins.theme.menuBackgroundColor
-        self.bottomBar.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+        self.topBar.tintColor                    = Typesetter.Ins.theme.foregroundColor
+        self.bottomBar.tintColor                 = Typesetter.Ins.theme.foregroundColor
+        self.view.backgroundColor                = Typesetter.Ins.theme.backgroundColor
+        self.chapterTitle.textColor              = Typesetter.Ins.theme.foregroundColor
+        self.topBar.backgroundColor              = Typesetter.Ins.theme.menuBackgroundColor
+        self.bottomBar.backgroundColor           = Typesetter.Ins.theme.menuBackgroundColor
+        self.topActivityIndicator.color          = Typesetter.Ins.theme.foregroundColor.newAlpha(0.5)
+        self.topActivityIndicatorLabel.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.5)
 
 		if let rvc = self.readerController {
 			rvc.applyTheme()
@@ -224,17 +270,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         
         if self.needReload {
             self.needReload = false
-            self.loadingIndicator.hidden = false
-            self.brightnessMask.userInteractionEnabled = true
-            self.loadingIndicator.startAnimating()
-
-            // Async reload
-			self.readerManager.asyncLoading { _ in
-                self.readerController.loadPapers(true)
-				self.loadingIndicator.stopAnimating()
-                self.loadingIndicator.hidden = true
-                self.brightnessMask.userInteractionEnabled = false
-			}
+            self.reloadReader()
         }
 
         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseOut, animations: {

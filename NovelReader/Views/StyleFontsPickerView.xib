@@ -36,6 +36,9 @@
                     <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
                         <rect key="frame" x="8" y="8" width="46" height="30"/>
                     </variation>
+                    <connections>
+                        <action selector="onCancelBtnClicked:" destination="-1" eventType="touchUpInside" id="EaP-Hl-IaR"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JBm-QH-BZV">
                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -44,6 +47,9 @@
                     <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
                         <rect key="frame" x="346" y="8" width="46" height="30"/>
                     </variation>
+                    <connections>
+                        <action selector="onSelectBtnClicked:" destination="-1" eventType="touchUpInside" id="rvO-p2-06b"/>
+                    </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
