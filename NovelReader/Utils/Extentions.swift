@@ -114,6 +114,10 @@ extension NSRange {
     var isLogical : Bool {
         return location < end
     }
+
+    func contain(loc: Int) -> Bool {
+        return self.loc <= loc && loc <= self.end
+    }
 }
 
 extension UIEdgeInsets {
@@ -156,5 +160,28 @@ extension UIColor {
         var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
         getHue(&h, saturation: &s, brightness: &b, alpha: &a)
         return UIColor(hue: h, saturation: s, brightness: brightness, alpha: a)
+    }
+}
+
+private var selectorColorAssociationKey: UInt8 = 0
+
+extension UIPickerView {
+    @IBInspectable var selectorColor: UIColor? {
+        get {
+            return objc_getAssociatedObject(self, &selectorColorAssociationKey) as? UIColor
+        }
+        set(newValue) {
+            objc_setAssociatedObject(self, &selectorColorAssociationKey, newValue,
+                                     objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        }
+    }
+
+    public override func didAddSubview(subview: UIView) {
+        super.didAddSubview(subview)
+        if let color = selectorColor {
+            if subview.bounds.height < 1.0 {
+                subview.backgroundColor = color
+            }
+        }
     }
 }

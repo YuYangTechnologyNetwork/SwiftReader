@@ -38,7 +38,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     private var readerManager: ReaderManager!
     private var stylePanelView: StylePanelView!
     private var readerController: ReaderViewController!
-    private var styleFontsListView: StyleFontsListView!
+    private var styleFontsListView: StyleFontsPickerView!
     
     private var menuShow: Bool           = false
     private var needReload: Bool         = false
@@ -53,7 +53,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.showFontsList()
         }
 
-        self.styleFontsListView = StyleFontsListView(frame: styleMenuRect)
+        self.styleFontsListView = StyleFontsPickerView(frame: styleMenuRect)
         self.styleFontsListView.hidden = true
 
         self.btmSubContainer.addSubview(styleFontsListView)
@@ -105,7 +105,14 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             make.width.equalTo(self.btmSubContainer.snp_width)
             make.height.equalTo(self.stylePanelHeight)
         }
-        
+
+        styleFontsListView.snp_makeConstraints { make in
+            make.top.equalTo(self.btmSubContainer.snp_top)
+            make.left.equalTo(self.btmSubContainer.snp_left)
+            make.width.equalTo(self.btmSubContainer.snp_width)
+            make.height.equalTo(self.stylePanelHeight)
+        }
+
         self.applyTheme()
     }
 

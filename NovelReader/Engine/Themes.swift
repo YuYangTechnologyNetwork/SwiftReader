@@ -16,7 +16,7 @@ enum Theme: Int {
     var backgroundColor: UIColor {
         switch self {
         case .Default:
-            return UIColor(red: 0.798, green: 0.746, blue: 0.654, alpha: 1)
+            return UIColor(red:0.986,  green:0.939,  blue:0.851, alpha:1)
         case .Eyeshield:
             return UIColor(red: 0.695, green: 0.822, blue: 0.710, alpha: 1)
         case .Night:
@@ -57,7 +57,7 @@ enum Theme: Int {
     var foregroundColor: UIColor {
         switch self {
         case .Default:
-            return UIColor(red: 0.099, green: 0.031, blue: 0.006, alpha: 1)
+            return UIColor(red:0.355,  green:0.275,  blue:0.211, alpha:1)
         case .Eyeshield:
             return UIColor(red: 0.117, green: 0.143, blue: 0.113, alpha: 1)
         case .Parchment:
@@ -69,5 +69,9 @@ enum Theme: Int {
 
     var styleLineColor: UIColor {
         return UIColor(red:0.917,  green:0.360,  blue:0, alpha:1)
+    }
+
+    var isNight: Bool {
+        return self == .Night
     }
 }

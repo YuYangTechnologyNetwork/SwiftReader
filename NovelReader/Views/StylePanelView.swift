@@ -59,7 +59,7 @@ class StylePanelView: UIView {
 
 	func applyTheme() {
         let tp                                      = Typesetter.Ins
-        self.tintColor                              = tp.theme.foregroundColor
+        self.tintColor                              = tp.theme.foregroundColor.newAlpha(0.8)
         self.backgroundColor                        = tp.theme.menuBackgroundColor
 
         self.vSplitLine.backgroundColor             = tp.theme.foregroundColor.newAlpha(0.05)

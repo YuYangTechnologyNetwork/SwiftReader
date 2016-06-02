@@ -14,10 +14,10 @@ final class FontManager {
 	enum SupportFonts: String {
 		case System = "系统字体"
 		case Heiti = "华文黑体"
-		case LanTing = "兰亭黑  "
-		case LiShu = "隶书    "
-		case KaiTi = "楷体    "
-		case SongTi = "宋体    "
+		case LanTing = "兰亭黑"
+		case LiShu = "隶书"
+		case KaiTi = "楷体"
+		case SongTi = "宋体"
 
 		var postScript: String {
 			switch self {
