@@ -123,7 +123,7 @@ final class FontManager {
 			switch state {
 			case .DidFinish:
 				s = .Finish
-			case .DidFailWithError, .Stalled:
+			case .DidFailWithError:
 				s = .Failure
 			case .WillBeginDownloading, .Downloading, .DidFinishDownloading:
 				s = .Downloading
