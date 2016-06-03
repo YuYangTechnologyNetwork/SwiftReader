@@ -22,7 +22,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var topActivityIndicatorContainer: UIView!
     @IBOutlet weak var topActivityIndicatorLabel: UILabel!
     @IBOutlet weak var topActivityIndicator: UIActivityIndicatorView!
-    
+    @IBOutlet weak var catalogContainer: UIView!
+
     @IBAction func onBackBtnClicked(sender: AnyObject) {
     }
 
@@ -40,6 +41,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     private var readerManager: ReaderManager!
     private var stylePanelView: StylePanelView!
     private var readerController: ReaderViewController!
+    private var catalogController: CatalogViewController!
     private var styleFontsListView: StyleFontsPickerView!
     
     private var menuShow: Bool           = false
@@ -186,6 +188,10 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 		if let rvc = self.readerController {
 			rvc.applyTheme()
 		}
+
+        if catalogController != nil {
+            catalogController.applyTheme()
+        }
 	}
     
 	func attachReaderView(currChapter: Chapter) {
@@ -194,6 +200,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.readerController.readerMgr  = self.readerManager
         self.readerController.view.frame = self.view.frame
 
+        self.loadingIndicator.stopAnimating()
 		self.addChildViewController(self.readerController)
 		self.view.addSubview(self.readerController.view)
 		self.view.sendSubviewToBack(self.readerController.view)
@@ -201,21 +208,39 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 
         if !self.loadingBoardMask.hidden {
             UIView.animateWithDuration(0.3, animations: {
-                self.loadingBoardMask.alpha = 0
+                self.loadingBoardMask.alpha  = 0
             }) { end in
                 self.loadingBoardMask.hidden = true
-                self.loadingBoardMask.alpha = 1
+                self.loadingBoardMask.alpha  = 1
             }
         }
 
-        self.loadingIndicator.hidden = true
-        self.loadingIndicator.stopAnimating()
+        self.catalogController           = CatalogViewController(nibName: "CatalogViewController", bundle: nil)
+        self.catalogController.book      = readerManager.book
+        self.catalogController.view.frame = catalogContainer.frame
+        self.catalogController.onDismiss { selected, bm in
+            self.dismissCatalog()
+
+            if selected {
+                // Jump to selected chapter(bm)
+            }
+        }
+
+        self.addChildViewController(catalogController)
+        self.catalogContainer.addSubview(catalogController.view)
+
+        self.catalogController.view.snp_makeConstraints { make in
+            make.top.equalTo(self.catalogContainer.snp_top)
+            make.left.equalTo(self.catalogContainer.snp_left)
+            make.width.equalTo(self.size.width * 5 / 6)
+            make.height.equalTo(self.catalogContainer.snp_height)
+        }
 	}
 
     func maskTaped(recognizer: UITapGestureRecognizer) {
         let point = recognizer.locationInView(maskPanel)
 
-        if !menuShow {
+        if !menuShow && self.catalogContainer.hidden {
             if inMenuRegion(point) {
                 showMenu()
             } else if inNextRegion(point) {
@@ -224,7 +249,11 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                 readerController.snapToPrevPage()
             }
         } else {
-            hideMenu()
+            if menuShow {
+                hideMenu()
+            } else {
+                dismissCatalog()
+            }
         }
     }
 
@@ -318,6 +347,16 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         }) { finish in }
     }
 
+    @IBAction func onCatalogBtnClicked(sender: AnyObject) {
+        self.hideMenu { self.showCatalog() }
+    }
+
+    @IBAction func onJumpBtnClicked(sender: AnyObject) {
+    }
+
+    @IBAction func onSettingsBtnClicked(sender: AnyObject) {
+    }
+
     func showFontsList() {
         self.styleFontsListView.frame.origin.x = self.size.width
         self.styleFontsListView.hidden = false
@@ -326,5 +365,31 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.stylePanelView.frame.origin.x = -self.size.width
             self.styleFontsListView.frame.origin.x = 0
         }) { finish in }
+    }
+
+    func showCatalog() {
+        if catalogController != nil {
+            self.maskPanel.hidden = false
+            self.catalogContainer.hidden = false
+            self.catalogContainer.frame.origin.x = -self.catalogController.view.frame.width
+            UIView.animateWithDuration(0.3, animations: {
+                self.maskPanel.alpha = 1
+                self.catalogContainer.frame.origin.x = 0
+            }) { finish in }
+        }
+    }
+
+    func dismissCatalog() {
+        if catalogController != nil {
+            self.brightnessMask.userInteractionEnabled = true
+            UIView.animateWithDuration(0.3, animations: {
+                self.maskPanel.alpha = 0
+                self.catalogContainer.frame.origin.x = -self.catalogController.view.frame.width
+            }) { finish in
+                self.brightnessMask.userInteractionEnabled = false
+                self.catalogContainer.hidden = true
+                self.maskPanel.hidden = true
+            }
+        }
     }
 }

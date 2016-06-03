@@ -14,7 +14,7 @@ class ReaderManager: NSObject {
         case AsyncLoadFinish
     }
     
-    private var book: Book!
+    private(set) var book: Book!
     private var paperSize: CGSize = EMPTY_SIZE
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var currChapter: Chapter = Chapter.EMPTY_CHAPTER

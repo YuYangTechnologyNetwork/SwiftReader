@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		self.window?.rootViewController = LaunchViewController(
         mainController: MenuViewController(nibName: "MenuViewController", bundle: nil)) { splash in
             // Download font
-			splash.setProgressText("Matching \(Typesetter.Ins.font)")
+			splash.setProgressText("Querying \(Typesetter.Ins.font)")
             
 			FontManager.asyncDownloadFont(Typesetter.Ins.font) { state, font, progress in
 				if state == FontManager.State.Downloading {

@@ -37,7 +37,6 @@ class StyleFontsPickerView: UIView, UIPickerViewDataSource, UIPickerViewDelegate
         NSBundle.mainBundle().loadNibNamed("StyleFontsPickerView", owner: self, options: nil)
         self.addSubview(contentView)
 
-        fontsPickerView.showsSelectionIndicator = true
         contentView.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self)
             make.left.equalTo(self)
