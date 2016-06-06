@@ -47,7 +47,7 @@ class Db {
             return ""
         }
     }
-
+    
     private var fmDb: FMDatabase
     private(set) var table: Table!
 

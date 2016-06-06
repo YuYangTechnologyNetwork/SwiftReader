@@ -68,14 +68,13 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
 
             Utils.asyncTask({
                 let file = fopen(self.book.fullFilePath, "r")
-                let reader = FileReader()
 
                 Db(name: self.book.name, table: .Catalog).clear(true).open { db in
                     // Extracting catalogs
-                    reader.logOff.fetchChaptersOfFile(file, encoding: self.book.encoding) { c in
+                    FileReader().logOff.fetchChaptersOfFile(file, encoding: self.book.encoding) { f, c in
                         for ch in c {
                             if ch.range.loc == 0 && ch.title == NO_TITLE {
-                                let t = reader.fetchRange(file, ch.range, self.book.encoding).text
+                                let t = f.fetchRange(file, ch.range, self.book.encoding).text
                                 if !t.isEmpty {
                                     ch.title = t.componentsSeparatedByString(FileReader.getNewLineCharater(t)).first!
                                 }

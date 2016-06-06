@@ -33,7 +33,7 @@ class MainViewController: UIViewController {
                 let paper    = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
                 paper.writtingLineByLine(result.0, firstLineIsTitle: false, startWithNewLine: result.1.loc == 0)
 
-                reader.logOff.fetchChaptersOfFile(file, encoding: book.encoding) { chapters in
+                reader.logOff.fetchChaptersOfFile(file, encoding: book.encoding) { f, chapters in
                     for ch in chapters {
                         Utils.Log(ch)
                     }

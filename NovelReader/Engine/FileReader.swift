@@ -380,7 +380,7 @@ extension FileReader {
      - parameter encoding: File encoding, eg: NSUTF8StringEncoding
      - parameter slice:    A closure to get slice chapters
      */
-    func fetchChaptersOfFile(file: UnsafeMutablePointer<FILE>, encoding: Encoding, slice: ([BookMark]) -> Void) {
+    func fetchChaptersOfFile(file: UnsafeMutablePointer<FILE>, encoding: Encoding, slice: (FileReader, [BookMark]) -> Void) {
         var start = 0, scale = 1
         let fileSize = getFileSize(file)
 
@@ -402,7 +402,7 @@ extension FileReader {
             } else {
                 scale = 1
                 start = s.last!.range.end
-                slice(s)
+                slice(self, s)
             }
 
             if scope.end >= fileSize {
