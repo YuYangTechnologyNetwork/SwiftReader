@@ -66,11 +66,7 @@ class Chapter: BookMark {
         return isEmpty ? "Blank" : super.description
     }
 
-    private var _offset = 0 {
-        didSet {
-            offset = _offset
-        }
-    }
+    private var _offset = 0
 
     private var _papers: [Paper] = []
 
@@ -80,7 +76,6 @@ class Chapter: BookMark {
 
     init(bm: BookMark) {
         super.init(title: bm.title, range: bm.range)
-        _offset = bm.offset
     }
 
     override init(title: String = NO_TITLE, range: NSRange = EMPTY_RANGE) {

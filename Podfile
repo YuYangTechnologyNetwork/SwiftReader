@@ -6,6 +6,7 @@ use_frameworks!
 target 'NovelReader' do
 pod 'YYText'
 pod 'SnapKit'
+pod 'FMDB', :git => 'https://github.com/robertmryan/fmdb.git'
 # pod 'PromiseKit/CorePromise'
 end
 

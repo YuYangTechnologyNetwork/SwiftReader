@@ -68,20 +68,33 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
 
             Utils.asyncTask({
                 let file = fopen(self.book.fullFilePath, "r")
+                let reader = FileReader()
 
-                // Extracting catalogs
-                FileReader().logOff.fetchChaptersOfFile(file, encoding: self.book.encoding) { c in
-                    for ch in c {
-                        Utils.Log(ch)
-                    }
+                Db(name: self.book.name, table: .Catalog).clear(true).open { db in
+                    // Extracting catalogs
+                    reader.logOff.fetchChaptersOfFile(file, encoding: self.book.encoding) { c in
+                        for ch in c {
+                            if ch.range.loc == 0 && ch.title == NO_TITLE {
+                                let t = reader.fetchRange(file, ch.range, self.book.encoding).text
+                                if !t.isEmpty {
+                                    ch.title = t.componentsSeparatedByString(FileReader.getNewLineCharater(t)).first!
+                                }
+                            }
 
-                    if !c.isEmpty {
-                        let progress = CGFloat(c.last!.range.end) * 100 / CGFloat(self.book.size)
-                        Utils.Log(progress)
-                        Utils.runUITask {
-                            self.loadingLabel.text = String(format: "提取中...%.2f", progress) + "%"
+                            db.insert(ch)
+                        }
+
+                        if !c.isEmpty {
+                            let p = CGFloat(c.last!.range.end) * 100 / CGFloat(self.book.size)
+                            let l = String(format: "提取中...%.2f", p) + "%"
+                            Utils.runUITask {
+                                Utils.Log(l)
+                                self.loadingLabel.text = l
+                            }
                         }
                     }
+
+                    Utils.Log("\(db.table): \(db.count())")
                 }
 
                 fclose(file)
@@ -90,10 +103,10 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.fetchCatalogBtn.hidden = false
 
                 UIView.animateWithDuration(0.3, animations: {
-                    self.loadingLabel.alpha     = 0
-                    self.fetchCatalogBtn.alpha  = 1
+                    self.loadingLabel.alpha = 0
+                    self.fetchCatalogBtn.alpha = 1
                 }) { finish in
-                    self.loadingLabel.hidden    = true
+                    self.loadingLabel.hidden = true
                 }
             }
         }

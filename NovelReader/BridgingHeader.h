@@ -11,6 +11,8 @@
 
 #include "uchardet.h"
 
+#import "FMDB/FMDB.h"
+
 #import <YYText/YYText.h>
 
 #endif /* BridgingHeader_h */

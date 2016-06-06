@@ -279,7 +279,7 @@ extension FileReader {
 
      - returns: Tuple that wrapped the snippet string and the reader NSRange
      */
-    func fetchRange(file: UnsafeMutablePointer<FILE>, _ r: NSRange, _ encoding: Encoding) -> (String, NSRange) {
+    func fetchRange(file: UnsafeMutablePointer<FILE>, _ r: NSRange, _ encoding: Encoding) -> (text: String, range: NSRange) {
         var snippet: String? = nil, scope: NSRange!, head = 0, tail = 0
         let fileSize = getFileSize(file)
 

@@ -33,10 +33,6 @@ class MainViewController: UIViewController {
                 let paper    = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
                 paper.writtingLineByLine(result.0, firstLineIsTitle: false, startWithNewLine: result.1.loc == 0)
 
-                let location = 4680//382
-                let chapter  = reader.fetchChapterAtLocation(file, location: location, encoding: book.encoding)
-                Utils.Log("Chapter: \(chapter!) at loc: \(location)")
-
                 reader.logOff.fetchChaptersOfFile(file, encoding: book.encoding) { chapters in
                     for ch in chapters {
                         Utils.Log(ch)

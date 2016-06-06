@@ -63,6 +63,8 @@
 		3F5925121D01282B00EBAD87 /* StyleFontsPickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F5925111D01282B00EBAD87 /* StyleFontsPickerView.xib */; };
 		3F5925151D012D3600EBAD87 /* CatalogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5925131D012D3600EBAD87 /* CatalogViewController.swift */; };
 		3F5925181D012D8200EBAD87 /* CatalogViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F5925171D012D8200EBAD87 /* CatalogViewController.xib */; };
+		3F59F96C1D05636D009867BE /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F59F96B1D05636D009867BE /* libsqlite3.tbd */; };
+		3F59F96E1D0565CF009867BE /* Db.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F59F96D1D0565CF009867BE /* Db.swift */; };
 		3F7052F01CF2F74C00235D48 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052EF1CF2F74C00235D48 /* Themes.swift */; };
 		3F7052F21CF4089400235D48 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */; };
 		3F7052F51CF4753800235D48 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052F31CF4753800235D48 /* LaunchViewController.swift */; };
@@ -174,6 +176,8 @@
 		3F5925111D01282B00EBAD87 /* StyleFontsPickerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StyleFontsPickerView.xib; path = xlibs/StyleFontsPickerView.xib; sourceTree = "<group>"; };
 		3F5925131D012D3600EBAD87 /* CatalogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CatalogViewController.swift; path = Reader/CatalogViewController.swift; sourceTree = "<group>"; };
 		3F5925171D012D8200EBAD87 /* CatalogViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CatalogViewController.xib; path = xlibs/CatalogViewController.xib; sourceTree = "<group>"; };
+		3F59F96B1D05636D009867BE /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		3F59F96D1D0565CF009867BE /* Db.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Db.swift; path = Utils/Db.swift; sourceTree = "<group>"; };
 		3F7052EF1CF2F74C00235D48 /* Themes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Themes.swift; path = Engine/Themes.swift; sourceTree = "<group>"; };
 		3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = xlibs/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3F7052F31CF4753800235D48 /* LaunchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LaunchViewController.swift; path = Reader/LaunchViewController.swift; sourceTree = "<group>"; };
@@ -187,6 +191,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F59F96C1D05636D009867BE /* libsqlite3.tbd in Frameworks */,
 				B151B56F286167A47FDE50DE /* Pods_NovelReader.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -225,6 +230,7 @@
 				111B55C21CABD6C700070E9C /* Constants.swift */,
 				111B55C31CABD6C700070E9C /* Extentions.swift */,
 				111B55BF1CABD64900070E9C /* FontManager.swift */,
+				3F59F96D1D0565CF009867BE /* Db.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -409,6 +415,7 @@
 		8B5E1BFFFD6BF47811135B89 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3F59F96B1D05636D009867BE /* libsqlite3.tbd */,
 				3D05DA1B1CAC21150059DBDF /* CoreText.framework */,
 				3D05DA191CAC21050059DBDF /* CoreGraphics.framework */,
 				3D05DA171CAC20F90059DBDF /* Foundation.framework */,
@@ -660,6 +667,7 @@
 				1156F1871CA3BB88006B5848 /* FileReader.swift in Sources */,
 				112E9CCE1C9FF1B400C5E34C /* uchardet.cpp in Sources */,
 				112E9CC61C9FF1B400C5E34C /* nsLatin1Prober.cpp in Sources */,
+				3F59F96E1D0565CF009867BE /* Db.swift in Sources */,
 				112E9CC31C9FF1B400C5E34C /* nsEUCTWProber.cpp in Sources */,
 				112E9CBE1C9FF1B400C5E34C /* nsCharSetProber.cpp in Sources */,
 				11F32CD81CD0D68000543CF3 /* MenuViewController.swift in Sources */,
@@ -788,6 +796,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
@@ -812,6 +821,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = "$(inherited)";
