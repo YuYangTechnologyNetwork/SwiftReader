@@ -185,8 +185,7 @@ final class Db {
                     self.totalCount = self.db.count()
                 }
 
-                let len = self.totalCount > self.bsize * 4 / 3 ? self.bsize : self.totalCount
-                rows = self.db.query(false, conditions: "limit \(self.start), \(len)")
+                rows = self.db.query(false, conditions: "limit \(self.start), \(self.bsize)")
 
                 self.db.close()
                 return rows
@@ -204,16 +203,15 @@ final class Db {
             let row = buffer[index - start]
             let lastStart = start
 
-            if totalCount > bsize * 4 / 3 {
-                if bufferIndex < middelRange.loc {
-                    self.start = max(self.start - middelRange.loc, 0)
-                } else if bufferIndex > middelRange.end {
-                    self.start = min(self.middelRange.end, self.totalCount - self.bsize)
-                }
+            if bufferIndex < middelRange.loc {
+                self.start = max(self.start - middelRange.loc, 0)
+            } else if bufferIndex > middelRange.end {
+                self.start = min(self.middelRange.end, self.totalCount - self.bsize)
             }
 
             if lastStart != start {
                 self.load()
+                Utils.Log("Cursor load start: \(self.start)")
             }
 
             return row

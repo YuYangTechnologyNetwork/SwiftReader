@@ -96,9 +96,6 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
                         }
                     }
 
-                    Utils.Log("\(db.description): \(db.count())")
-                    Utils.Log(db.query(false, conditions: "where `Hash` = -20343398337672323"))
-
                     self.cursor = Db.Cursor(db: db)
                 }
 
