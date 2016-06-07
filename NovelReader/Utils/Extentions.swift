@@ -108,7 +108,11 @@ extension NSRange {
     }
     
     var desc: String {
-        return String("\(loc)\(len)".hash)
+        return "(\(loc), \(len), \(end))"
+    }
+
+    var hash: Int {
+        return desc.hash
     }
 
     var isLogical : Bool {

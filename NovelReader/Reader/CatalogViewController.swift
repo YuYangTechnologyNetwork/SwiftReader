@@ -26,6 +26,8 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 
     private var onDismissListener: ((Bool, BookMark?) -> Void)? = nil
+    private var cursor: Db.Cursor!
+    private var cellSelectedBg: UIView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +37,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
         let v                                   = UIView()
         v.backgroundColor                       = UIColor.clearColor()
         tableView.tableFooterView               = v
+        self.cellSelectedBg                     = UIView()
         self.fetchCatalogBtn.layer.borderWidth  = 1
         self.fetchCatalogBtn.layer.cornerRadius = 8
     }
@@ -69,7 +72,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
             Utils.asyncTask({
                 let file = fopen(self.book.fullFilePath, "r")
 
-                Db(name: self.book.name, table: .Catalog).clear(true).open { db in
+                Db(rowable: BookMark()).clear(true).open { db in
                     // Extracting catalogs
                     FileReader().logOff.fetchChaptersOfFile(file, encoding: self.book.encoding) { f, c in
                         for ch in c {
@@ -93,19 +96,32 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
                         }
                     }
 
-                    Utils.Log("\(db.table): \(db.count())")
+                    Utils.Log("\(db.description): \(db.count())")
+                    Utils.Log(db.query(false, conditions: "where `Hash` = -20343398337672323"))
+
+                    self.cursor = Db.Cursor(db: db)
                 }
 
                 fclose(file)
             }) {
-                self.loadingIndicator.stopAnimating()
-                self.fetchCatalogBtn.hidden = false
-
-                UIView.animateWithDuration(0.3, animations: {
-                    self.loadingLabel.alpha = 0
-                    self.fetchCatalogBtn.alpha = 1
-                }) { finish in
-                    self.loadingLabel.hidden = true
+                self.cursor.load {
+                    self.loadingIndicator.stopAnimating()
+                    if !self.cursor.isEmpty {
+                        UIView.animateWithDuration(0.3, animations: {
+                            self.emptyTipsView.alpha = 0
+                        }) { finish in
+                            self.emptyTipsView.hidden = true
+                            self.tableView.reloadData()
+                        }
+                    } else {
+                        self.fetchCatalogBtn.hidden = false
+                        UIView.animateWithDuration(0.3, animations: {
+                            self.loadingLabel.alpha = 0
+                            self.fetchCatalogBtn.alpha = 1
+                        }) { finish in
+                            self.loadingLabel.hidden = true
+                        }
+                    }
                 }
             }
         }
@@ -121,6 +137,8 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.fetchCatalogBtn.layer.borderColor      = Typesetter.Ins.theme.foregroundColor.newAlpha(0.4).CGColor
         self.loadingIndicator.color                 = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
         self.loadingLabel.textColor                 = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
+        self.cellSelectedBg.backgroundColor         = Typesetter.Ins.theme.foregroundColor.newAlpha(0.05)
+        self.tableView.reloadData()
     }
 
     func onDismiss(l: (selected: Bool, bm: BookMark?) -> Void) -> CatalogViewController {
@@ -129,11 +147,19 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return self.cursor != nil ? self.cursor.count() : 0
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("CatalogCell")
+
+        cell?.selectedBackgroundView = cellSelectedBg
+        cell?.textLabel?.textColor   = Typesetter.Ins.theme.foregroundColor
+        cell?.textLabel?.font        = Typesetter.Ins.font.forSize(12)
+        cell?.backgroundColor        = UIColor.clearColor()
+
+        let bm = self.cursor.rowAt(indexPath.row) as? BookMark
+        cell?.textLabel?.text = bm == nil ? "null" : "\(bm!.title)"
         return cell!
     }
 }

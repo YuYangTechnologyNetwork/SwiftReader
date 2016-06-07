@@ -9,47 +9,220 @@
 import Foundation
 import FMDB
 
+/// Lite ORM protocol
 protocol Rowable {
-    func values() -> [AnyObject]
+    /// Table name
+    var table: String { get }
+    /// Table Columns and default value(or update/insert value)
+    var fields: [Db.Field] { get }
+    /**
+     Parse row to Object
+
+     - parameter row: row data, [column1, column2...]
+
+     - returns: A Rowable type object
+     */
+    func parse(row: [AnyObject]) -> Rowable
 }
 
-class Db {
+/// FMDB Manager class
+final class Db {
+    /**
+     Database fields enum
 
-    /// Define tables
-    enum Table: String {
-        case Books = "Book TEXT, Downloaded INTEGER, Extracted INTEGER,  BmTItle TEXT, BmLoc INTEGER"
-        case Catalog = "Title TEXT, Location INTEGER, Length INTEGER, Hash INTEGER"
-        case Profile = "AutoNight INTEGER, Typesetter TEXT"
+     - TEXT:    Sqlit TEXT => (ColumnName, default/value)
+     - REAL:    Sqlit REAL(float) => (ColumnName, default/value)
+     - BLOB:    Sqlit BLOB => (ColumnName, default/value)
+     - INTEGER: Sqlit INTEGER => (ColumnName, default/value)
+     */
+    enum Field {
+        case REAL(name: String, value: Float)
+        case BLOB(name: String, value: NSData)
+        case TEXT(name: String, value: String)
+        case INTEGER(name: String, value: Int)
 
-        var Insert: String {
+        private var associated: (name: String, value: AnyObject) {
             switch self {
-            case .Catalog:
-                return "INSERT INTO \(self) (Title, Location, Length, Hash) VALUES (?, ?, ?, ?)"
-            case .Books:
-                break
-            case .Profile:
-                break
+            case .TEXT(let n, let v):
+                return (name: n, value: v)
+            case .REAL(let n, let v):
+                return (name: n, value: v)
+            case .BLOB(let n, let v):
+                return (name: n, value: v)
+            case .INTEGER(let n, let v):
+                return (name: n, value: v)
             }
-
-            return ""
         }
 
-        var Count: String {
+        private var sqliteType: String {
             switch self {
-            case .Catalog:
-                return "SELECT COUNT(*) AS `Count` FROM \(self)"
-            case .Books:
-                break
-            case .Profile:
-                break
+            case .TEXT(_, _):
+                return "TEXT"
+            case .REAL(_, _):
+                return "REAL"
+            case .BLOB(_, _):
+                return "BLOB"
+            case .INTEGER(_, _):
+                return "INTEGER"
+            }
+        }
+
+        private static func createSql(fields: [Db.Field]) -> String {
+            var sql = ""
+            for i in 0 ..< fields.count {
+                let f = fields[i]
+                sql += "`\(f.associated.name)` \(f.sqliteType)"
+
+                if i < fields.count - 1 {
+                    sql += ","
+                }
             }
 
-            return ""
+            return sql
+        }
+
+        private static func split(fields: [Db.Field]) -> (c: String, p: String, v: [AnyObject]) {
+            var sql = "", vs: [AnyObject] = [], ps = ""
+
+            for i in 0 ..< fields.count {
+                let f = fields[i]
+
+                sql += "`\(f.associated.name)`"
+                ps += "?"
+
+                if i < fields.count - 1 {
+                    sql += ", "
+                    ps += ", "
+                }
+
+                vs.append(f.associated.value)
+            }
+
+            return (c: sql, p: ps, v: vs)
         }
     }
-    
+
+    /**
+     Db execute SQL
+
+     - Create: Create table
+     - Insert: Insert row
+     - Query:  Select
+     - Delete: Delete
+     - Count:  Count
+     - Clear:  Drop table
+     */
+    private enum Operator {
+        case Create(Rowable)
+        case Insert(Rowable)
+        case Update(Rowable, conditions: String?)
+        case Query(Rowable, conditions: String?)
+        case Delete(Rowable, conditions: String?)
+        case Count(Rowable, conditions: String?)
+        case Clear(Rowable)
+
+        private var sql: String {
+            switch self {
+            case .Create(let r):
+                return "CREATE TABLE IF NOT EXISTS \(r.table) (\(Field.createSql(r.fields)))"
+            case .Insert(let r):
+                let splits = Field.split(r.fields)
+                return "INSERT INTO \(r.table) (\(splits.c)) VALUES (\(splits.p))"
+            case .Update(let r, let c):
+                var sql = ""
+                for i in 0 ..< r.fields.count {
+                    let f = r.fields[i]
+                    sql += "\(f.associated.name) = `\(f.associated.value)`"
+                    if i < r.fields.count - 1 { sql += ", " }
+                }
+                return "UPDATE \(r.table) SET " + sql + " " + (c ?? "")
+            case .Query(let r, let c):
+                let splits = Field.split(r.fields)
+                return "SELECT \(splits.c) FROM \(r.table) " + (c ?? "")
+            case .Delete(let r, let c):
+                return "DELETE FROM \(r.table) " + (c ?? "")
+            case .Count(let r, let c):
+                return "SELECT COUNT(*) FROM \(r.table) " + (c ?? "")
+            case .Clear(let r):
+                return "DROP TABLE IF EXISTS \(r.table)"
+            }
+        }
+    }
+
+    class Cursor {
+        private var db: Db!
+        private var start: Int!
+        private var bsize: Int!
+        private var buffer: [Rowable] = []
+        private var totalCount: Int = 0
+        private var middelRange: NSRange
+
+        var isEmpty: Bool {
+            return buffer.isEmpty
+        }
+
+        init(db: Db, bufferSize: Int = 100) {
+            self.db = db
+            self.start = 0
+            self.bsize = bufferSize
+            self.middelRange = NSMakeRange(bsize / 3, bsize / 3)
+        }
+
+        func load(callback: (() -> Void)? = nil) {
+            self.asyncLoading { rows in
+                self.buffer = rows
+                if let c = callback {
+                    c()
+                }
+            }
+        }
+
+        private func asyncLoading(callback: ([Rowable]) -> Void) {
+            Utils.asyncTask({ () -> [Rowable] in
+                var rows: [Rowable] = []
+                self.db.open()
+                if self.totalCount == 0 {
+                    self.totalCount = self.db.count()
+                }
+
+                let len = self.totalCount > self.bsize * 4 / 3 ? self.bsize : self.totalCount
+                rows = self.db.query(false, conditions: "limit \(self.start), \(len)")
+
+                self.db.close()
+                return rows
+            }) { rows in
+                callback(rows)
+            }
+        }
+
+        func count() -> Int {
+            return totalCount
+        }
+
+        func rowAt(index: Int) -> Rowable? {
+            let bufferIndex = index - start
+            let row = buffer[index - start]
+            let lastStart = start
+
+            if totalCount > bsize * 4 / 3 {
+                if bufferIndex < middelRange.loc {
+                    self.start = max(self.start - middelRange.loc, 0)
+                } else if bufferIndex > middelRange.end {
+                    self.start = min(self.middelRange.end, self.totalCount - self.bsize)
+                }
+            }
+
+            if lastStart != start {
+                self.load()
+            }
+
+            return row
+        }
+    }
+
     private var fmDb: FMDatabase
-    private(set) var table: Table!
+    private var rowable: Rowable!
+    private var database: String
 
     /**
      Init db
@@ -59,17 +232,16 @@ class Db {
 
      - returns: If fail nil will return
      */
-    init!(name: String, table: Table) {
+    init!(db: String = "NoverReader", rowable r: Rowable) {
         let filemgr = NSFileManager.defaultManager()
         let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
-        let databasePath = dirPath.stringByAppendingString("/" + name + ".sqlite")
+        let databasePath = dirPath.stringByAppendingString("/" + db + ".sqlite")
 
         Utils.Log("Db Path: " + databasePath)
         if !filemgr.fileExistsAtPath(databasePath) {
             if let db = FMDatabase(path: databasePath) {
                 if db.open() {
-                    let sql_stmt = "CREATE TABLE IF NOT EXISTS \(table) (\(table.rawValue))"
-                    if !db.executeStatements(sql_stmt) {
+                    if !db.executeStatements(Operator.Create(r).sql) {
                         Utils.Log("Error: \(db.lastErrorMessage())")
                     }
 
@@ -85,13 +257,18 @@ class Db {
         }
 
         fmDb = FMDatabase(path: databasePath)
-        self.table = table
+        rowable = r
+        database = db + ".sqlite"
+    }
+
+    var description: String {
+        return "\(database)/\(rowable.table)[\(Field.split(rowable.fields).c)]"
     }
 
     /**
      Open sqlite db
 
-     - parameter task: auto execute task
+     - parameter task: auto execute task, if not nil, db.close will be call when task finished
      */
     func open(task: ((db: Db) -> Void)? = nil) {
         fmDb.open()
@@ -121,10 +298,9 @@ class Db {
             fmDb.open()
         }
 
-        fmDb.executeStatements("DROP TABLE IF EXISTS \(table)")
+        fmDb.executeStatements(Operator.Clear(rowable).sql)
 
-        let sql_stmt = "CREATE TABLE IF NOT EXISTS \(table) (\(table.rawValue))"
-        if !fmDb.executeStatements(sql_stmt) {
+        if !fmDb.executeStatements(Operator.Create(rowable).sql) {
             Utils.Log("Error: \(fmDb.lastErrorMessage())")
         }
 
@@ -147,7 +323,7 @@ class Db {
             fmDb.open()
         }
 
-        let res = fmDb.executeQuery(table.Count, withArgumentsInArray: nil)
+        let res = fmDb.executeQuery(Operator.Count(rowable, conditions: nil).sql, withArgumentsInArray: nil)
         if res.next() {
             return res.longForColumnIndex(0)
         }
@@ -172,12 +348,57 @@ class Db {
             fmDb.open()
         }
 
-        let res = fmDb.executeUpdate(table.Insert, withArgumentsInArray: row.values())
+        let res = fmDb.executeUpdate(Operator.Insert(row).sql, withArgumentsInArray: Field.split(row.fields).v)
 
         if reopen {
             fmDb.close()
         }
 
         return res
+    }
+
+    /**
+     Query
+
+     - parameter reopen:     need open db?
+     - parameter conditions: Conditions: conform to standar SQL syntax. eg: where `column1` = 123 limit 0, 30
+
+     - returns: Result [Rowable]
+     */
+    func query(reopen: Bool = false, conditions: String? = nil) -> [Rowable] {
+        if reopen {
+            fmDb.open()
+        }
+
+        let res = fmDb.executeQuery(Operator.Query(rowable, conditions: conditions).sql, withArgumentsInArray: nil)
+        var rows: [Rowable] = []
+
+        while res.next() {
+            var row: [AnyObject] = []
+
+            for f in rowable.fields {
+                let value: AnyObject
+                switch f {
+                case .TEXT(let n, _):
+                    value = res.stringForColumn(n)
+                case .REAL(let n, _):
+                    value = NSNumber(double: res.doubleForColumn(n)).floatValue
+                case .BLOB(let n, _):
+                    value = res.dataForColumn(n)
+                case .INTEGER(let n, _):
+                    value = NSNumber(longLong: res.longLongIntForColumn(n)).integerValue
+                }
+
+                row.append(value)
+            }
+
+            rows.append(rowable.parse(row))
+        }
+
+        if reopen {
+            fmDb.close()
+        }
+
+        return rows
     }
 }
