@@ -92,7 +92,7 @@ class StyleFontsPickerView: UIView, UIPickerViewDataSource, UIPickerViewDelegate
         }
 
         let font = Fonts.cases[r % Fonts.cases.count]
-        label?.font = font.forSize(17)
+        label?.font = font.forSize(R.Dimens.FontSize.Com_Title)
         
         if font == Typesetter.Ins.font {
             label?.text = font.rawValue + "✓"

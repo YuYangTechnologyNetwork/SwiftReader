@@ -57,22 +57,25 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 
     private func asyncExtraCatalog() {
-        if self.book != nil {
-            self.loadingIndicator.startAnimating()
-            self.loadingLabel.alpha     = 0
-            self.loadingLabel.hidden    = false
-            self.fetchCatalogBtn.alpha  = 1
-            self.fetchCatalogBtn.hidden = true
+        if self.book == nil {
+            return
+        }
 
-            UIView.animateWithDuration(0.3) {
-                self.loadingLabel.alpha    = 1
-                self.fetchCatalogBtn.alpha = 0
-            }
+        self.loadingIndicator.startAnimating()
+        self.loadingLabel.alpha = 0
+        self.loadingLabel.hidden = false
+        self.fetchCatalogBtn.alpha = 1
+        self.fetchCatalogBtn.hidden = true
 
-            Utils.asyncTask({
-                let file = fopen(self.book.fullFilePath, "r")
+        UIView.animateWithDuration(R.Dimens.AnimInterval.Normal) {
+            self.loadingLabel.alpha = 1
+            self.fetchCatalogBtn.alpha = 0
+        }
 
-                Db(rowable: BookMark()).clear(true).open { db in
+        Utils.asyncTask({
+            let file = fopen(self.book.fullFilePath, "r")
+            Db(rowable: BookMark()).clear(true).open { db in
+                db.inTransaction { () -> Bool in
                     // Extracting catalogs
                     FileReader().logOff.fetchChaptersOfFile(file, encoding: self.book.encoding) { f, c in
                         for ch in c {
@@ -96,28 +99,30 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
                         }
                     }
 
-                    self.cursor = Db.Cursor(db: db)
+                    return true
                 }
 
-                fclose(file)
-            }) {
-                self.cursor.load {
-                    self.loadingIndicator.stopAnimating()
-                    if !self.cursor.isEmpty {
-                        UIView.animateWithDuration(0.3, animations: {
-                            self.emptyTipsView.alpha = 0
-                        }) { finish in
-                            self.emptyTipsView.hidden = true
-                            self.tableView.reloadData()
-                        }
-                    } else {
-                        self.fetchCatalogBtn.hidden = false
-                        UIView.animateWithDuration(0.3, animations: {
-                            self.loadingLabel.alpha = 0
-                            self.fetchCatalogBtn.alpha = 1
-                        }) { finish in
-                            self.loadingLabel.hidden = true
-                        }
+                self.cursor = Db.Cursor(db: db)
+            }
+
+            fclose(file)
+        }) {
+            self.cursor.load {
+                self.loadingIndicator.stopAnimating()
+                if !self.cursor.isEmpty {
+                    UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, animations: {
+                        self.emptyTipsView.alpha = 0
+                    }) { finish in
+                        self.emptyTipsView.hidden = true
+                        self.tableView.reloadData()
+                    }
+                } else {
+                    self.fetchCatalogBtn.hidden = false
+                    UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, animations: {
+                        self.loadingLabel.alpha = 0
+                        self.fetchCatalogBtn.alpha = 1
+                    }) { finish in
+                        self.loadingLabel.hidden = true
                     }
                 }
             }
@@ -134,7 +139,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.fetchCatalogBtn.layer.borderColor      = Typesetter.Ins.theme.foregroundColor.newAlpha(0.4).CGColor
         self.loadingIndicator.color                 = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
         self.loadingLabel.textColor                 = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
-        self.cellSelectedBg.backgroundColor         = Typesetter.Ins.theme.foregroundColor.newAlpha(0.05)
+        self.cellSelectedBg.backgroundColor         = Typesetter.Ins.theme.foregroundColor.newAlpha(0.1)
         self.tableView.reloadData()
     }
 
@@ -150,13 +155,19 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("CatalogCell")
 
-        cell?.selectedBackgroundView = cellSelectedBg
-        cell?.textLabel?.textColor   = Typesetter.Ins.theme.foregroundColor
-        cell?.textLabel?.font        = Typesetter.Ins.font.forSize(12)
-        cell?.backgroundColor        = UIColor.clearColor()
+        if cell?.selectedBackgroundView != cellSelectedBg {
+            cell?.selectedBackgroundView = cellSelectedBg
+            cell?.textLabel?.textColor   = Typesetter.Ins.theme.foregroundColor.newAlpha(0.8)
+            cell?.textLabel?.font        = UIFont.systemFontOfSize(R.Dimens.FontSize.Com_Label)
+            cell?.backgroundColor        = UIColor.clearColor()
+        }
 
-        let bm = self.cursor.rowAt(indexPath.row) as? BookMark
-        cell?.textLabel?.text = bm == nil ? "null" : "\(bm!.title)"
+        var visble = tableView.indexPathsForVisibleRows!.map { $0.row }
+        visble.sortInPlace { $0 < $1 }
+
+        let bm = self.cursor.rowAt(indexPath.row, visibleRange: NSMakeRange(visble.first!, visble.count)) as? BookMark
+        cell?.textLabel?.text = bm == nil ? "Loading" : "\(bm!.title)"
+
         return cell!
     }
 }

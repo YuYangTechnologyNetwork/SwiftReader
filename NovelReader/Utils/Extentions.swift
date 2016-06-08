@@ -94,7 +94,7 @@ extension String {
     }
 }
 
-extension NSRange {
+extension NSRange: Equatable {
     var end: Int {
         return location + length
     }
@@ -108,7 +108,7 @@ extension NSRange {
     }
     
     var desc: String {
-        return "(\(loc), \(len), \(end))"
+        return "(\(loc)~\(end),\(len))"
     }
 
     var hash: Int {
@@ -122,6 +122,21 @@ extension NSRange {
     func contain(loc: Int) -> Bool {
         return self.loc <= loc && loc <= self.end
     }
+
+    func intersection(r: NSRange) -> NSRange {
+        let low = loc <= r.loc ? self : r
+        let hight = loc < r.loc ? r : self
+
+        if low.contain(hight.loc) {
+            return NSMakeRange(hight.loc, min(low.end, hight.end) - hight.loc)
+        } else {
+            return EMPTY_RANGE
+        }
+    }
+}
+
+public func == (lhs: NSRange, rhs: NSRange) -> Bool {
+    return lhs.loc == rhs.loc && lhs.end == rhs.end
 }
 
 extension UIEdgeInsets {

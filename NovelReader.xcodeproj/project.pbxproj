@@ -65,6 +65,7 @@
 		3F5925181D012D8200EBAD87 /* CatalogViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F5925171D012D8200EBAD87 /* CatalogViewController.xib */; };
 		3F59F96C1D05636D009867BE /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F59F96B1D05636D009867BE /* libsqlite3.tbd */; };
 		3F59F96E1D0565CF009867BE /* Db.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F59F96D1D0565CF009867BE /* Db.swift */; };
+		3F59F9701D07B9DD009867BE /* R.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F59F96F1D07B9DD009867BE /* R.swift */; };
 		3F7052F01CF2F74C00235D48 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052EF1CF2F74C00235D48 /* Themes.swift */; };
 		3F7052F21CF4089400235D48 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */; };
 		3F7052F51CF4753800235D48 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7052F31CF4753800235D48 /* LaunchViewController.swift */; };
@@ -178,6 +179,7 @@
 		3F5925171D012D8200EBAD87 /* CatalogViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CatalogViewController.xib; path = xlibs/CatalogViewController.xib; sourceTree = "<group>"; };
 		3F59F96B1D05636D009867BE /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		3F59F96D1D0565CF009867BE /* Db.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Db.swift; path = Utils/Db.swift; sourceTree = "<group>"; };
+		3F59F96F1D07B9DD009867BE /* R.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = R.swift; path = Utils/R.swift; sourceTree = "<group>"; };
 		3F7052EF1CF2F74C00235D48 /* Themes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Themes.swift; path = Engine/Themes.swift; sourceTree = "<group>"; };
 		3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = xlibs/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3F7052F31CF4753800235D48 /* LaunchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LaunchViewController.swift; path = Reader/LaunchViewController.swift; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 				111B55C31CABD6C700070E9C /* Extentions.swift */,
 				111B55BF1CABD64900070E9C /* FontManager.swift */,
 				3F59F96D1D0565CF009867BE /* Db.swift */,
+				3F59F96F1D07B9DD009867BE /* R.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -656,6 +659,7 @@
 				112E9CCC1C9FF1B400C5E34C /* nsUniversalDetector.cpp in Sources */,
 				112E9CC11C9FF1B400C5E34C /* nsEUCJPProber.cpp in Sources */,
 				112E9CBC1C9FF1B400C5E34C /* JpCntx.cpp in Sources */,
+				3F59F9701D07B9DD009867BE /* R.swift in Sources */,
 				112E9CC51C9FF1B400C5E34C /* nsHebrewProber.cpp in Sources */,
 				112E9CC21C9FF1B400C5E34C /* nsEUCKRProber.cpp in Sources */,
 				3D49C70E1C96F53700DD408F /* AppDelegate.swift in Sources */,

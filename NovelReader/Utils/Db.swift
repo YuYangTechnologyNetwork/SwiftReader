@@ -149,25 +149,38 @@ final class Db {
         }
     }
 
+    /// Cursor for segment loading
     class Cursor {
         private var db: Db!
-        private var start: Int!
-        private var bsize: Int!
+        private var start: Int
+        private var bsize: Int
         private var buffer: [Rowable] = []
         private var totalCount: Int = 0
-        private var middelRange: NSRange
+        private var vRange = EMPTY_RANGE
 
+        /// Cursor is empty?
         var isEmpty: Bool {
             return buffer.isEmpty
         }
 
-        init(db: Db, bufferSize: Int = 100) {
+        /**
+         Curor for load segment
+
+         - parameter db:         Db object
+         - parameter start:      First row index
+         - parameter bufferSize: Extra buffer size
+         */
+        init(db: Db, start: Int = 0, bufferSize: Int = 30) {
             self.db = db
-            self.start = 0
+            self.start = start
             self.bsize = bufferSize
-            self.middelRange = NSMakeRange(bsize / 3, bsize / 3)
         }
 
+        /**
+         Asyn loading
+
+         - parameter callback: Callback
+         */
         func load(callback: (() -> Void)? = nil) {
             self.asyncLoading { rows in
                 self.buffer = rows
@@ -185,33 +198,57 @@ final class Db {
                     self.totalCount = self.db.count()
                 }
 
-                rows = self.db.query(false, conditions: "limit \(self.start), \(self.bsize)")
+                rows = self.db.query(false, conditions: "limit \(self.start), \(self.bsize * 3)")
 
                 self.db.close()
                 return rows
             }) { rows in
                 callback(rows)
+                Utils.Log("Loaded: \(self.start)")
             }
         }
 
+        /**
+         Total count
+
+         - returns: Database total count
+         */
         func count() -> Int {
             return totalCount
         }
 
-        func rowAt(index: Int) -> Rowable? {
-            let bufferIndex = index - start
-            let row = buffer[index - start]
-            let lastStart = start
+        /**
+         Get row data from cursor and try async load buffer if need
 
-            if bufferIndex < middelRange.loc {
-                self.start = max(self.start - middelRange.loc, 0)
-            } else if bufferIndex > middelRange.end {
-                self.start = min(self.middelRange.end, self.totalCount - self.bsize)
-            }
+         - parameter index: Row index
+         - parameter r:     List visible range, eg: UITalbeView.indexPathsForVisibleRows
 
-            if lastStart != start {
-                self.load()
-                Utils.Log("Cursor load start: \(self.start)")
+         - returns: Row data
+         */
+        func rowAt(index: Int, visibleRange r: NSRange) -> Rowable? {
+            let bIndex = index - start
+            let row: Rowable? = bIndex >= 0 && bIndex < buffer.count ? buffer[bIndex]: nil
+
+            if vRange != r && self.totalCount > buffer.count {
+                let lastStart = self.start
+
+                if r.loc >= vRange.loc {
+                    if buffer.count - bIndex < self.bsize {
+                        self.start += self.bsize
+                        self.start = min(self.totalCount - self.bsize * 3, self.start)
+                    }
+                } else {
+                    if bIndex < self.bsize * 2 {
+                        self.start -= self.bsize
+                        self.start = max(0, self.start)
+                    }
+                }
+
+                self.vRange = r
+
+                if lastStart != self.start {
+                    self.load()
+                }
             }
 
             return row
@@ -398,5 +435,20 @@ final class Db {
         }
 
         return rows
+    }
+
+    /**
+     Do transaction
+
+     - parameter task: If false return, rollback will be execute
+     */
+    func inTransaction(task: () -> Bool) {
+        fmDb.beginTransaction()
+
+        if !task() {
+            fmDb.rollback()
+        } else {
+            fmDb.commit()
+        }
     }
 }
