@@ -67,7 +67,7 @@ enum Theme: Int {
         }
     }
 
-    var styleLineColor: UIColor {
+    var highlightColor: UIColor {
         return UIColor(red:0.917,  green:0.360,  blue:0, alpha:0.6)
     }
 

@@ -14,12 +14,13 @@ class ReaderManager: NSObject {
         case AsyncLoadFinish
     }
     
-    private(set) var book: Book!
     private var paperSize: CGSize = EMPTY_SIZE
-    private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
-    private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
-    private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var listeners: [MonitorName: [String:(chpater: Chapter) -> Void]] = [:]
+    
+    private(set) var book: Book!
+    private(set) var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
+    private(set) var currChapter: Chapter = Chapter.EMPTY_CHAPTER
+    private(set) var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
 
     var currPaper: Paper? {
         return currChapter.currPage!

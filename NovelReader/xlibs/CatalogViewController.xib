@@ -128,9 +128,6 @@
                     <subviews>
                         <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="xRJ-oc-KaC">
                             <rect key="frame" x="-10" y="-10" width="20" height="20"/>
-                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                <rect key="frame" x="190" y="326" width="20" height="20"/>
-                            </variation>
                         </activityIndicatorView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9jF-zj-xTS">
                             <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -146,8 +143,7 @@
                                     <exclude reference="Cmn-s1-z5S"/>
                                 </mask>
                             </variation>
-                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                <rect key="frame" x="159" y="356" width="82" height="33"/>
+                            <variation key="heightClass=regular-widthClass=compact">
                                 <mask key="constraints">
                                     <include reference="Cmn-s1-z5S"/>
                                 </mask>
@@ -162,9 +158,6 @@
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
-                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                <rect key="frame" x="176" y="361" width="47" height="14.5"/>
-                            </variation>
                         </label>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -174,7 +167,9 @@
                         <constraint firstItem="ahG-eP-R35" firstAttribute="centerX" secondItem="pG4-Fw-dvF" secondAttribute="centerX" id="d2G-j0-Fng"/>
                         <constraint firstItem="9jF-zj-xTS" firstAttribute="top" secondItem="xRJ-oc-KaC" secondAttribute="bottom" constant="10" id="wY3-8A-z5j"/>
                         <constraint firstItem="xRJ-oc-KaC" firstAttribute="centerX" secondItem="pG4-Fw-dvF" secondAttribute="centerX" id="xgV-d5-vbm"/>
-                        <constraint firstItem="xRJ-oc-KaC" firstAttribute="centerY" secondItem="pG4-Fw-dvF" secondAttribute="centerY" id="zaY-ew-Fat"/>
+                        <constraint firstItem="xRJ-oc-KaC" firstAttribute="centerY" secondItem="pG4-Fw-dvF" secondAttribute="centerY" id="zaY-ew-Fat">
+                            <variation key="heightClass=regular-widthClass=compact" constant="-32"/>
+                        </constraint>
                         <constraint firstAttribute="height" constant="190" id="zye-Lx-En2"/>
                     </constraints>
                     <variation key="default">
@@ -247,16 +242,16 @@
                     <exclude reference="pG4-Fw-dvF"/>
                 </mask>
                 <mask key="constraints">
+                    <exclude reference="3Tt-4d-Duo"/>
+                    <exclude reference="Nx7-9C-ioc"/>
+                    <exclude reference="V4Z-d3-Kmg"/>
+                    <exclude reference="wkX-h0-H46"/>
                     <exclude reference="GOY-bD-e7m"/>
                     <exclude reference="PLT-SL-dzJ"/>
                     <exclude reference="ybF-Pk-wgv"/>
                     <exclude reference="Vto-A1-Eul"/>
                     <exclude reference="d5N-Ne-eTe"/>
                     <exclude reference="qPy-u3-7SG"/>
-                    <exclude reference="3Tt-4d-Duo"/>
-                    <exclude reference="Nx7-9C-ioc"/>
-                    <exclude reference="V4Z-d3-Kmg"/>
-                    <exclude reference="wkX-h0-H46"/>
                     <exclude reference="Ib3-qM-4pM"/>
                     <exclude reference="Kzg-Wf-laf"/>
                     <exclude reference="Nih-n8-Vuk"/>
@@ -276,16 +271,16 @@
                     <include reference="pG4-Fw-dvF"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="3Tt-4d-Duo"/>
+                    <include reference="Nx7-9C-ioc"/>
+                    <include reference="V4Z-d3-Kmg"/>
+                    <include reference="wkX-h0-H46"/>
                     <include reference="GOY-bD-e7m"/>
                     <include reference="PLT-SL-dzJ"/>
                     <include reference="ybF-Pk-wgv"/>
                     <include reference="Vto-A1-Eul"/>
                     <include reference="d5N-Ne-eTe"/>
                     <include reference="qPy-u3-7SG"/>
-                    <include reference="3Tt-4d-Duo"/>
-                    <include reference="Nx7-9C-ioc"/>
-                    <include reference="V4Z-d3-Kmg"/>
-                    <include reference="wkX-h0-H46"/>
                     <exclude reference="Ib3-qM-4pM"/>
                     <include reference="Kzg-Wf-laf"/>
                     <include reference="Nih-n8-Vuk"/>

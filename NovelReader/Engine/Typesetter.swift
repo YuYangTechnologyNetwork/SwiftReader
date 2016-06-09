@@ -184,8 +184,8 @@ class Typesetter {
             let nsStr           = attrt.string as NSString
             let yyBoard         = YYTextBorder()
             yyBoard.lineStyle   = [.PatternSolid, .Single]
-            yyBoard.fillColor   = theme.styleLineColor
-            yyBoard.strokeColor = theme.styleLineColor
+            yyBoard.fillColor   = theme.highlightColor
+            yyBoard.strokeColor = theme.highlightColor
             yyBoard.strokeWidth = 0.5
             yyBoard.insets      = UIEdgeInsetsMake(yyFont.capHeight * 2, 0, 0, 0)
             var searchRange     = NSMakeRange(0, nsStr.length)
@@ -209,7 +209,7 @@ class Typesetter {
             let yyBoard          = YYTextBorder()
             yyBoard.lineStyle    = [.PatternSolid, .Single]
             yyBoard.strokeWidth  = 1
-            yyBoard.strokeColor  = theme.styleLineColor
+            yyBoard.strokeColor  = theme.highlightColor
             yyBoard.cornerRadius = yyFont.capHeight / 2
             yyBoard.insets       = UIEdgeInsetsMake(1, 0, 0, 0)
             var searchRange      = NSMakeRange(0, nsStr.length)

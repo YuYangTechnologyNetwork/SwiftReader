@@ -11,18 +11,20 @@ import FMDB
 
 /// Lite ORM protocol
 protocol Rowable {
-    /// Table name
-    var table: String { get }
-    /// Table Columns and default value(or update/insert value)
-    var fields: [Db.Field] { get }
-    /**
-     Parse row to Object
+	/// Inner sqlite row id, started width 1
+	var rowId: Int { get set }
+	/// Table name
+	var table: String { get }
+	/// Table Columns and default value(or update/insert value)
+	var fields: [Db.Field] { get }
+	/**
+	 Parse row to Object
 
-     - parameter row: row data, [column1, column2...]
+	 - parameter row: row data, [column1, column2...]
 
-     - returns: A Rowable type object
-     */
-    func parse(row: [AnyObject]) -> Rowable
+	 - returns: A Rowable type object
+	 */
+	func parse(row: [AnyObject]) -> Rowable
 }
 
 /// FMDB Manager class
@@ -124,7 +126,7 @@ final class Db {
         private var sql: String {
             switch self {
             case .Create(let r):
-                return "CREATE TABLE IF NOT EXISTS \(r.table) (\(Field.createSql(r.fields)))"
+                return "CREATE TABLE IF NOT EXISTS \(r.table) (RowId INTEGER PRIMARY KEY, \(Field.createSql(r.fields)))"
             case .Insert(let r):
                 let splits = Field.split(r.fields)
                 return "INSERT INTO \(r.table) (\(splits.c)) VALUES (\(splits.p))"
@@ -137,8 +139,7 @@ final class Db {
                 }
                 return "UPDATE \(r.table) SET " + sql + " " + (c ?? "")
             case .Query(let r, let c):
-                let splits = Field.split(r.fields)
-                return "SELECT \(splits.c) FROM \(r.table) " + (c ?? "")
+                return "SELECT * FROM \(r.table) " + (c ?? "")
             case .Delete(let r, let c):
                 return "DELETE FROM \(r.table) " + (c ?? "")
             case .Count(let r, let c):
@@ -151,7 +152,7 @@ final class Db {
 
     /// Cursor for segment loading
     class Cursor {
-        private var db: Db!
+        private(set) var db: Db!
         private var start: Int
         private var bsize: Int
         private var buffer: [Rowable] = []
@@ -170,25 +171,35 @@ final class Db {
          - parameter start:      First row index
          - parameter bufferSize: Extra buffer size
          */
-        init(db: Db, start: Int = 0, bufferSize: Int = 30) {
-            self.db = db
-            self.start = start
-            self.bsize = bufferSize
-        }
+		init(db: Db, bufferSize: Int = 50) {
+			self.db = db
+			self.start = 0
+			self.bsize = bufferSize
+		}
 
-        /**
-         Asyn loading
+		/**
+		 Relocating cursor postion, async return
 
-         - parameter callback: Callback
-         */
-        func load(callback: (() -> Void)? = nil) {
-            self.asyncLoading { rows in
-                self.buffer = rows
+		 - parameter index:    The new index: [0, cout())
+		 - parameter callback: Finish callback
+		 */
+		func moveTo(index: Int, callback: (() -> Void)? = nil) {
+			let lastStart = self.start
+			self.start = max(0, min(self.totalCount - self.bsize * 3, index - self.bsize))
+
+			if lastStart != self.start || self.isEmpty {
+				self.asyncLoading { rows in
+					self.buffer = rows
+					if let c = callback {
+						c()
+					}
+				}
+            } else {
                 if let c = callback {
                     c()
                 }
             }
-        }
+		}
 
         private func asyncLoading(callback: ([Rowable]) -> Void) {
             Utils.asyncTask({ () -> [Rowable] in
@@ -225,7 +236,7 @@ final class Db {
 
          - returns: Row data
          */
-        func rowAt(index: Int, visibleRange r: NSRange) -> Rowable? {
+        func rowAt(index: Int, used r: NSRange) -> Rowable? {
             let bIndex = index - start
             let row: Rowable? = bIndex >= 0 && bIndex < buffer.count ? buffer[bIndex]: nil
 
@@ -246,9 +257,11 @@ final class Db {
 
                 self.vRange = r
 
-                if lastStart != self.start {
-                    self.load()
-                }
+				if lastStart != self.start {
+					self.asyncLoading { rows in
+						self.buffer = rows
+					}
+				}
             }
 
             return row
@@ -400,43 +413,45 @@ final class Db {
 
      - returns: Result [Rowable]
      */
-    func query(reopen: Bool = false, conditions: String? = nil) -> [Rowable] {
-        if reopen {
-            fmDb.open()
-        }
+	func query(reopen: Bool = false, conditions: String? = nil) -> [Rowable] {
+		if reopen {
+			fmDb.open()
+		}
 
-        let res = fmDb.executeQuery(Operator.Query(rowable, conditions: conditions).sql, withArgumentsInArray: nil)
-        var rows: [Rowable] = []
+		let res = fmDb.executeQuery(Operator.Query(rowable, conditions: conditions).sql, withArgumentsInArray: nil)
+		var rows: [Rowable] = []
 
-        while res.next() {
-            var row: [AnyObject] = []
+		while res != nil && res.next() {
+			var row: [AnyObject] = []
 
-            for f in rowable.fields {
-                let value: AnyObject
-                switch f {
-                case .TEXT(let n, _):
-                    value = res.stringForColumn(n)
-                case .REAL(let n, _):
-                    value = NSNumber(double: res.doubleForColumn(n)).floatValue
-                case .BLOB(let n, _):
-                    value = res.dataForColumn(n)
-                case .INTEGER(let n, _):
-                    value = NSNumber(longLong: res.longLongIntForColumn(n)).integerValue
-                }
+			for f in rowable.fields {
+				let value: AnyObject
+				switch f {
+				case .TEXT(let n, _):
+					value = res.stringForColumn(n)
+				case .REAL(let n, _):
+					value = NSNumber(double: res.doubleForColumn(n)).floatValue
+				case .BLOB(let n, _):
+					value = res.dataForColumn(n)
+				case .INTEGER(let n, _):
+					value = NSNumber(integer: res.longForColumn(n)).integerValue
+				}
 
-                row.append(value)
-            }
+				row.append(value)
+			}
 
-            rows.append(rowable.parse(row))
-        }
+			var r = rowable.parse(row)
+			r.rowId = NSNumber(integer: res.longForColumn("RowId")).integerValue
+			rows.append(r)
+		}
 
-        if reopen {
-            fmDb.close()
-        }
+		if reopen {
+			fmDb.close()
+		}
 
-        return rows
-    }
-
+		return rows
+	}
+    
     /**
      Do transaction
 

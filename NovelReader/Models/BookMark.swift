@@ -32,6 +32,8 @@ class BookMark: NSObject, Rowable {
     override var hash: Int {
         return "\(title)\(range.desc)".hash
     }
+    
+    var rowId: Int = 0
 
     var fields: [Db.Field] {
         return [.TEXT(name: "Title", value: title),

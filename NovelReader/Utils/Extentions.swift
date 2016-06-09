@@ -204,3 +204,49 @@ extension UIPickerView {
         }
     }
 }
+
+extension UIView {
+	private class MyTapGesture: UITapGestureRecognizer {
+		var callback: ((UIView) -> Void)!
+		func setCallback(c: (UIView) -> Void) -> MyTapGesture {
+			self.callback = c
+			return self
+		}
+	}
+
+	/**
+	 Convenience for tap event
+
+	 - parameter noSub:    Just response out side of all subview's frame
+	 - parameter listener: The listenr
+
+	 - returns: Self for chains-type call
+	 */
+	func onClick(noSub: Bool = true, listener: (UIView) -> Void) -> UIView {
+		let myGesture = MyTapGesture(target: self, action: #selector(self.click(_:))).setCallback(listener)
+
+		if noSub {
+			let interLayer = UIView(frame: self.frame)
+			self.insertSubview(interLayer, atIndex: 0)
+			interLayer.addGestureRecognizer(myGesture)
+		} else {
+			self.addGestureRecognizer(myGesture)
+		}
+
+		return self
+	}
+
+	/**
+	 Just for UITapGestureRecognizer to call back.
+	 !!!!DON'T CALL IN YOUR CODE!!!!!
+
+	 - parameter recognizer: MyTapGesture
+	 */
+	func click(recognizer: UITapGestureRecognizer) {
+		if let r = recognizer as? MyTapGesture {
+			if let c = r.callback {
+				c(self)
+			}
+		}
+	}
+}

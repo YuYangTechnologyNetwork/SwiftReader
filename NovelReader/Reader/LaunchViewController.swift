@@ -30,6 +30,7 @@ final class LaunchViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.frame = UIScreen.mainScreen().bounds
         showSplash()
     }
 

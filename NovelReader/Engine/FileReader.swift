@@ -303,6 +303,8 @@ extension FileReader {
             fseek(file, scope.loc, SEEK_SET)
             let readed = fread(buf, sizeof(UInt8), scope.len, file)
             snippet    = readed > 0 ? String(data: NSData(bytes: buf, length: readed), encoding: encoding.code()) : nil
+            
+            free(buf)
 
             if snippet == nil {
                 if tail > head {
