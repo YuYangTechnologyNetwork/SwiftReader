@@ -200,6 +200,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
 
         cell.textLabel!.font        = UIFont.systemFontOfSize(R.Dimens.FontSize.Com_Label)
         cell.backgroundColor        = UIColor.clearColor()
+        cell.textLabel?.numberOfLines = 4
         cell.selectedBackgroundView = cellSelectedBg
 
 		let v = tableView.indexPathsForVisibleRows!.sort { $0.row < $1.row }

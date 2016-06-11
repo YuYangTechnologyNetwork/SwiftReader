@@ -341,25 +341,31 @@ extension FileReader {
         let fileSize = getFileSize(file)
         var loc = 0, len = 0, scale = 1
 
+        var loop = 1
+        
         while true {
             loc = max(0, location - CHAPTER_SIZE * scale)
-            len = min(CHAPTER_SIZE * (scale + 1), fileSize - loc)
+            len = min(CHAPTER_SIZE * scale * 4, fileSize - loc)
 
             let scope = NSMakeRange(loc, len)
             var chapters = fetchChaptersInRange(file, range: scope, encoding: encoding)
             chapters.sortInPlace { $0.0.range.loc > $0.1.range.loc }
 
+            Utils.Log("Loop: \(loop)")
+            
             for (i, ch) in chapters.enumerate() {
+                let maybeFound = ch.range.loc <= location && location < ch.range.end
+                
                 if scope.loc > 0 && scope.end < fileSize {
-                    if ch.range.loc <= location && ch.title != NO_TITLE && i != 0 {
+                    if maybeFound && ch.title != NO_TITLE && i != 0 {
                         return ch
                     }
                 } else if scope.loc == 0 {
-                    if ch.range.loc <= location && i != 0 {
+                    if maybeFound && i != 0 {
                         return ch
                     }
                 } else {
-                    if ch.range.loc <= location && ch.title != NO_TITLE {
+                    if maybeFound && ch.title != NO_TITLE {
                         return ch
                     }
                 }
@@ -370,6 +376,8 @@ extension FileReader {
             } else {
                 scale += 1
             }
+            
+            loop += 1
         }
 
         return nil

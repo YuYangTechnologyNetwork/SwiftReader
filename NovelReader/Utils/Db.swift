@@ -29,148 +29,149 @@ protocol Rowable {
 
 /// FMDB Manager class
 final class Db {
-    /**
-     Database fields enum
+	/**
+	 Database fields enum
 
-     - TEXT:    Sqlit TEXT => (ColumnName, default/value)
-     - REAL:    Sqlit REAL(float) => (ColumnName, default/value)
-     - BLOB:    Sqlit BLOB => (ColumnName, default/value)
-     - INTEGER: Sqlit INTEGER => (ColumnName, default/value)
-     */
-    enum Field {
-        case REAL(name: String, value: Float)
-        case BLOB(name: String, value: NSData)
-        case TEXT(name: String, value: String)
-        case INTEGER(name: String, value: Int)
+	 - TEXT:    Sqlit TEXT => (ColumnName, default/value)
+	 - REAL:    Sqlit REAL(float) => (ColumnName, default/value)
+	 - BLOB:    Sqlit BLOB => (ColumnName, default/value)
+	 - INTEGER: Sqlit INTEGER => (ColumnName, default/value)
+	 */
+	enum Field {
+		case REAL(name: String, value: Float)
+		case BLOB(name: String, value: NSData)
+		case TEXT(name: String, value: String)
+		case INTEGER(name: String, value: Int)
 
-        private var associated: (name: String, value: AnyObject) {
-            switch self {
-            case .TEXT(let n, let v):
-                return (name: n, value: v)
-            case .REAL(let n, let v):
-                return (name: n, value: v)
-            case .BLOB(let n, let v):
-                return (name: n, value: v)
-            case .INTEGER(let n, let v):
-                return (name: n, value: v)
-            }
-        }
+		private var associated: (name: String, value: AnyObject) {
+			switch self {
+			case .TEXT(let n, let v):
+				return (name: n, value: v)
+			case .REAL(let n, let v):
+				return (name: n, value: v)
+			case .BLOB(let n, let v):
+				return (name: n, value: v)
+			case .INTEGER(let n, let v):
+				return (name: n, value: v)
+			}
+		}
 
-        private var sqliteType: String {
-            switch self {
-            case .TEXT(_, _):
-                return "TEXT"
-            case .REAL(_, _):
-                return "REAL"
-            case .BLOB(_, _):
-                return "BLOB"
-            case .INTEGER(_, _):
-                return "INTEGER"
-            }
-        }
+		private var sqliteType: String {
+			switch self {
+			case .TEXT(_, _):
+				return "TEXT"
+			case .REAL(_, _):
+				return "REAL"
+			case .BLOB(_, _):
+				return "BLOB"
+			case .INTEGER(_, _):
+				return "INTEGER"
+			}
+		}
 
-        private static func createSql(fields: [Db.Field]) -> String {
-            var sql = ""
-            for i in 0 ..< fields.count {
-                let f = fields[i]
-                sql += "`\(f.associated.name)` \(f.sqliteType)"
+		private static func createSql(fields: [Db.Field]) -> String {
+			var sql = ""
+			for i in 0 ..< fields.count {
+				let f = fields[i]
+				sql += "`\(f.associated.name)` \(f.sqliteType)"
 
-                if i < fields.count - 1 {
-                    sql += ","
-                }
-            }
+				if i < fields.count - 1 {
+					sql += ","
+				}
+			}
 
-            return sql
-        }
+			return sql
+		}
 
-        private static func split(fields: [Db.Field]) -> (c: String, p: String, v: [AnyObject]) {
-            var sql = "", vs: [AnyObject] = [], ps = ""
+		private static func split(fields: [Db.Field]) -> (c: String, p: String, v: [AnyObject]) {
+			var sql = "", vs: [AnyObject] = [], ps = ""
 
-            for i in 0 ..< fields.count {
-                let f = fields[i]
+			for i in 0 ..< fields.count {
+				let f = fields[i]
 
-                sql += "`\(f.associated.name)`"
-                ps += "?"
+				sql += "`\(f.associated.name)`"
+				ps += "?"
 
-                if i < fields.count - 1 {
-                    sql += ", "
-                    ps += ", "
-                }
+				if i < fields.count - 1 {
+					sql += ", "
+					ps += ", "
+				}
 
-                vs.append(f.associated.value)
-            }
+				vs.append(f.associated.value)
+			}
 
-            return (c: sql, p: ps, v: vs)
-        }
-    }
+			return (c: sql, p: ps, v: vs)
+		}
+	}
 
-    /**
-     Db execute SQL
+	/**
+	 Db execute SQL
 
-     - Create: Create table
-     - Insert: Insert row
-     - Query:  Select
-     - Delete: Delete
-     - Count:  Count
-     - Clear:  Drop table
-     */
-    private enum Operator {
-        case Create(Rowable)
-        case Insert(Rowable)
-        case Update(Rowable, conditions: String?)
-        case Query(Rowable, conditions: String?)
-        case Delete(Rowable, conditions: String?)
-        case Count(Rowable, conditions: String?)
-        case Clear(Rowable)
+	 - Create: Create
+	 - Insert: Insert
+	 - Delete: Delete
+	 - Update: Update
+	 - Query:  Select
+	 - Count:  Count
+	 - Clear:  Drop
+	 */
+	private enum Operator {
+		case Create(Rowable)
+		case Insert(Rowable)
+		case Update(Rowable, conditions: String?)
+		case Query(Rowable, conditions: String?)
+		case Delete(Rowable, conditions: String?)
+		case Count(Rowable, conditions: String?)
+		case Clear(Rowable)
 
-        private var sql: String {
-            switch self {
-            case .Create(let r):
-                return "CREATE TABLE IF NOT EXISTS \(r.table) (RowId INTEGER PRIMARY KEY, \(Field.createSql(r.fields)))"
-            case .Insert(let r):
-                let splits = Field.split(r.fields)
-                return "INSERT INTO \(r.table) (\(splits.c)) VALUES (\(splits.p))"
-            case .Update(let r, let c):
-                var sql = ""
-                for i in 0 ..< r.fields.count {
-                    let f = r.fields[i]
-                    sql += "\(f.associated.name) = `\(f.associated.value)`"
-                    if i < r.fields.count - 1 { sql += ", " }
-                }
-                return "UPDATE \(r.table) SET " + sql + " " + (c ?? "")
-            case .Query(let r, let c):
-                return "SELECT * FROM \(r.table) " + (c ?? "")
-            case .Delete(let r, let c):
-                return "DELETE FROM \(r.table) " + (c ?? "")
-            case .Count(let r, let c):
-                return "SELECT COUNT(*) FROM \(r.table) " + (c ?? "")
-            case .Clear(let r):
-                return "DROP TABLE IF EXISTS \(r.table)"
-            }
-        }
-    }
+		private var sql: String {
+			switch self {
+			case .Create(let r):
+				return "CREATE TABLE IF NOT EXISTS \(r.table) (RowId INTEGER PRIMARY KEY, \(Field.createSql(r.fields)))"
+			case .Insert(let r):
+				let splits = Field.split(r.fields)
+				return "INSERT INTO \(r.table) (\(splits.c)) VALUES (\(splits.p))"
+			case .Update(let r, let c):
+				var sql = ""
+				for i in 0 ..< r.fields.count {
+					let f = r.fields[i]
+					sql += "\(f.associated.name) = `\(f.associated.value)`"
+					if i < r.fields.count - 1 { sql += ", " }
+				}
+				return "UPDATE \(r.table) SET " + sql + " " + (c ?? "")
+			case .Query(let r, let c):
+				return "SELECT * FROM \(r.table) " + (c ?? "")
+			case .Delete(let r, let c):
+				return "DELETE FROM \(r.table) " + (c ?? "")
+			case .Count(let r, let c):
+				return "SELECT COUNT(*) FROM \(r.table) " + (c ?? "")
+			case .Clear(let r):
+				return "DROP TABLE IF EXISTS \(r.table)"
+			}
+		}
+	}
 
-    /// Cursor for segment loading
-    class Cursor {
-        private(set) var db: Db!
-        private var start: Int
-        private var bsize: Int
-        private var buffer: [Rowable] = []
-        private var totalCount: Int = 0
-        private var vRange = EMPTY_RANGE
+	/// Cursor for segment loading
+	class Cursor {
+		private(set) var db: Db!
+		private var start: Int
+		private var bsize: Int
+		private var buffer: [Rowable] = []
+		private var totalCount: Int = 0
+		private var vRange = EMPTY_RANGE
 
-        /// Cursor is empty?
-        var isEmpty: Bool {
-            return buffer.isEmpty
-        }
+		/// Cursor is empty?
+		var isEmpty: Bool {
+			return buffer.isEmpty
+		}
 
-        /**
-         Curor for load segment
+		/**
+		 Curor for load segment
 
-         - parameter db:         Db object
-         - parameter start:      First row index
-         - parameter bufferSize: Extra buffer size
-         */
+		 - parameter db:         Db object
+		 - parameter start:      First row index
+		 - parameter bufferSize: Extra buffer size
+		 */
 		init(db: Db, bufferSize: Int = 50) {
 			self.db = db
 			self.start = 0
@@ -194,225 +195,229 @@ final class Db {
 						c()
 					}
 				}
-            } else {
-                if let c = callback {
-                    c()
-                }
-            }
+			} else {
+				if let c = callback {
+					c()
+				}
+			}
 		}
 
-        private func asyncLoading(callback: ([Rowable]) -> Void) {
-            Utils.asyncTask({ () -> [Rowable] in
-                var rows: [Rowable] = []
-                self.db.open()
-                if self.totalCount == 0 {
-                    self.totalCount = self.db.count()
-                }
+		private func asyncLoading(callback: ([Rowable]) -> Void) {
+			Utils.asyncTask({ () -> [Rowable] in
+				var rows: [Rowable] = []
+				self.db.open()
+				if self.totalCount == 0 {
+					self.totalCount = self.db.count()
+				}
 
-                rows = self.db.query(false, conditions: "limit \(self.start), \(self.bsize * 3)")
+				rows = self.db.query(false, conditions: "limit \(self.start), \(self.bsize * 3)")
 
-                self.db.close()
-                return rows
-            }) { rows in
-                callback(rows)
-                Utils.Log("Loaded: \(self.start)")
-            }
-        }
+				self.db.close()
+				return rows
+			}) { rows in
+				callback(rows)
+				Utils.Log("Loaded: \(self.start)")
+			}
+		}
 
-        /**
-         Total count
+		/**
+		 Total count
 
-         - returns: Database total count
-         */
-        func count() -> Int {
-            return totalCount
-        }
+		 - returns: Database total count
+		 */
+		func count() -> Int {
+			return totalCount
+		}
 
-        /**
-         Get row data from cursor and try async load buffer if need
+		/**
+		 Get row data from cursor and try async load buffer if need
 
-         - parameter index: Row index
-         - parameter r:     List visible range, eg: UITalbeView.indexPathsForVisibleRows
+		 - parameter index: Row index
+		 - parameter r:     List visible range, eg: UITalbeView.indexPathsForVisibleRows
 
-         - returns: Row data
-         */
-        func rowAt(index: Int, used r: NSRange) -> Rowable? {
-            let bIndex = index - start
-            let row: Rowable? = bIndex >= 0 && bIndex < buffer.count ? buffer[bIndex]: nil
+		 - returns: Row data
+		 */
+		func rowAt(index: Int, used r: NSRange) -> Rowable? {
+			let bIndex = index - start
+			let lastStart = self.start
+			let row: Rowable? = bIndex >= 0 && bIndex < buffer.count ? buffer[bIndex]: nil
 
-            if vRange != r && self.totalCount > buffer.count {
-                let lastStart = self.start
+			if vRange != r && self.totalCount > buffer.count {
 
-                if r.loc >= vRange.loc {
-                    if buffer.count - bIndex < self.bsize {
-                        self.start += self.bsize
-                        self.start = min(self.totalCount - self.bsize * 3, self.start)
-                    }
-                } else {
-                    if bIndex < self.bsize * 2 {
-                        self.start -= self.bsize
-                        self.start = max(0, self.start)
-                    }
-                }
-
-                self.vRange = r
-
-				if lastStart != self.start {
-					self.asyncLoading { rows in
-						self.buffer = rows
+				if r.loc >= vRange.loc {
+					if buffer.count - bIndex < self.bsize {
+						self.start += self.bsize
+						self.start = min(self.totalCount - self.bsize * 3, self.start)
+					}
+				} else {
+					if bIndex < self.bsize * 2 {
+						self.start -= self.bsize
+						self.start = max(0, self.start)
 					}
 				}
+
+				self.vRange = r
+			}
+            
+            if row == nil {
+                self.start = max(0, min(self.totalCount - self.bsize * 3, index - self.bsize))
             }
 
-            return row
-        }
-    }
+			if lastStart != self.start {
+				self.asyncLoading { rows in
+					self.buffer = rows
+				}
+			}
 
-    private var fmDb: FMDatabase
-    private var rowable: Rowable!
-    private var database: String
+			return row
+		}
+	}
 
-    /**
-     Init db
+	private var fmDb: FMDatabase
+	private var rowable: Rowable!
+	private var database: String
 
-     - parameter name:  database name
-     - parameter table: table name
+	/**
+	 Init db
 
-     - returns: If fail nil will return
-     */
-    init!(db: String = "NoverReader", rowable r: Rowable) {
-        let filemgr = NSFileManager.defaultManager()
-        let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
-        let databasePath = dirPath.stringByAppendingString("/" + db + ".sqlite")
+	 - parameter name:  database name
+	 - parameter table: table name
 
-        Utils.Log("Db Path: " + databasePath)
-        if !filemgr.fileExistsAtPath(databasePath) {
-            if let db = FMDatabase(path: databasePath) {
-                if db.open() {
-                    if !db.executeStatements(Operator.Create(r).sql) {
-                        Utils.Log("Error: \(db.lastErrorMessage())")
-                    }
+	 - returns: If fail nil will return
+	 */
+	init!(db: String = "NoverReader", rowable r: Rowable) {
+		let filemgr = NSFileManager.defaultManager()
+		let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
+		let databasePath = dirPath.stringByAppendingString("/" + db + ".sqlite")
 
-                    db.close()
-                } else {
-                    Utils.Log("Error: \(db.lastErrorMessage())")
-                    return nil
-                }
-            } else {
-                Utils.Log("Error: init db for path[\(databasePath)] failed")
-                return nil
-            }
-        }
+		Utils.Log("Db Path: " + databasePath)
+		if !filemgr.fileExistsAtPath(databasePath) {
+			if let db = FMDatabase(path: databasePath) {
+				if db.open() {
+					if !db.executeStatements(Operator.Create(r).sql) {
+						Utils.Log("Error: \(db.lastErrorMessage())")
+					}
 
-        fmDb = FMDatabase(path: databasePath)
-        rowable = r
-        database = db + ".sqlite"
-    }
+					db.close()
+				} else {
+					Utils.Log("Error: \(db.lastErrorMessage())")
+					return nil
+				}
+			} else {
+				Utils.Log("Error: init db for path[\(databasePath)] failed")
+				return nil
+			}
+		}
 
-    var description: String {
-        return "\(database)/\(rowable.table)[\(Field.split(rowable.fields).c)]"
-    }
+		fmDb = FMDatabase(path: databasePath)
+		rowable = r
+		database = db + ".sqlite"
+	}
 
-    /**
-     Open sqlite db
+	var description: String {
+		return "\(database)/\(rowable.table)[\(Field.split(rowable.fields).c)]"
+	}
 
-     - parameter task: auto execute task, if not nil, db.close will be call when task finished
-     */
-    func open(task: ((db: Db) -> Void)? = nil) {
-        fmDb.open()
+	/**
+	 Open sqlite db
 
-        if let t = task {
-            t(db: self)
-            fmDb.close()
-        }
-    }
+	 - parameter task: auto execute task, if not nil, db.close will be call when task finished
+	 */
+	func open(task: ((db: Db) -> Void)? = nil) {
+		fmDb.open()
 
-    /**
-     Close sqlite db
-     */
-    func close() {
-        fmDb.close()
-    }
+		if let t = task {
+			t(db: self)
+			fmDb.close()
+		}
+	}
 
-    /**
-     Recreate table
+	/**
+	 Close sqlite db
+	 */
+	func close() {
+		fmDb.close()
+	}
 
-     - parameter reopen: need open db
+	/**
+	 Recreate table
 
-     - returns: For chain-type call
-     */
-    func clear(reopen: Bool = false) -> Db {
-        if reopen {
-            fmDb.open()
-        }
+	 - parameter reopen: need open db
 
-        fmDb.executeStatements(Operator.Clear(rowable).sql)
+	 - returns: For chain-type call
+	 */
+	func clear(reopen: Bool = false) -> Db {
+		if reopen {
+			fmDb.open()
+		}
 
-        if !fmDb.executeStatements(Operator.Create(rowable).sql) {
-            Utils.Log("Error: \(fmDb.lastErrorMessage())")
-        }
+		fmDb.executeStatements(Operator.Clear(rowable).sql)
 
-        if reopen {
-            fmDb.close()
-        }
+		if !fmDb.executeStatements(Operator.Create(rowable).sql) {
+			Utils.Log("Error: \(fmDb.lastErrorMessage())")
+		}
 
-        return self
-    }
+		if reopen {
+			fmDb.close()
+		}
 
-    /**
-     Count rows
+		return self
+	}
 
-     - parameter reopen: need open db
+	/**
+	 Count rows
 
-     - returns: Count of rows
-     */
-    func count(reopen: Bool = false) -> Int {
-        if reopen {
-            fmDb.open()
-        }
+	 - parameter reopen: need open db
 
-        let res = fmDb.executeQuery(Operator.Count(rowable, conditions: nil).sql, withArgumentsInArray: nil)
-        if res.next() {
-            return res.longForColumnIndex(0)
-        }
+	 - returns: Count of rows
+	 */
+	func count(reopen: Bool = false) -> Int {
+		if reopen {
+			fmDb.open()
+		}
 
-        if reopen {
-            fmDb.close()
-        }
+		let res = fmDb.executeQuery(Operator.Count(rowable, conditions: nil).sql, withArgumentsInArray: nil)
+		if res.next() {
+			return res.longForColumnIndex(0)
+		}
 
-        return 0
-    }
+		if reopen {
+			fmDb.close()
+		}
 
-    /**
-     Insert
+		return 0
+	}
 
-     - parameter row:    Give column values
-     - parameter reopen: need open db
+	/**
+	 Insert
 
-     - returns: Success is true
-     */
-    func insert(row: Rowable, reopen: Bool = false) -> Bool {
-        if reopen {
-            fmDb.open()
-        }
+	 - parameter row:    Give column values
+	 - parameter reopen: need open db
 
-        let res = fmDb.executeUpdate(Operator.Insert(row).sql, withArgumentsInArray: Field.split(row.fields).v)
+	 - returns: Success is true
+	 */
+	func insert(row: Rowable, reopen: Bool = false) -> Bool {
+		if reopen {
+			fmDb.open()
+		}
 
-        if reopen {
-            fmDb.close()
-        }
+		let res = fmDb.executeUpdate(Operator.Insert(row).sql, withArgumentsInArray: Field.split(row.fields).v)
 
-        return res
-    }
+		if reopen {
+			fmDb.close()
+		}
 
-    /**
-     Query
+		return res
+	}
 
-     - parameter reopen:     need open db?
-     - parameter conditions: Conditions: conform to standar SQL syntax. eg: where `column1` = 123 limit 0, 30
+	/**
+	 Query
 
-     - returns: Result [Rowable]
-     */
+	 - parameter reopen:     need open db?
+	 - parameter conditions: Conditions: conform to standar SQL syntax. eg: where `column1` = 123 limit 0, 30
+
+	 - returns: Result [Rowable]
+	 */
 	func query(reopen: Bool = false, conditions: String? = nil) -> [Rowable] {
 		if reopen {
 			fmDb.open()
@@ -451,19 +456,19 @@ final class Db {
 
 		return rows
 	}
-    
-    /**
-     Do transaction
 
-     - parameter task: If false return, rollback will be execute
-     */
-    func inTransaction(task: () -> Bool) {
-        fmDb.beginTransaction()
+	/**
+	 Do transaction
 
-        if !task() {
-            fmDb.rollback()
-        } else {
-            fmDb.commit()
-        }
-    }
+	 - parameter task: If false return, rollback will be execute
+	 */
+	func inTransaction(task: () -> Bool) {
+		fmDb.beginTransaction()
+
+		if !task() {
+			fmDb.rollback()
+		} else {
+			fmDb.commit()
+		}
+	}
 }

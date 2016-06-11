@@ -131,7 +131,11 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 				}
 
 				self.readerMgr.asyncLoading({ chapter in
-					self.attachReaderView(chapter)
+                    self.attachReaderView(chapter)
+                    // Set top title
+                    self.chapterTitle.text = chapter.title
+                    // Sync catalog list
+                    self.catalogVC.syncReaderStatus(b, currentChapter: chapter)
 				})
 			}
 		}
@@ -167,10 +171,14 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.loadingIndicator.startAnimating()
 
             // Async reload
-            self.readerMgr.asyncLoading { _ in
+            self.readerMgr.asyncLoading { c in
                 self.readerVC.loadPapers(withBlink)
                 self.loadingIndicator.stopAnimating()
                 self.brightnessMask.userInteractionEnabled = false
+                // Set top title
+                self.chapterTitle.text = c.title
+                // Sync catalog list
+				self.catalogVC?.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currentChapter)
             }
         }
     }
@@ -219,14 +227,19 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         }
 
 		catalogVC = CatalogViewController(nibName: "CatalogViewController", bundle: nil)
-		catalogVC.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currChapter)
+		catalogVC.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currentChapter)
 		catalogVC.view.frame = catalogContainer.frame
 		catalogVC.onDismiss { selected, bm in
 			self.dismissCatalog()
 
 			if selected {
-				// Jump to selected chapter(bm)
-				Utils.Log("Jump to \(bm)")
+				if bm != self.readerMgr.currentChapter {
+					if let b = bm {
+						Utils.Log("Jump to \(b)")
+						self.readerMgr.book.bookMark = b
+						self.reloadReader(false)
+					}
+				}
 			}
 		}
         
@@ -403,8 +416,6 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 				self.catalogContainer.hidden = true
 				self.maskPanel.hidden = true
 			}
-
-			catalogVC.syncReaderStatus(readerMgr.book, currentChapter: readerMgr.currChapter)
 		}
 	}
 }
