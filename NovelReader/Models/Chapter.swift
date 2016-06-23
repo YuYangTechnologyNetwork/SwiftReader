@@ -198,15 +198,15 @@ class Chapter: BookMark {
         return self.status
     }
 
-    func load(readerMgr: ReaderManager, reverse: Bool, book: Book) -> Status {
+    func load(readerMgr: ReaderManager, reverse: Bool, book: Book, fuzzy: Bool = true) -> Status {
         if range.loc < 0 || range.end > book.size {
             self.status = .Blank
             return .Failure
         }
 
-        let file     = fopen((book.fullFilePath), "r")
-        let reader   = FileReader()
-        let fetched  = reader.fetchChapterAtLocation(file, location: range.loc, encoding: book.encoding)
+        let file    = fopen((book.fullFilePath), "r")
+        let reader  = FileReader()
+        let fetched = fuzzy ? reader.fetchChapterAtLocation(file, location: range.loc, encoding: book.encoding) : self
 
         if let chapter = fetched {
             range = chapter.range
@@ -220,6 +220,12 @@ class Chapter: BookMark {
                 }
 
                 self.status = .Success
+
+                if reverse {
+                    setTail()
+                } else {
+                    setHead()
+                }
             } else {
                 self.status = .Failure
             }

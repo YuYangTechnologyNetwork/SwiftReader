@@ -59,6 +59,7 @@
 		3DC6F2AF1CF1F5F700BD44FE /* MenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */; };
 		3DC6F2B01CF1F5F700BD44FE /* PageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */; };
 		3DC6F2B21CF1F64A00BD44FE /* ReaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */; };
+		3F3318921D129A5300BF1A72 /* dldl_utf8.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3F3318911D129A5300BF1A72 /* dldl_utf8.txt */; };
 		3F59250E1D0012CA00EBAD87 /* StyleFontsPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F59250D1D0012CA00EBAD87 /* StyleFontsPickerView.swift */; };
 		3F5925121D01282B00EBAD87 /* StyleFontsPickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3F5925111D01282B00EBAD87 /* StyleFontsPickerView.xib */; };
 		3F5925151D012D3600EBAD87 /* CatalogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5925131D012D3600EBAD87 /* CatalogViewController.swift */; };
@@ -173,6 +174,7 @@
 		3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MenuViewController.xib; path = xlibs/MenuViewController.xib; sourceTree = "<group>"; };
 		3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PageViewController.xib; path = xlibs/PageViewController.xib; sourceTree = "<group>"; };
 		3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReaderManager.swift; path = Engine/ReaderManager.swift; sourceTree = "<group>"; };
+		3F3318911D129A5300BF1A72 /* dldl_utf8.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dldl_utf8.txt; path = Books/dldl_utf8.txt; sourceTree = "<group>"; };
 		3F59250D1D0012CA00EBAD87 /* StyleFontsPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StyleFontsPickerView.swift; path = Views/StyleFontsPickerView.swift; sourceTree = "<group>"; };
 		3F5925111D01282B00EBAD87 /* StyleFontsPickerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StyleFontsPickerView.xib; path = xlibs/StyleFontsPickerView.xib; sourceTree = "<group>"; };
 		3F5925131D012D3600EBAD87 /* CatalogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CatalogViewController.swift; path = Reader/CatalogViewController.swift; sourceTree = "<group>"; };
@@ -409,6 +411,7 @@
 		3D6A24471CA0361F00F05D55 /* Books */ = {
 			isa = PBXGroup;
 			children = (
+				3F3318911D129A5300BF1A72 /* dldl_utf8.txt */,
 				3D45B5121CF01D2400FBE46A /* jy_gbk.txt */,
 				11F32CD41CD099B800543CF3 /* zx_utf8.txt */,
 			);
@@ -549,6 +552,7 @@
 			files = (
 				3DC6F2B01CF1F5F700BD44FE /* PageViewController.xib in Resources */,
 				3F5925121D01282B00EBAD87 /* StyleFontsPickerView.xib in Resources */,
+				3F3318921D129A5300BF1A72 /* dldl_utf8.txt in Resources */,
 				112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */,
 				3DC6F2AE1CF1F5F700BD44FE /* MainViewController.xib in Resources */,
 				3D9B572D1CF49B0A005FFB35 /* LaunchViewController.xib in Resources */,

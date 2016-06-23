@@ -13,10 +13,11 @@ enum Error: ErrorType {
     case NotSupportEncoding(String)
 }
 
+let CODE_TEST                  = false
 let NO_TITLE                   = "No_Title"
 let EMPTY_STR                  = ""
 let EMPTY_SIZE                 = CGSizeMake(0, 0)
 let EMPTY_RANGE                = NSMakeRange(0, 0)
 let CHAPTER_SIZE               = 30720
-let BUILD_BOOK                 = "jy_gbk"//"zx_utf8"
+let BUILD_BOOK                 = "zx_utf8"// "jy_gbk"
 let READER_DEFAULT_ASYNC_QUEUE = "Reader_Default_Async_Queue"

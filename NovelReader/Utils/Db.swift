@@ -172,7 +172,7 @@ final class Db {
 		 - parameter start:      First row index
 		 - parameter bufferSize: Extra buffer size
 		 */
-		init(db: Db, bufferSize: Int = 50) {
+		init(db: Db, bufferSize: Int = 100) {
 			self.db = db
 			self.start = 0
 			self.bsize = bufferSize
@@ -202,23 +202,23 @@ final class Db {
 			}
 		}
 
-		private func asyncLoading(callback: ([Rowable]) -> Void) {
-			Utils.asyncTask({ () -> [Rowable] in
-				var rows: [Rowable] = []
-				self.db.open()
-				if self.totalCount == 0 {
-					self.totalCount = self.db.count()
-				}
+        private func asyncLoading(callback: ([Rowable]) -> Void) {
+            Utils.asyncTask({ () -> [Rowable] in
+                var rows: [Rowable] = []
+                self.db.open { db in
+                    if self.totalCount == 0 {
+                        self.totalCount = self.db.count()
+                    }
 
-				rows = self.db.query(false, conditions: "limit \(self.start), \(self.bsize * 3)")
+                    rows = self.db.query(false, conditions: "limit \(self.start), \(self.bsize * 3)")
+                }
 
-				self.db.close()
-				return rows
-			}) { rows in
-				callback(rows)
-				Utils.Log("Loaded: \(self.start)")
-			}
-		}
+                return rows
+            }) { rows in
+                callback(rows)
+                Utils.Log("Loaded: \(self.start)")
+            }
+        }
 
 		/**
 		 Total count

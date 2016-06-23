@@ -23,17 +23,18 @@ enum Theme: Int {
             return UIColor(red: 0.097, green: 0.129, blue: 0.158, alpha: 1)
         case .Parchment:
             if Theme.PBgColor == nil {
-                let patch1 = UIImage(named: "reading_parchment1")
-                let patch2 = UIImage(named: "reading_parchment2")
-                let patch3 = UIImage(named: "reading_parchment3")
-                let border = patch1!.size.width
+                let patch1 = UIImage(named: "reading_parchment3")!
+                let patch2 = UIImage(named: "reading_parchment2")!
+                let patch3 = UIImage(named: "reading_parchment1")!
+                let border = patch1.size.width
                 let size = CGSizeMake(border * 2, 2 * border)
 
                 UIGraphicsBeginImageContext(size);
-                patch1?.drawInRect(CGRectMake(0, 0, border, border))
-                patch3?.drawInRect(CGRectMake(0, border, border, border))
-                patch2?.drawInRect(CGRectMake(border, 0, border, border))
-                patch1?.drawInRect(CGRectMake(border, border, border, border))
+                CGContextSetInterpolationQuality(UIGraphicsGetCurrentContext()!, .High)
+                patch1.drawInRect(CGRectMake(0, 0, border, border))
+                patch2.drawInRect(CGRectMake(0, border, border, border))
+                patch3.drawInRect(CGRectMake(border, 0, border, border))
+                patch1.drawInRect(CGRectMake(border, border, border, border))
                 Theme.PBgColor = UIColor(patternImage: UIGraphicsGetImageFromCurrentImageContext())
             }
 
