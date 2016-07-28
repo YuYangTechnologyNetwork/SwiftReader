@@ -22,7 +22,7 @@ class Typesetter {
     
     private typealias `Self` = Typesetter
 
-    static let DEFAULT_THEME = Theme.Default
+    static let DEFAULT_THEME = Theme.Parchment
     
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 18

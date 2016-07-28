@@ -130,13 +130,13 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 					self.catalogVC.syncReaderStatus(b, currentChapter: chapter)
 				}
 
-				self.readerMgr.asyncLoading({ chapter in
+                self.readerMgr.asyncLoading { chapter in
                     self.attachReaderView(chapter)
                     // Set top title
                     self.chapterTitle.text = chapter.title
                     // Sync catalog list
                     self.catalogVC.syncReaderStatus(b, currentChapter: chapter)
-				})
+                }
 			}
 		}
 
@@ -165,13 +165,13 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         return .Default
     }
 
-    private func reloadReader(withBlink: Bool = true) {
+    private func reloadReader(withBlink: Bool = true, limit: Bool = false) {
         if self.readerMgr != nil {
             self.brightnessMask.userInteractionEnabled = true
             self.loadingIndicator.startAnimating()
 
             // Async reload
-            self.readerMgr.asyncLoading { c in
+            self.readerMgr.asyncLoading(limit) { c in
                 self.readerVC.loadPapers(withBlink)
                 self.loadingIndicator.stopAnimating()
                 self.brightnessMask.userInteractionEnabled = false
@@ -229,19 +229,19 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 		catalogVC = CatalogViewController(nibName: "CatalogViewController", bundle: nil)
 		catalogVC.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currentChapter)
 		catalogVC.view.frame = catalogContainer.frame
-		catalogVC.onDismiss { selected, bm in
-			self.dismissCatalog()
-
-			if selected {
-				if bm != self.readerMgr.currentChapter {
-					if let b = bm {
-						Utils.Log("Jump to \(b)")
-						self.readerMgr.book.bookMark = b
-						self.reloadReader(false)
-					}
-				}
-			}
-		}
+        catalogVC.onDismiss { selected, bm in
+            self.dismissCatalog {
+                if selected {
+                    if bm != self.readerMgr.currentChapter {
+                        if let b = bm {
+                            Utils.Log("Jump to \(b)")
+                            self.readerMgr.book.bookMark = b
+                            self.reloadReader(false, limit: true)
+                        }
+                    }
+                }
+            }
+        }
         
 		catalogContainer.onClick { v in
 			if self.menuShow {
@@ -309,7 +309,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .Slide)
             self.setNeedsStatusBarAppearanceUpdate()
             self.topBar.frame.origin.y    = 0
-            self.maskPanel.alpha          = 0.1
+            self.maskPanel.alpha          = 0.25
             self.topSubContainer.alpha    = 1.0
             self.bottomBar.frame.origin.y = self.size.height - self.bottomBar.bounds.height
         }) { finish in }
@@ -404,7 +404,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
 
-	private func dismissCatalog() {
+    private func dismissCatalog(end: (()->Void)? = nil) {
 		if catalogVC != nil {
 			self.brightnessMask.userInteractionEnabled = true
 
@@ -415,6 +415,10 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
 				self.brightnessMask.userInteractionEnabled = false
 				self.catalogContainer.hidden = true
 				self.maskPanel.hidden = true
+
+                if let e = end {
+                    e()
+                }
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 //: Playground - noun: a place where people can play
 import UIKit
+import XCPlayground
 
 struct Margin {
     var top:CGFloat
@@ -91,6 +92,8 @@ var visibleString = novel_snippets.substringToIndex(subIndex)
 // 绘制
 pageView.textFrame  = drawFrame
 pageView.setNeedsDisplay()
+
+XCPlaygroundPage.currentPage.liveView = pageView
 
 
 

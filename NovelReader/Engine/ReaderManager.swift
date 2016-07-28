@@ -14,7 +14,7 @@ class ReaderManager: NSObject {
         case AsyncLoadFinish
     }
 
-    private var paperSize: CGSize = EMPTY_SIZE
+    private(set) var paperSize: CGSize = EMPTY_SIZE
     private var listeners: [MonitorName: [String: (chpater: Chapter) -> Void]] = [:]
 
     private(set) var book: Book!
@@ -123,7 +123,7 @@ class ReaderManager: NSObject {
 
      - parameter callback: Will be call on prepare finish or error
      */
-    func asyncLoading(callback: (_: Chapter) -> Void) {
+    func asyncLoading(limit: Bool = false, callback: (_: Chapter) -> Void) {
         if let bm = book.bookMark {
             currChapter = Chapter(bm: bm)
         } else {
@@ -132,8 +132,8 @@ class ReaderManager: NSObject {
 
         Utils.asyncTask({ () -> (left: Bool, right: Bool) in
             // Load current chapter
-            self.currChapter.load(self, reverse: false, book: self.book)
-            var lazy = (false, false)
+            self.currChapter.load(paperSize: self.paperSize, reverse: false, book: self.book, limit: limit)
+            var lazy = (true, true)
 
             if self.currChapter.status == Chapter.Status.Success {
                 // Jump to bookmark
@@ -144,19 +144,27 @@ class ReaderManager: NSObject {
                 }
 
                 // Load prev chapter
-                self.prevChapter = Chapter(range: NSMakeRange(max(self.currChapter.range.loc - 1, 0), 1))
-                if !self.currChapter.canLazyLeft {
-                    self.prevChapter.load(self, reverse: true, book: self.book)
-                    lazy.0 = true
+                if self.currChapter.range.loc > 0 {
+                    self.prevChapter = Chapter(range: NSMakeRange(max(self.currChapter.range.loc - 1, 0), 1))
+                    //if !self.currChapter.canLazyLeft {
+                        //self.prevChapter.load(paperSize: self.paperSize, reverse: true, book: self.book, limit: true)
+                    //}
+                } else {
+                    lazy.0 = false
                 }
 
                 // Load next chapter
-                self.nextChapter = Chapter(range: NSMakeRange(self.currChapter.range.end + 1, 1))
+                if self.currChapter.range.end < self.book.size {
+                    self.nextChapter = Chapter(range: NSMakeRange(self.currChapter.range.end + 1, 1))
 
-                if !self.currChapter.canLazyRight {
-                    self.nextChapter.load(self, reverse: false, book: self.book)
-                    lazy.1 = true
+                    //if !self.currChapter.canLazyRight {
+                        //self.nextChapter.load(paperSize: self.paperSize, reverse: false, book: self.book, limit: true)
+                    //}
+                } else {
+                    lazy.1 = false
                 }
+            } else {
+                lazy = (false, false)
             }
 
             return lazy
@@ -166,11 +174,16 @@ class ReaderManager: NSObject {
 
             if lazy.left || lazy.right {
                 Utils.asyncTask({
-                    if lazy.left { self.prevChapter.load(self, reverse: true, book: self.book) }
-                    if lazy.right { self.nextChapter.load(self, reverse: false, book: self.book) }
+                    if lazy.left {
+                        self.prevChapter.load(paperSize: self.paperSize, reverse: true, book: self.book)
+                    }
+
+                    if lazy.right {
+                        self.nextChapter.load(paperSize: self.paperSize, reverse: false, book: self.book)
+                    }
                 }) {
                     if let ms = self.listeners[.AsyncLoadFinish] {
-                        for l in ms.values { l(chpater: self.prevChapter) }
+                        for l in ms.values { l(chpater: self.currChapter) }
                     }
                 }
             }
@@ -186,12 +199,12 @@ class ReaderManager: NSObject {
      - returns: array wrapped chapter's papers
      */
     func paging(content: String, firstListIsTitle: Bool = false) -> [Paper] {
-        var index = 0, tmpStr = content, papers: [Paper] = []
+        var index = 0, papers: [Paper] = []
         var lastEndWithNewLine: Bool = !firstListIsTitle
 
         repeat {
             let paper = Paper(size: paperSize), flit = firstListIsTitle && index == 0
-            tmpStr = content.substringFromIndex(content.startIndex.advancedBy(index))
+            let tmpStr = content.substringFromIndex(content.startIndex.advancedBy(index))
 
             paper.writtingLineByLine(tmpStr, firstLineIsTitle: flit, startWithNewLine: lastEndWithNewLine)
 
@@ -229,7 +242,7 @@ class ReaderManager: NSObject {
             if nextChapter.isEmpty && nextChapter.status != Chapter.Status.Loading {
                 self.nextChapter = Chapter(range: NSMakeRange(self.currChapter.range.end + 1, 1))
                 Utils.asyncTask({ () -> Chapter.Status in
-                    self.nextChapter.load(self, reverse: false, book: self.book)
+                    self.nextChapter.load(paperSize: self.paperSize, reverse: false, book: self.book)
                     return self.nextChapter.status
                 }) { s in
                     if s == Chapter.Status.Success {
@@ -240,19 +253,6 @@ class ReaderManager: NSObject {
                         }
                     }
                 }
-
-                //let loc = currChapter.range.end
-                //let len = min(CHAPTER_SIZE, book.size - loc)
-                //nextChapter = Chapter(range: NSMakeRange(loc, len)).setHead()
-                //nextChapter.asyncLoadInRange(self, reverse: false, book: book, callback: { (s: Chapter.Status) in
-                    //if s == Chapter.Status.Success {
-                        //if let ms = self.listeners[MonitorName.AsyncLoadFinish] {
-                            //for l in ms.values {
-                                //l(chpater: self.nextChapter)
-                            //}
-                        //}
-                    //}
-                //})
             }
 
             // Auto record bookmark
@@ -280,7 +280,7 @@ class ReaderManager: NSObject {
             if prevChapter.isEmpty && prevChapter.status != Chapter.Status.Loading {
                 self.prevChapter = Chapter(range: NSMakeRange(max(self.currChapter.range.loc - 1, 0), 1))
                 Utils.asyncTask({ () -> Chapter.Status in
-                    self.prevChapter.load(self, reverse: true, book: self.book)
+                    self.prevChapter.load(paperSize: self.paperSize, reverse: true, book: self.book)
                     return self.prevChapter.status
                 }) { s in
                     if s == Chapter.Status.Success {
@@ -291,19 +291,6 @@ class ReaderManager: NSObject {
                         }
                     }
                 }
-
-                //let loc = max(currChapter.range.loc - CHAPTER_SIZE, 0)
-                //let len = min(currChapter.range.loc - loc, CHAPTER_SIZE - 1)
-                //prevChapter = Chapter(range: NSMakeRange(loc, len)).setTail()
-                //prevChapter.asyncLoadInRange(self, reverse: true, book: book, callback: { (s: Chapter.Status) in
-                    //if s == Chapter.Status.Success {
-                        //if let ms = self.listeners[MonitorName.AsyncLoadFinish] {
-                            //for l in ms.values {
-                                //l(chpater: self.prevChapter)
-                            //}
-                        //}
-                    //}
-                //})
             }
 
             // Auto record bookmark
