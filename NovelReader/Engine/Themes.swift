@@ -35,7 +35,7 @@ enum Theme: Int {
                 patch2.drawInRect(CGRectMake(0, border, border, border))
                 patch3.drawInRect(CGRectMake(border, 0, border, border))
                 patch1.drawInRect(CGRectMake(border, border, border, border))
-                Theme.PBgColor = UIColor(patternImage: UIGraphicsGetImageFromCurrentImageContext())
+                Theme.PBgColor = UIColor(patternImage: UIGraphicsGetImageFromCurrentImageContext()!)
             }
 
             return Theme.PBgColor

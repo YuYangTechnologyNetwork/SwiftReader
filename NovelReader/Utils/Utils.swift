@@ -53,7 +53,7 @@ final class Utils {
         let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        return img
+        return img!
     }
     
     /**
