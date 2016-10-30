@@ -15,7 +15,7 @@ class ReaderManager: NSObject {
     }
 
     private(set) var paperSize: CGSize = EMPTY_SIZE
-    private var listeners: [MonitorName: [String: (chpater: Chapter) -> Void]] = [:]
+    private var listeners: [MonitorName: [String: (chapter: Chapter) -> Void]] = [:]
 
     private(set) var book: Book!
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
@@ -76,7 +76,7 @@ class ReaderManager: NSObject {
     }
 
     /**
-     Upadte bookmark
+     Update bookmark
      */
     func updateBookMark() {
         if let cp = currPaper {
@@ -90,14 +90,14 @@ class ReaderManager: NSObject {
     }
 
     /**
-     Add listener that will be called on current chpater is changed
+     Add listener that will be called on current chapter is changed
 
      - parameter name:     The listener name
      - parameter listener: Listener
      */
-    func addListener(name: String, forMonitor m: MonitorName, listener: (chpater: Chapter) -> Void) {
+    func addListener(name: String, forMonitor m: MonitorName, listener: (chapter: Chapter) -> Void) {
         if listeners.indexForKey(m) == nil {
-            listeners[m] = Dictionary < String, (chpater: Chapter) -> Void > ()
+            listeners[m] = Dictionary < String, (chapter: Chapter) -> Void > ()
         }
 
         if listeners[m]!.indexForKey(name) == nil {
@@ -119,7 +119,7 @@ class ReaderManager: NSObject {
     }
 
     /**
-     Aysnc prepare the book and the papers
+     Async prepare the book and the papers
 
      - parameter callback: Will be call on prepare finish or error
      */
@@ -183,7 +183,7 @@ class ReaderManager: NSObject {
                     }
                 }) {
                     if let ms = self.listeners[.AsyncLoadFinish] {
-                        for l in ms.values { l(chpater: self.currChapter) }
+                        for l in ms.values { l(chapter: self.currChapter) }
                     }
                 }
             }
@@ -206,7 +206,7 @@ class ReaderManager: NSObject {
             let paper = Paper(size: paperSize), flit = firstListIsTitle && index == 0
             let tmpStr = content.substringFromIndex(content.startIndex.advancedBy(index))
 
-            paper.writtingLineByLine(tmpStr, firstLineIsTitle: flit, startWithNewLine: lastEndWithNewLine)
+            paper.writingLineByLine(tmpStr, firstLineIsTitle: flit, startWithNewLine: lastEndWithNewLine)
 
             // Skip empty paper
             if paper.realLen == 0 {
@@ -222,7 +222,7 @@ class ReaderManager: NSObject {
         return papers
     }
 
-    func swipToNext() {
+    func swipeToNext() {
         if !isTail {
             if currChapter.isTail {
                 prevChapter.trash()
@@ -232,7 +232,7 @@ class ReaderManager: NSObject {
 
                 if let ms = listeners[MonitorName.ChapterChanged] {
                     for l in ms.values {
-                        l(chpater: currChapter)
+                        l(chapter: currChapter)
                     }
                 }
             } else {
@@ -248,7 +248,7 @@ class ReaderManager: NSObject {
                     if s == Chapter.Status.Success {
                         if let ms = self.listeners[MonitorName.AsyncLoadFinish] {
                             for l in ms.values {
-                                l(chpater: self.nextChapter)
+                                l(chapter: self.nextChapter)
                             }
                         }
                     }
@@ -270,7 +270,7 @@ class ReaderManager: NSObject {
 
                 if let ms = listeners[MonitorName.ChapterChanged] {
                     for l in ms.values {
-                        l(chpater: currChapter)
+                        l(chapter: currChapter)
                     }
                 }
             } else {
@@ -286,7 +286,7 @@ class ReaderManager: NSObject {
                     if s == Chapter.Status.Success {
                         if let ms = self.listeners[MonitorName.AsyncLoadFinish] {
                             for l in ms.values {
-                                l(chpater: self.prevChapter)
+                                l(chapter: self.prevChapter)
                             }
                         }
                     }

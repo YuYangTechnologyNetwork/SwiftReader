@@ -125,10 +125,10 @@ extension NSRange: Equatable {
 
     func intersection(r: NSRange) -> NSRange {
         let low = loc <= r.loc ? self : r
-        let hight = loc < r.loc ? r : self
+        let high = loc < r.loc ? r : self
 
-        if low.contain(hight.loc) {
-            return NSMakeRange(hight.loc, min(low.end, hight.end) - hight.loc)
+        if low.contain(high.loc) {
+            return NSMakeRange(high.loc, min(low.end, high.end) - high.loc)
         } else {
             return EMPTY_RANGE
         }
@@ -140,19 +140,19 @@ public func == (lhs: NSRange, rhs: NSRange) -> Bool {
 }
 
 extension UIEdgeInsets {
-	mutating func increase(l: CGFloat, t: CGFloat, r: CGFloat, b: CGFloat) {
-		self.top += t
-		self.left += l
-		self.right += r
-		self.bottom += b
-	}
+    mutating func increase(l: CGFloat, t: CGFloat, r: CGFloat, b: CGFloat) {
+        self.top += t
+        self.left += l
+        self.right += r
+        self.bottom += b
+    }
     
-	mutating func clamp(down: UIEdgeInsets, up: UIEdgeInsets) {
+    mutating func clamp(down: UIEdgeInsets, up: UIEdgeInsets) {
         self.top = min(up.top, max(self.top, down.top))
         self.left = min(up.left, max(self.left, down.left))
         self.right = min(up.right, max(self.right, down.right))
         self.bottom = min(up.bottom, max(self.bottom, down.bottom))
-	}
+    }
 }
 
 extension UIColor {
@@ -206,47 +206,47 @@ extension UIPickerView {
 }
 
 extension UIView {
-	private class MyTapGesture: UITapGestureRecognizer {
-		var callback: ((UIView) -> Void)!
-		func setCallback(c: (UIView) -> Void) -> MyTapGesture {
-			self.callback = c
-			return self
-		}
-	}
+    private class MyTapGesture: UITapGestureRecognizer {
+        var callback: ((UIView) -> Void)!
+        func setCallback(c: (UIView) -> Void) -> MyTapGesture {
+            self.callback = c
+            return self
+        }
+    }
 
-	/**
-	 Convenience for tap event
+    /**
+     Convenience for tap event
 
-	 - parameter noSub:    Just response out side of all subview's frame
-	 - parameter listener: The listenr
+     - parameter noSub:    Just response out side of all subview's frame
+     - parameter listener: The listener
 
-	 - returns: Self for chains-type call
-	 */
-	func onClick(noSub: Bool = true, listener: (UIView) -> Void) -> UIView {
-		let myGesture = MyTapGesture(target: self, action: #selector(self.click(_:))).setCallback(listener)
+     - returns: Self for chains-type call
+     */
+    func onClick(noSub: Bool = true, listener: (UIView) -> Void) -> UIView {
+        let myGesture = MyTapGesture(target: self, action: #selector(self.click(_:))).setCallback(listener)
 
-		if noSub {
-			let interLayer = UIView(frame: self.frame)
-			self.insertSubview(interLayer, atIndex: 0)
-			interLayer.addGestureRecognizer(myGesture)
-		} else {
-			self.addGestureRecognizer(myGesture)
-		}
+        if noSub {
+            let interLayer = UIView(frame: self.frame)
+            self.insertSubview(interLayer, atIndex: 0)
+            interLayer.addGestureRecognizer(myGesture)
+        } else {
+            self.addGestureRecognizer(myGesture)
+        }
 
-		return self
-	}
+        return self
+    }
 
-	/**
-	 Just for UITapGestureRecognizer to call back.
-	 !!!!DON'T CALL IN YOUR CODE!!!!!
+    /**
+     Just for UITapGestureRecognizer to call back.
+     !!!!DON'T CALL IN YOUR CODE!!!!!
 
-	 - parameter recognizer: MyTapGesture
-	 */
-	func click(recognizer: UITapGestureRecognizer) {
-		if let r = recognizer as? MyTapGesture {
-			if let c = r.callback {
-				c(self)
-			}
-		}
-	}
+     - parameter recognizer: MyTapGesture
+     */
+    func click(recognizer: UITapGestureRecognizer) {
+        if let r = recognizer as? MyTapGesture {
+            if let c = r.callback {
+                c(self)
+            }
+        }
+    }
 }

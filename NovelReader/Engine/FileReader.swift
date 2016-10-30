@@ -13,7 +13,7 @@ class FileReader {
     private typealias `Self` = FileReader
 
     static let BUFFER_SIZE = 65536
-    static let UNKNOW_ENCODING = "Unknow"
+    static let UNKNOWN_ENCODING = "Unknown"
     static let ENCODING_UTF8 = "UTF-8"
     static let ENCODING_GB18030 = "GB18030"
 
@@ -40,29 +40,23 @@ class FileReader {
         "A895", "A989", "A98A", "A98B", "A98C", "A98D", "A98E",
         "A98F", "A990", "A991", "A992", "A993", "A994", "A995"
     ]
-    
-    // Supported encodings
-    //static let Encodings: [String: UInt] = [
-        //ENCODING_UTF8: NSUTF8StringEncoding,
-        //ENCODING_GB18030: CFStringConvertEncodingToNSStringEncoding(UInt32(CFStringEncodings.GB_18030_2000.rawValue))
-    //]
 
-	enum Encoding: String {
-        case UNKNOW  = "Unknow"
+    enum Encoding: String {
+        case UNKNOWN = "Unknown"
         case UTF8    = "UTF-8"
         case GB18030 = "GB18030"
         
-		func code() -> UInt {
-			switch self {
-			case .UTF8:
-				return NSUTF8StringEncoding
-			case .GB18030:
-				return CFStringConvertEncodingToNSStringEncoding(UInt32(CFStringEncodings.GB_18030_2000.rawValue))
-            case .UNKNOW:
+        func code() -> UInt {
+            switch self {
+            case .UTF8:
+                return NSUTF8StringEncoding
+            case .GB18030:
+                return CFStringConvertEncodingToNSStringEncoding(UInt32(CFStringEncodings.GB_18030_2000.rawValue))
+            case .UNKNOWN:
                 return 0
-			}
-		}
-	}
+            }
+        }
+    }
     
     /*
      * Guess the special text file encoding type, use the open-source library `uchardet` by Mozilla.org
@@ -80,7 +74,7 @@ class FileReader {
             let retval = uchardet_handle_data(uchar_handle, cache_buffer, valid_len)
             
             if retval != 0 {
-                return Self.UNKNOW_ENCODING
+                return Self.UNKNOWN_ENCODING
             }
         }
         
@@ -90,30 +84,30 @@ class FileReader {
         
         free(cache_buffer)
         
-        return isSupportEncding(possible_encoding!) ? possible_encoding! : Self.UNKNOW_ENCODING
+        return isSupportEncoding(possible_encoding!) ? possible_encoding! : Self.UNKNOWN_ENCODING
     }
     
-	func guessEncoding(file: UnsafeMutablePointer<FILE>) -> Encoding {
-		let uchar_handle = uchardet_new()
-		let cache_buffer = UnsafeMutablePointer<Int8>.alloc(Self.BUFFER_SIZE)
+    func guessEncoding(file: UnsafeMutablePointer<FILE>) -> Encoding {
+        let uchar_handle = uchardet_new()
+        let cache_buffer = UnsafeMutablePointer<Int8>.alloc(Self.BUFFER_SIZE)
 
-		while feof(file) == 0 {
-			let valid_len = fread(cache_buffer, 1, Self.BUFFER_SIZE, file)
-			let retval = uchardet_handle_data(uchar_handle, cache_buffer, valid_len)
+        while feof(file) == 0 {
+            let valid_len = fread(cache_buffer, 1, Self.BUFFER_SIZE, file)
+            let retval = uchardet_handle_data(uchar_handle, cache_buffer, valid_len)
 
-			if retval != 0 {
-				return Encoding.UNKNOW
-			}
-		}
+            if retval != 0 {
+                return Encoding.UNKNOWN
+            }
+        }
 
-		uchardet_data_end(uchar_handle)
-		let possible_encoding = String.fromCString(uchardet_get_charset(uchar_handle))
-		uchardet_delete(uchar_handle)
+        uchardet_data_end(uchar_handle)
+        let possible_encoding = String.fromCString(uchardet_get_charset(uchar_handle))
+        uchardet_delete(uchar_handle)
 
-		free(cache_buffer)
+        free(cache_buffer)
 
-		return Encoding(rawValue: possible_encoding ?? "") ?? Encoding.UNKNOW
-	}
+        return Encoding(rawValue: possible_encoding ?? "") ?? Encoding.UNKNOWN
+    }
     
     /*
      * Check the special encoding name for supportive
@@ -122,7 +116,7 @@ class FileReader {
      *
      * @return Bool         If encoding is defined in Self.Encodings, true will be returned
      */
-    func isSupportEncding(encoding: String) -> Bool {
+    func isSupportEncoding(encoding: String) -> Bool {
         return Encoding(rawValue: encoding) != nil
     }
     
@@ -139,9 +133,9 @@ class FileReader {
     /*!
      * @param file      The file pointer
      *
-     * @param fuzzyPos  The fuzzy file position, mybe it's the word border
+     * @param fuzzyPos  The fuzzy file position, maybe it's the word border
      *
-     * @param encoding  The iOS defined ecnoding, eg: NSUTF8StringEncoding
+     * @param encoding  The iOS defined encoding, eg: NSUTF8StringEncoding
      *
      * @return          If got a word border success, the correct position will be returned. Failed return -1
      */
@@ -185,7 +179,7 @@ class FileReader {
     /*
      * Get the UTF-8 encoding word border
      *
-     * UTF-8 Foramt rules:
+     * UTF-8 Format rules:
      * 1 byte  0xxxxxxx
      * 2 bytes 110xxxxx 10xxxxxx
      * 3 bytes 1110xxxx 10xxxxxx 10xxxxxx
@@ -275,7 +269,7 @@ extension FileReader {
 
      - parameter file:     The file pointer
      - parameter r:        The special NSRange
-     - parameter encoding: The iOS defined ecnoding, eg: NSUTF8StringEncoding
+     - parameter encoding: The iOS defined encoding, eg: NSUTF8StringEncoding
 
      - returns: Tuple that wrapped the snippet string and the reader NSRange
      */
@@ -285,7 +279,7 @@ extension FileReader {
 
         /*
          * If the range start and end not a word border, try to repair it.
-         * Loops mybe like below:
+         * Loops maybe like below:
          *   L0:     r.loc ... r.end + 1
          *   L1: r.loc - 1 ... r.end + 1
          *   L2: r.loc - 1 ... r.end
@@ -428,7 +422,7 @@ extension FileReader {
      *
      * @param range                 The special range, [0 ... filesize]
      *
-     * @param ecnoding              The iOS defined ecnoding, eg: NSUTF8StringEncoding
+     * @param encoding              The iOS defined encoding, eg: NSUTF8StringEncoding
      *
      * @return (Title, location)    If range or encoding is illegal, [] will be returned
      */
@@ -485,9 +479,9 @@ extension FileReader {
     /*
      * Merge short and repeated chapter
      *
-     * @param chapters        Chapters genarate by chaptersInRange
+     * @param chapters        Chapters generate by chaptersInRange
      *
-     * @param encoding        The iOS defined ecnoding, eg: NSUTF8StringEncoding
+     * @param encoding        The iOS defined encoding, eg: NSUTF8StringEncoding
      *
      * @return merged chapters
      */
@@ -541,21 +535,21 @@ extension FileReader {
             i += 1
         } while (i < count)
 
-		#if DEBUG
+        #if DEBUG
             if _logOn {
                 for item in merged {
                     Utils.Log(item)
                 }
             }
-		#endif
+        #endif
 
         return merged
     }
     
     /*
      * Get the special text newline character
-     * \r\n, \r:    Mybe for Windows
-     *       \n:    Mybe for Linux/Unix, Mac, Windows
+     * \r\n, \r:    Maybe for Windows
+     *       \n:    Maybe for Linux/Unix, Mac, Windows
      */
     static func getNewLineCharater(text: String) -> String {
         if text.characters.contains("\r\n") {

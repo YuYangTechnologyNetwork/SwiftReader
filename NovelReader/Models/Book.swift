@@ -9,13 +9,13 @@
 import Foundation
 
 class Book: NSObject {
-    /* File name, not include subfix */
+    /* File name, not include suffix */
     var name: String = ""
 
     /* TXT file encoding */
-    var encoding: FileReader.Encoding = FileReader.Encoding.UNKNOW
+    var encoding: FileReader.Encoding = FileReader.Encoding.UNKNOWN
 
-    /* File subfix */
+    /* File suffix */
     var type: String = ""
 
     /* Last opened time, for seconds */
@@ -57,7 +57,7 @@ class Book: NSObject {
         let reader = FileReader()
         self.encoding = reader.guessEncoding(file)
 
-        if self.encoding != .UNKNOW {
+        if self.encoding != .UNKNOWN {
             self.size = reader.getFileSize(file)
         }
 

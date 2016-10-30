@@ -11,13 +11,13 @@ import YYText
 
 class Typesetter {
     /*Text draw direction*/
-    enum TextOrentation {
+    enum TextOrientation {
         case Horizontal
         case Vertical
     }
 
     enum Observer:String {
-		case Font, FontSize, LineSpace, BorderMargin, TextOrentation, Theme, Brightness
+        case Font, FontSize, LineSpace, BorderMargin, TextOrientation, Theme, Brightness
     }
     
     private typealias `Self` = Typesetter
@@ -76,9 +76,9 @@ class Typesetter {
         didSet { for l in listeners.values { l(.BorderMargin, before: oldValue) } }
     }
 
-    /*Text draw direction, see Typesetter.TextOrentation*/
-    var textOrentation: TextOrentation = .Horizontal {
-        didSet { for l in listeners.values { l(.TextOrentation, before: oldValue) } }
+    /*Text draw direction, see Typesetter.TextOrientation*/
+    var textOrientation: TextOrientation = .Horizontal {
+        didSet { for l in listeners.values { l(.TextOrientation, before: oldValue) } }
     }
 
     var theme: Theme = Self.DEFAULT_THEME {
@@ -133,10 +133,10 @@ class Typesetter {
      - parameter paperWidth:       Paper size
      - parameter startWithNewLine: If start with newline, indent is needed
      
-     - returns: NSMutableAttributedString wrapped the typesetted text
+     - returns: NSMutableAttributedString wrapped the typed text
      */
-	func typeset(text: String, paperWidth: CGFloat, firstLineIsTitle: Bool, startWithNewLine: Bool,
-		blinkSnipptes: [String] = [], notedSnipptes: [String] = []) -> NSMutableAttributedString {
+    func typeset(text: String, paperWidth: CGFloat, firstLineIsTitle: Bool, startWithNewLine: Bool,
+                 blinkSnippets: [String] = [], notedSnippets: [String] = []) -> NSMutableAttributedString {
         let attrt  = NSMutableAttributedString(string: text)
         let yyFont = self.font.forSize(self.fontSize)
         
@@ -179,8 +179,8 @@ class Typesetter {
         attrt.yy_setFont(yyFont, range: NSMakeRange(start, attrt.length - start))
         attrt.yy_setAlignment(.Justified, range: NSMakeRange(start, attrt.length - start))
 
-        // Set noted snipptes
-        if !notedSnipptes.isEmpty {
+        // Set noted snippets
+        if !notedSnippets.isEmpty {
             let nsStr           = attrt.string as NSString
             let yyBoard         = YYTextBorder()
             yyBoard.lineStyle   = [.PatternSolid, .Single]
@@ -190,7 +190,7 @@ class Typesetter {
             yyBoard.insets      = UIEdgeInsetsMake(yyFont.capHeight * 2, 0, 0, 0)
             var searchRange     = NSMakeRange(0, nsStr.length)
             
-            for l in notedSnipptes {
+            for l in notedSnippets {
                 if l.isEmpty || l.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet()).isEmpty {
                     continue
                 }
@@ -203,8 +203,8 @@ class Typesetter {
             }
         }
         
-        // Set blink snipptes
-        if !blinkSnipptes.isEmpty {
+        // Set blink snippets
+        if !blinkSnippets.isEmpty {
             let nsStr            = attrt.string as NSString
             let yyBoard          = YYTextBorder()
             yyBoard.lineStyle    = [.PatternSolid, .Single]
@@ -214,7 +214,7 @@ class Typesetter {
             yyBoard.insets       = UIEdgeInsetsMake(1, 0, 0, 0)
             var searchRange      = NSMakeRange(0, nsStr.length)
             
-            for l in blinkSnipptes {
+            for l in blinkSnippets {
                 if l.isEmpty || l.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet()).isEmpty {
                     continue
                 }

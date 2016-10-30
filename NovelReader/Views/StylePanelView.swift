@@ -28,36 +28,36 @@ class StylePanelView: UIView {
 
     private var showFontsList: (() -> Void)? = nil
     
-	override init(frame: CGRect) {
-		super.init(frame: frame)
-		self.commonInit()
-	}
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.commonInit()
+    }
 
-	required init?(coder aDecoder: NSCoder) {
-		super.init(coder: aDecoder)
-		self.commonInit()
-	}
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.commonInit()
+    }
     
-	private func commonInit() {
-		NSBundle.mainBundle().loadNibNamed("StylePanelView", owner: self, options: nil)
+    private func commonInit() {
+        NSBundle.mainBundle().loadNibNamed("StylePanelView", owner: self, options: nil)
 
-		self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(blankAction(_:))))
-		self.addSubview(contentView)
+        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(blankAction(_:))))
+        self.addSubview(contentView)
 
-		contentView.snp_makeConstraints { (make) -> Void in
-			make.top.equalTo(self)
-			make.left.equalTo(self)
-			make.right.equalTo(self)
-			make.bottom.equalTo(self)
-		}
-	}
+        contentView.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(self)
+            make.left.equalTo(self)
+            make.right.equalTo(self)
+            make.bottom.equalTo(self)
+        }
+    }
 
     func onShowFontsList(action: () -> Void) -> StylePanelView {
         self.showFontsList = action
         return self
     }
 
-	func applyTheme() {
+    func applyTheme() {
         let tp                                      = Typesetter.Ins
         self.tintColor                              = tp.theme.foregroundColor
         self.backgroundColor                        = tp.theme.menuBackgroundColor
@@ -77,18 +77,18 @@ class StylePanelView: UIView {
 
         let trackBness: CGFloat                     = tp.theme == Theme.Night ? 0.35 : 0.16
         
-		self.fontSetBtn.setTitle("\(tp.font.rawValue)         〉", forState: .Normal)
-		self.brightnessSlider.setThumbImage(
-			Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness), size: CGSizeMake(16, 16), circle: true),
-			forState: .Normal
-		)
-	}
+        self.fontSetBtn.setTitle("\(tp.font.rawValue)         〉", forState: .Normal)
+        self.brightnessSlider.setThumbImage(
+            Utils.color2Img(tp.theme.foregroundColor.newBrightness(trackBness), size: CGSizeMake(16, 16), circle: true),
+            forState: .Normal
+        )
+    }
 
-	func blankAction(_: UIView) { /*Just ignore */ }
+    func blankAction(_: UIView) { /*Just ignore */ }
 
-	@IBAction func onThemeChanged(sender: AnyObject) {
-		Typesetter.Ins.theme = Theme(rawValue: themeSegment.selectedSegmentIndex)!
-	}
+    @IBAction func onThemeChanged(sender: AnyObject) {
+        Typesetter.Ins.theme = Theme(rawValue: themeSegment.selectedSegmentIndex)!
+    }
 
     @IBAction func onBrightnessChanged(sender: AnyObject) {
         Typesetter.Ins.brightness = CGFloat(brightnessSlider.value / brightnessSlider.maximumValue)
@@ -116,19 +116,19 @@ class StylePanelView: UIView {
         Typesetter.Ins.fontSize = fontSize
     }
     
-	@IBAction func decreaseLineSpace(sender: AnyObject) {
+    @IBAction func decreaseLineSpace(sender: AnyObject) {
         Typesetter.Ins.line_space = max(Typesetter.LineSpace_Min, Typesetter.Ins.line_space - 1)
         lineSpaceDecBtn.enabled   = Typesetter.Ins.line_space > Typesetter.LineSpace_Min
         lineSpaceIncBtn.enabled   = true
-	}
+    }
 
-	@IBAction func increaseLineSpace(sender: AnyObject) {
+    @IBAction func increaseLineSpace(sender: AnyObject) {
         Typesetter.Ins.line_space = min(Typesetter.LineSpace_Max, Typesetter.Ins.line_space + 1)
         lineSpaceIncBtn.enabled   = Typesetter.Ins.line_space < Typesetter.LineSpace_Max
         lineSpaceDecBtn.enabled   = true
-	}
+    }
     
-	@IBAction func descreaseBoardMargin(sender: AnyObject) {
+    @IBAction func descreaseBoardMargin(sender: AnyObject) {
         var margin = Typesetter.Ins.margin
         margin.increase(-5, t: -5, r: -5, b: -5)
         margin.clamp(Typesetter.Margin_Min, up: Typesetter.Margin_Max)
@@ -136,7 +136,7 @@ class StylePanelView: UIView {
         Typesetter.Ins.margin = margin
         marginDecBtn.enabled  = margin != Typesetter.Margin_Min
         marginIncBtn.enabled  = true
-	}
+    }
     
     @IBAction func increaseBoardMargin(sender: AnyObject) {
         var margin = Typesetter.Ins.margin
@@ -146,11 +146,11 @@ class StylePanelView: UIView {
         Typesetter.Ins.margin = margin
         marginIncBtn.enabled  = margin != Typesetter.Margin_Max
         marginDecBtn.enabled  = true
-	}
+    }
     
-	@IBAction func toSelectFontFamily(sender: AnyObject) {
+    @IBAction func toSelectFontFamily(sender: AnyObject) {
         if let s = showFontsList {
             s()
         }
-	}
+    }
 }

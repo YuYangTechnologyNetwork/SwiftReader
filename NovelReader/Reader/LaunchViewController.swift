@@ -94,17 +94,17 @@ final class LaunchViewController: UIViewController {
         self.loaded = true
     }
     
-	func displayMainControllerDelay(delay: NSTimeInterval) {
-		if delay > 0 {
-			NSTimer.scheduledTimerWithTimeInterval(
-				delay,
-				target: self,
-				selector: #selector(displayMainController),
-				userInfo: nil,
-				repeats: false
-			)
-		} else {
-			displayMainController()
-		}
-	}
+    func displayMainControllerDelay(delay: NSTimeInterval) {
+        if delay > 0 {
+            NSTimer.scheduledTimerWithTimeInterval(
+                delay,
+                target: self,
+                selector: #selector(displayMainController),
+                userInfo: nil,
+                repeats: false
+            )
+        } else {
+            displayMainController()
+        }
+    }
 }

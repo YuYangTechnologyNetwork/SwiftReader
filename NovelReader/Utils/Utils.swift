@@ -62,23 +62,23 @@ final class Utils {
      - parameter task: This closure will run on background thread
      - parameter main: This closure will run on main thread
      */
-	static func asyncTask<T>(task: () -> T, onMain main: (res: T) -> Void) {
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-			let result = task()
-			dispatch_async(dispatch_get_main_queue()) {
-				main(res: result)
-			}
-		}
-	}
+    static func asyncTask<T>(task: () -> T, onMain main: (res: T) -> Void) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            let result = task()
+            dispatch_async(dispatch_get_main_queue()) {
+                main(res: result)
+            }
+        }
+    }
     
     /**
      Convenient for dispatch async to execute UI task
      
      - parameter task: This closure will run on main thread
      */
-	static func runUITask(task: () -> Void) {
-		dispatch_async(dispatch_get_main_queue()) {
-			task()
-		}
-	}
+    static func runUITask(task: () -> Void) {
+        dispatch_async(dispatch_get_main_queue()) {
+            task()
+        }
+    }
 }

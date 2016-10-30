@@ -49,7 +49,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     private var downZone: DownZone       = .None
     private let stylePanelHeight:CGFloat = 190
 
-	override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         let styleMenuRect = CGRectMake(0, 0, self.view.bounds.width, stylePanelHeight)
@@ -104,31 +104,31 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             case .Font:
                 self.reloadReader(false)
             default:
-				if let reader = self.readerVC {
-					reader.applyFormat()
-				}
+                if let reader = self.readerVC {
+                    reader.applyFormat()
+                }
                 self.needReload = true
                 break
             }
         }
-	}
+    }
 
     override func viewWillAppear(animated: Bool) {
         // Start loading
         self.loadingIndicator.startAnimating()
         
-		Utils.asyncTask({ () -> Book? in
-			return Book(fullFilePath: NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")!)
-		}) { book in
-			if let b = book {
-				self.readerMgr = ReaderManager(b: b, size: self.view.frame.size)
+        Utils.asyncTask({ () -> Book? in
+            return Book(fullFilePath: NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")!)
+        }) { book in
+            if let b = book {
+                self.readerMgr = ReaderManager(b: b, size: self.view.frame.size)
 
-				self.readerMgr.addListener("MenuTitle", forMonitor: .ChapterChanged) { chapter in
+                self.readerMgr.addListener("MenuTitle", forMonitor: .ChapterChanged) { chapter in
                     // Set top title
-					self.chapterTitle.text = chapter.title
+                    self.chapterTitle.text = chapter.title
                     // Sync catalog list
-					self.catalogVC.syncReaderStatus(b, currentChapter: chapter)
-				}
+                    self.catalogVC.syncReaderStatus(b, currentChapter: chapter)
+                }
 
                 self.readerMgr.asyncLoading { chapter in
                     self.attachReaderView(chapter)
@@ -137,8 +137,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                     // Sync catalog list
                     self.catalogVC.syncReaderStatus(b, currentChapter: chapter)
                 }
-			}
-		}
+            }
+        }
 
         stylePanelView.snp_makeConstraints { make in
             make.top.equalTo(self.btmSubContainer.snp_top)
@@ -178,7 +178,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                 // Set top title
                 self.chapterTitle.text = c.title
                 // Sync catalog list
-				self.catalogVC?.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currentChapter)
+                self.catalogVC?.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currentChapter)
             }
         }
     }
@@ -196,16 +196,16 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.topActivityIndicator.color          = Typesetter.Ins.theme.foregroundColor.newAlpha(0.5)
         self.topActivityIndicatorLabel.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.5)
 
-		if let rvc = self.readerVC {
-			rvc.applyTheme()
-		}
+        if let rvc = self.readerVC {
+            rvc.applyTheme()
+        }
 
         if catalogVC != nil {
             catalogVC.applyTheme()
         }
-	}
+    }
     
-	private func attachReaderView(currChapter: Chapter) {
+    private func attachReaderView(currChapter: Chapter) {
         chapterTitle.text           = currChapter.title
         readerVC            = ReaderViewController(nibName: "ReaderViewController", bundle: nil)
         readerVC.readerMgr  = self.readerMgr
@@ -213,12 +213,12 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         readerVC.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.maskTaped(_:))))
 
         loadingIndicator.stopAnimating()
-		addChildViewController(self.readerVC)
-		view.addSubview(self.readerVC.view)
-		view.sendSubviewToBack(self.readerVC.view)
+        addChildViewController(self.readerVC)
+        view.addSubview(self.readerVC.view)
+        view.sendSubviewToBack(self.readerVC.view)
 
         if !loadingBoardMask.hidden {
-            UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, animations: {
+            UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, animations: {
                 self.loadingBoardMask.alpha  = 0
             }) { end in
                 self.loadingBoardMask.hidden = true
@@ -226,9 +226,9 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             }
         }
 
-		catalogVC = CatalogViewController(nibName: "CatalogViewController", bundle: nil)
-		catalogVC.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currentChapter)
-		catalogVC.view.frame = catalogContainer.frame
+        catalogVC = CatalogViewController(nibName: "CatalogViewController", bundle: nil)
+        catalogVC.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currentChapter)
+        catalogVC.view.frame = catalogContainer.frame
         catalogVC.onDismiss { selected, bm in
             self.dismissCatalog {
                 if selected {
@@ -243,13 +243,13 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             }
         }
         
-		catalogContainer.onClick { v in
-			if self.menuShow {
-				self.hideMenu()
-			} else {
-				self.dismissCatalog()
-			}
-		}
+        catalogContainer.onClick { v in
+            if self.menuShow {
+                self.hideMenu()
+            } else {
+                self.dismissCatalog()
+            }
+        }
 
         addChildViewController(catalogVC)
         catalogContainer.addSubview(catalogVC.view)
@@ -260,7 +260,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             make.width.equalTo(self.size.width * 5 / 6)
             make.height.equalTo(self.catalogContainer.snp_height)
         }
-	}
+    }
 
     func maskTaped(recognizer: UITapGestureRecognizer) {
         let point = recognizer.locationInView(maskPanel)
@@ -305,7 +305,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.bottomBar.hidden         = false
         self.maskPanel.hidden         = false
         
-        UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
+        UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .Slide)
             self.setNeedsStatusBarAppearanceUpdate()
             self.topBar.frame.origin.y    = 0
@@ -319,7 +319,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.menuShow = false
         self.btmSubContainer.userInteractionEnabled = false
         
-        UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
+        UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Slide)
             self.setNeedsStatusBarAppearanceUpdate()
             self.topBar.frame.origin.y          = -self.topBar.bounds.height
@@ -363,7 +363,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.stylePanelView.applyTheme()
         self.styleFontsListView.applyTheme()
         
-        UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
+        UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
             self.setNeedsStatusBarAppearanceUpdate()
             self.bottomBar.alpha                = 0
@@ -386,7 +386,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.styleFontsListView.frame.origin.x = self.size.width
         self.styleFontsListView.hidden = false
         
-        UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, animations: {
+        UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, animations: {
             self.stylePanelView.frame.origin.x = -self.size.width
             self.styleFontsListView.frame.origin.x = 0
         }) { finish in }
@@ -397,7 +397,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.maskPanel.hidden = false
             self.catalogContainer.hidden = false
             self.catalogContainer.frame.origin.x = -self.catalogVC.view.frame.width
-            UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, animations: {
+            UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, animations: {
                 self.maskPanel.alpha = 0.6
                 self.catalogContainer.frame.origin.x = 0
             }) { finish in }
@@ -405,21 +405,21 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     private func dismissCatalog(end: (()->Void)? = nil) {
-		if catalogVC != nil {
-			self.brightnessMask.userInteractionEnabled = true
+        if catalogVC != nil {
+            self.brightnessMask.userInteractionEnabled = true
 
-			UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, animations: {
-				self.maskPanel.alpha = 0
-				self.catalogContainer.frame.origin.x = -self.catalogVC.view.frame.width
-			}) { finish in
-				self.brightnessMask.userInteractionEnabled = false
-				self.catalogContainer.hidden = true
-				self.maskPanel.hidden = true
+            UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, animations: {
+                self.maskPanel.alpha = 0
+                self.catalogContainer.frame.origin.x = -self.catalogVC.view.frame.width
+            }) { finish in
+                self.brightnessMask.userInteractionEnabled = false
+                self.catalogContainer.hidden = true
+                self.maskPanel.hidden = true
 
                 if let e = end {
                     e()
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 }

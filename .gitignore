@@ -3,3 +3,4 @@ DerivedData
 Pods/
 Podfile.lock
 NovelReader.xcworkspace/
+.idea/

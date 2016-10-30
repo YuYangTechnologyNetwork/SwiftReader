@@ -69,7 +69,7 @@ enum Theme: Int {
     }
 
     var highlightColor: UIColor {
-        return UIColor(red:0.917,  green:0.360,  blue:0, alpha:0.6)
+        return UIColor(red:0.617,  green:0.260,  blue:0, alpha:0.8)
     }
 
     var isNight: Bool {

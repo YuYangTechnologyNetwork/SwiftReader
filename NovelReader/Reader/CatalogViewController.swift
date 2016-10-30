@@ -29,17 +29,28 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
         super.viewDidLoad()
 
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "CatalogCell")
-        backBtn.transform                       = CGAffineTransformMakeRotation(CGFloat(M_PI))
-        let v                                   = UIView()
-        v.backgroundColor                       = UIColor.clearColor()
-        tableView.tableFooterView               = v
-        self.cellSelectedBg                     = UIView()
-        self.fetchCatalogBtn.layer.borderWidth  = 1
+        backBtn.transform = CGAffineTransformMakeRotation(CGFloat(M_PI))
+        let v = UIView()
+        v.backgroundColor = UIColor.clearColor()
+        tableView.tableFooterView = v
+        self.cellSelectedBg = UIView()
+        self.fetchCatalogBtn.layer.borderWidth = 1
         self.fetchCatalogBtn.layer.cornerRadius = 8
+        self.cursor = Db.Cursor(db: Db(db: self.book.name, rowable: BookMark()))
+
+        if self.cursor.count() <= 0 {
+            self.cursor = nil
+        }
     }
 
     override func viewWillAppear(animated: Bool) {
         self.applyTheme()
+
+        if let _ = self.cursor {
+            self.fetchCatalogBtn.hidden = true
+            self.loadingLabel.hidden = true
+            self.emptyTipsView.hidden = true
+        }
     }
 
     @IBAction func onFetchCatalogBtnClicked(sender: AnyObject) {
@@ -63,17 +74,20 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.fetchCatalogBtn.alpha = 1
         self.fetchCatalogBtn.hidden = true
 
-        UIView.animateWithDuration(R.Dimens.AnimInterval.Normal) {
+        UIView.animateWithDuration(R.Dimension.AnimInterval.Normal) {
             self.loadingLabel.alpha = 1
             self.fetchCatalogBtn.alpha = 0
         }
 
         Utils.asyncTask({
             let file = fopen(self.book.fullFilePath, "r")
-			Db(db: self.book.name, rowable: BookMark()).clear(true).open { db in
-                db.inTransaction { () -> Bool in
+            Db(db: self.book.name, rowable: BookMark()).clear(true).open {
+                db in
+                db.inTransaction {
+                    () -> Bool in
                     // Extracting catalogs
-                    FileReader().logOff.fetchChaptersOfFile(file, encoding: self.book.encoding) { f, c in
+                    FileReader().logOff.fetchChaptersOfFile(file, encoding: self.book.encoding) {
+                        f, c in
                         for ch in c {
                             if ch.range.loc == 0 && ch.title == NO_TITLE {
                                 let t = f.fetchRange(file, ch.range, self.book.encoding).text
@@ -102,79 +116,77 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
 
             fclose(file)
-		}) {
-			if self.cursor != nil {
-				self.locatingBookMark {
-					self.loadingIndicator.stopAnimating()
+        }) {
+            if self.cursor != nil {
+                self.locatingBookMark {
+                    self.loadingIndicator.stopAnimating()
 
-					if !self.cursor.isEmpty {
-						self.tableView.alpha = 0
-						self.tableView.reloadData()
+                    if !self.cursor.isEmpty {
+                        self.tableView.alpha = 0
+                        self.tableView.reloadData()
 
-						UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, animations: {
-							self.emptyTipsView.alpha = 0
-							self.tableView.alpha = 1
-						}) { _ in self.emptyTipsView.hidden = true }
+                        UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, animations: {
+                            self.emptyTipsView.alpha = 0
+                            self.tableView.alpha = 1
+                        }) {
+                            _ in self.emptyTipsView.hidden = true
+                        }
 
-						return
-					}
-				}
-			}
+                        return
+                    }
+                }
+            }
 
-			self.fetchCatalogBtn.hidden = false
+            self.fetchCatalogBtn.hidden = false
 
-			UIView.animateWithDuration(R.Dimens.AnimInterval.Normal, animations: {
-				self.loadingLabel.alpha = 0
-				self.fetchCatalogBtn.alpha = 1
-			}) { _ in self.loadingLabel.hidden = true }
-		}
+            UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, animations: {
+                self.loadingLabel.alpha = 0
+                self.fetchCatalogBtn.alpha = 1
+            }) {
+                _ in self.loadingLabel.hidden = true
+            }
+        }
     }
-    
-	private func locatingBookMark(finish: (() -> Void)? = nil) {
-		if self.cursor != nil && self.currChapter != nil {
-			Utils.asyncTask({ () -> Int? in
-				let rows = self.cursor.db.query(true, conditions: "where `Hash` = \(self.currChapter.hash)")
-				if !rows.isEmpty {
-					return (rows[0] as? BookMark)?.rowId
-				}
 
-				return nil
-			}) { rowId in
-				self.cursor.moveTo((rowId ?? 1) - 1) {
-					if let f = finish {
-						f()
-					} else {
-						self.tableView.reloadData()
-					}
+    private func locatingBookMark(finish: (() -> Void)? = nil) {
+        if self.cursor != nil && self.currChapter != nil && self.cursor.count() > 0 {
+            let rows = cursor.db.query(true, conditions: "where `Hash`=\(currChapter.hash)")
+            let rowId = (rows[0] as? BookMark)?.rowId ?? 0
 
-					self.tableView.scrollToRowAtIndexPath(
-						NSIndexPath(forRow: (rowId ?? 1) - 1, inSection: 0),
-						atScrollPosition: .Middle,
-						animated: false
-					)
-				}
-			}
-		}
-	}
+            cursor.moveTo(rowId)
+            self.tableView.reloadData()
 
-	func syncReaderStatus(book: Book, currentChapter c: BookMark) {
-		self.book = book
-		self.currChapter = c
+            if let f = finish {
+                f()
+            } else {
+                self.tableView.reloadData()
+            }
 
-		self.locatingBookMark()
-	}
+            self.tableView.scrollToRowAtIndexPath(
+                    NSIndexPath(forRow: (rowId ?? 1) - 1, inSection: 0),
+                    atScrollPosition: .Middle,
+                    animated: false)
+        }
+    }
+
+    func syncReaderStatus(book: Book, currentChapter c: BookMark) {
+        self.book = book
+        self.currChapter = c
+
+        self.locatingBookMark()
+    }
 
     func applyTheme() {
-        self.view.backgroundColor                   = Typesetter.Ins.theme.menuBackgroundColor
-        self.titleLabel.textColor                   = Typesetter.Ins.theme.foregroundColor
-        self.backBtn.tintColor                      = Typesetter.Ins.theme.foregroundColor
+        self.view.backgroundColor = Typesetter.Ins.theme.menuBackgroundColor
+        self.titleLabel.textColor = Typesetter.Ins.theme.foregroundColor
+        self.backBtn.tintColor = Typesetter.Ins.theme.foregroundColor
         self.titleAndTableSplitLine.backgroundColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.1)
-        self.tableView.separatorColor               = Typesetter.Ins.theme.foregroundColor.newAlpha(0.07)
-        self.fetchCatalogBtn.tintColor              = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
-        self.fetchCatalogBtn.layer.borderColor      = Typesetter.Ins.theme.foregroundColor.newAlpha(0.4).CGColor
-        self.loadingIndicator.color                 = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
-        self.loadingLabel.textColor                 = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
-        self.cellSelectedBg.backgroundColor         = Typesetter.Ins.theme.foregroundColor.newAlpha(0.1)
+        self.tableView.separatorColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.07)
+        self.fetchCatalogBtn.tintColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
+        self.fetchCatalogBtn.layer.borderColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.4).CGColor
+        self.loadingIndicator.color = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
+        self.loadingLabel.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.7)
+        self.cellSelectedBg.backgroundColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.1)
         self.tableView.reloadData()
     }
 
@@ -182,37 +194,37 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.onDismissListener = l
         return self
     }
-    
-	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-		if self.onDismissListener != nil {
-			let v = tableView.indexPathsForVisibleRows!.sort { $0.row < $1.row }
-			let bm = cursor?.rowAt(indexPath.row, used: NSMakeRange(v[0].row, v.count)) as? BookMark
-			self.onDismissListener(true, bm)
-		}
-	}
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return self.cursor?.count() ?? 0
+
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if self.onDismissListener != nil {
+            cursor.moveTo(indexPath.row)
+            let bm = cursor.getRow() as? BookMark
+            self.onDismissListener(true, bm)
+        }
     }
 
-	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier("CatalogCell")!
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.cursor?.count() ?? 0
+    }
 
-        cell.textLabel!.font        = UIFont.systemFontOfSize(R.Dimens.FontSize.Com_Label)
-        cell.backgroundColor        = UIColor.clearColor()
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("CatalogCell")!
+
+        cell.textLabel!.font = UIFont.systemFontOfSize(R.Dimension.FontSize.Com_Label)
+        cell.backgroundColor = UIColor.clearColor()
         cell.textLabel?.numberOfLines = 4
         cell.selectedBackgroundView = cellSelectedBg
 
-		let v = tableView.indexPathsForVisibleRows!.sort { $0.row < $1.row }
-		let bm = cursor?.rowAt(indexPath.row, used: NSMakeRange(v[0].row, v.count)) as? BookMark
-		cell.textLabel!.text = (bm?.title ?? "Loading")
-        
+        cursor.moveTo(indexPath.row)
+        let bm = cursor.getRow() as? BookMark
+        cell.textLabel!.text = (bm?.title ?? "Loading")
+
         if bm != nil && bm?.hash == currChapter?.hash {
-            cell.textLabel!.textColor   = Typesetter.Ins.theme.highlightColor.newAlpha(1)
+            cell.textLabel!.textColor = Typesetter.Ins.theme.highlightColor.newAlpha(1)
         } else {
-            cell.textLabel!.textColor   = Typesetter.Ins.theme.foregroundColor.newAlpha(0.8)
+            cell.textLabel!.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.8)
         }
 
-		return cell
-	}
+        return cell
+    }
 }

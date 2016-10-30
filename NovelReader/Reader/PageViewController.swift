@@ -10,50 +10,50 @@ import UIKit
 import YYText
 
 class PageViewController: UIViewController {
-	@IBOutlet weak var containerView: YYLabel!
-	@IBOutlet weak var boardMaskView: UIImageView!
+    @IBOutlet weak var containerView: YYLabel!
+    @IBOutlet weak var boardMaskView: UIImageView!
     @IBOutlet weak var bufferContainerView: YYLabel!
 
-	private var paper: Paper?
+    private var paper: Paper?
     private var needRefresh: Bool    = true
     private var _index: Int          = 0
-    private var dispalyWithAnimation = false
+    private var displayWithAnimation = false
 
-	var index: Int {
-		return _index
-	}
+    var index: Int {
+        return _index
+    }
 
-	override func viewDidLoad() {
+    override func viewDidLoad() {
         containerView.textVerticalAlignment        = .Top
         containerView.ignoreCommonProperties       = true
         bufferContainerView.textVerticalAlignment  = .Top
         bufferContainerView.ignoreCommonProperties = true
         boardMaskView.alpha                        = Typesetter.Ins.theme.boardMaskNeeded ? 1 : 0
-		applyTheme(false)
-	}
+        applyTheme(false)
+    }
 
-	override func viewWillAppear(animated: Bool) {
-		if self.needRefresh {
-			needRefresh = false
-			if let p = self.paper {
-				p.attachToView(containerView)
+    override func viewWillAppear(animated: Bool) {
+        if self.needRefresh {
+            needRefresh = false
+            if let p = self.paper {
+                p.attachToView(containerView)
                 
-				if dispalyWithAnimation {
-                    dispalyWithAnimation = false
+                if displayWithAnimation {
+                    displayWithAnimation = false
                     containerView.alpha  = 0
                     
-					UIView.animateWithDuration(0.3) {
-						self.containerView.alpha = 1
-					}
-				}
-			}
-		}
-	}
+                    UIView.animateWithDuration(0.3) {
+                        self.containerView.alpha = 1
+                    }
+                }
+            }
+        }
+    }
 
-	func index(index: Int) -> PageViewController {
-		_index = index
-		return self
-	}
+    func index(index: Int) -> PageViewController {
+        _index = index
+        return self
+    }
 
     func applyTheme(withAnim: Bool = true) {
         if let c = self.containerView {
@@ -65,14 +65,14 @@ class PageViewController: UIViewController {
         let cT = Typesetter.Ins.theme
         let oT = Typesetter.Ins.oldTheme
 
-        var notParchemnt = true
+        var notParchment = true
         if cT == Theme.Night || oT == Theme.Night {
-            notParchemnt = true
+            notParchment = true
         } else {
-            notParchemnt = oT != .Parchment && cT != .Parchment
+            notParchment = oT != .Parchment && cT != .Parchment
         }
 
-        if withAnim && notParchemnt {
+        if withAnim && notParchment {
             UIView.animateWithDuration(0.3) {
                 if cT == .Night && oT != nil {
                     self.view.backgroundColor = oT!.menuBackgroundColor
@@ -103,12 +103,12 @@ class PageViewController: UIViewController {
     }
 
     func bindPaper(paper: Paper?, doAnimation: Bool = false) -> PageViewController? {
-		if let p = paper {
-			if p != self.paper {
+        if let p = paper {
+            if p != self.paper {
                 let lp     = self.paper
                 self.paper = Paper(paper: p)
-				if let c = self.containerView {
-					if doAnimation {
+                if let c = self.containerView {
+                    if doAnimation {
                         if let l = lp {
                             containerView.textLayout = nil
                             l.attachToView(bufferContainerView)
@@ -118,28 +118,28 @@ class PageViewController: UIViewController {
                         containerView.alpha       = 0
                         p.attachToView(c)
 
-						UIView.animateWithDuration(0.3) {
+                        UIView.animateWithDuration(0.3) {
                             self.containerView.alpha       = 1
                             self.bufferContainerView.alpha = 0
-						}
-					} else {
-						p.attachToView(containerView)
-					}
-				} else {
-					self.needRefresh = true
-                    self.dispalyWithAnimation = doAnimation
-				}
-			}
+                        }
+                    } else {
+                        p.attachToView(containerView)
+                    }
+                } else {
+                    self.needRefresh = true
+                    self.displayWithAnimation = doAnimation
+                }
+            }
 
-			return self
-		} else {
-			if let c = containerView {
-				c.textLayout = nil
-			}
+            return self
+        } else {
+            if let c = containerView {
+                c.textLayout = nil
+            }
 
-			self.paper = nil
+            self.paper = nil
 
-			return nil
-		}
-	}
+            return nil
+        }
+    }
 }

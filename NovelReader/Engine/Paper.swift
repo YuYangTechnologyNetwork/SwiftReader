@@ -16,24 +16,24 @@ class Paper: Equatable {
         private(set) var startWithNewLine: Bool = false
         private(set) var endedWithNewLine: Bool = false
         
-        private(set) var blinkSnipptes: [String] = [] {
-			didSet {
-				needReformatPaper = oldValue != blinkSnipptes
-			}
-		}
+        private(set) var blinkSnippets: [String] = [] {
+            didSet {
+                needReformatPaper = oldValue != blinkSnippets
+            }
+        }
 
-		private(set) var notedSnipptes: [String] = [] {
-			didSet {
-				needReformatPaper = oldValue != notedSnipptes
-			}
-		}
+        private(set) var notedSnippets: [String] = [] {
+            didSet {
+                needReformatPaper = oldValue != notedSnippets
+            }
+        }
         
-		private(set) var applyTheme: Theme! {
-			didSet {
-				needReformatPaper = applyTheme != nil && oldValue != applyTheme
-			}
-		}
-	}
+        private(set) var applyTheme: Theme! {
+            didSet {
+                needReformatPaper = applyTheme != nil && oldValue != applyTheme
+            }
+        }
+    }
     
     private(set) var realLen: Int
     private(set) var text: String!
@@ -57,11 +57,11 @@ class Paper: Equatable {
         self.realLen                           = 0
         self.properties                        = Properties()
         self.textContainer                     = YYTextContainer(size: size, insets: paperMargin)
-        self.textContainer.verticalForm        = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
+        self.textContainer.verticalForm        = Typesetter.Ins.textOrientation == Typesetter.TextOrientation.Vertical
         self.textContainer.maximumNumberOfRows = 0
     }
     
-	init(paper: Paper) {
+    init(paper: Paper) {
         self.size                              = paper.size
         self.text                              = paper.text
         self.cachedText                        = paper.cachedText
@@ -70,25 +70,25 @@ class Paper: Equatable {
         self.firstLineText                     = paper.firstLineText
         self.firstLineIsTitle                  = paper.firstLineIsTitle
         self.textContainer                     = YYTextContainer(size: size, insets: paper.textContainer.insets)
-        self.textContainer.verticalForm        = Typesetter.Ins.textOrentation == Typesetter.TextOrentation.Vertical
+        self.textContainer.verticalForm        = Typesetter.Ins.textOrientation == Typesetter.TextOrientation.Vertical
         self.textContainer.maximumNumberOfRows = paper.textContainer.maximumNumberOfRows
         self.textLayout                        = YYTextLayout(container: textContainer, text: paper.textLayout.text)
-	}
+    }
     
-	func blink(snippets: [String] = []) -> Paper {
-		properties.blinkSnipptes = snippets
-		return self
-	}
+    func blink(snippets: [String] = []) -> Paper {
+        properties.blinkSnippets = snippets
+        return self
+    }
 
-	func noted(snippets: [String] = []) -> Paper {
-		properties.notedSnipptes = snippets
-		return self
-	}
+    func noted(snippets: [String] = []) -> Paper {
+        properties.notedSnippets = snippets
+        return self
+    }
     
-	func applyTheme() -> Paper {
-		properties.applyTheme = Typesetter.Ins.theme
-		return self
-	}
+    func applyTheme() -> Paper {
+        properties.applyTheme = Typesetter.Ins.theme
+        return self
+    }
     
     func applyFormat() -> Paper {
         properties.needReformatPaper = true
@@ -98,11 +98,11 @@ class Paper: Equatable {
     /**
      Use typesetter to write text to this paper line by line
      
-     - parameter text:             Need writted to this paper
+     - parameter text:             Need write to this paper
      - parameter firstLineIsTitle: First line is the chapter title?
      - parameter startWithNewLine: If started with new line, indent needed
      */
-    func writtingLineByLine(text: String, firstLineIsTitle: Bool = false, startWithNewLine: Bool = false) {
+    func writingLineByLine(text: String, firstLineIsTitle: Bool = false, startWithNewLine: Bool = false) {
         let newLineChar = FileReader.getNewLineCharater(text)
         let lines       = text.componentsSeparatedByString(newLineChar)
 
@@ -161,7 +161,7 @@ class Paper: Equatable {
      Get the visible text end position in original text
      
      - parameter text:         The original text
-     - parameter visibleLines: Visbile lines
+     - parameter visibleLines: Visible lines
      
      - returns: Int, the visible end position
      */
@@ -186,19 +186,19 @@ class Paper: Equatable {
      - parameter applyTheme: Theme changed or not
      */
     func attachToView(yyLabel: YYLabel) {
-		if self.textLayout != nil {
+        if self.textLayout != nil {
             if !properties.needReformatPaper {
                 self.properties.applyTheme = Typesetter.Ins.theme
             }
             
-			if properties.needReformatPaper && !cachedText.isEmpty {
+            if properties.needReformatPaper && !cachedText.isEmpty {
                 let attrText = Typesetter.Ins.typeset(
                     cachedText,
                     paperWidth: size.width,
                     firstLineIsTitle: firstLineIsTitle,
                     startWithNewLine: properties.startWithNewLine,
-                    blinkSnipptes: properties.blinkSnipptes,
-                    notedSnipptes: properties.notedSnipptes
+                    blinkSnippets: properties.blinkSnippets,
+                    notedSnippets: properties.notedSnippets
                 )
                 
                 var paperMargin                   = UIEdgeInsetsZero
@@ -213,16 +213,16 @@ class Paper: Equatable {
                 self.properties.needReformatPaper = false
             }
 
-			yyLabel.textLayout = self.textLayout;
-		}
-	}
+            yyLabel.textLayout = self.textLayout;
+        }
+    }
 }
 
 func == (lhs: Paper.Properties, rhs: Paper.Properties) -> Bool {
-	return lhs.endedWithNewLine == lhs.endedWithNewLine && lhs.startWithNewLine == lhs.startWithNewLine &&
-	lhs.blinkSnipptes == rhs.blinkSnipptes && lhs.notedSnipptes == rhs.notedSnipptes
+    return lhs.endedWithNewLine == lhs.endedWithNewLine && lhs.startWithNewLine == lhs.startWithNewLine &&
+    lhs.blinkSnippets == rhs.blinkSnippets && lhs.notedSnippets == rhs.notedSnippets
 }
 
 func == (lhs: Paper, rhs: Paper) -> Bool {
-	return lhs.textLayout?.text == rhs.textLayout?.text && lhs.properties == rhs.properties
+    return lhs.textLayout?.text == rhs.textLayout?.text && lhs.properties == rhs.properties
 }

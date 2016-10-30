@@ -30,7 +30,7 @@ class MainViewController: UIViewController {
             Utils.Log("InOut: \(range)→\(result.1)")
 
             let paper = Paper(size: CGSizeMake(self.yyLabel.bounds.width, self.yyLabel.bounds.height))
-            paper.writtingLineByLine(result.0, firstLineIsTitle: false, startWithNewLine: result.1.loc == 0)
+            paper.writingLineByLine(result.0, firstLineIsTitle: false, startWithNewLine: result.1.loc == 0)
 
             let chapter = reader.fetchChapterAtLocation(file, location: 673484, encoding: book.encoding)
             Utils.Log(chapter)

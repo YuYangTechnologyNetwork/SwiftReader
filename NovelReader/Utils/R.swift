@@ -9,7 +9,7 @@
 import Foundation
 
 final class R {
-    final class Dimens {
+    final class Dimension {
         final class FontSize {
             static let Com_Title:CGFloat     = 17
             static let Com_Label:CGFloat     = 15

@@ -141,28 +141,28 @@ class Chapter: BookMark {
         let file     = fopen((book.fullFilePath), "r")
         let reader   = FileReader()
 
-		var chapters: [BookMark]!, loc = range.loc, len = range.len + readerMgr.currSelection.range.len / 2, scale = 0
-		repeat {
-			chapters = reader.fetchChaptersInRange(file, range: NSMakeRange(loc, len), encoding: book.encoding)
+        var chapters: [BookMark]!, loc = range.loc, len = range.len + readerMgr.currSelection.range.len / 2, scale = 0
+        repeat {
+            chapters = reader.fetchChaptersInRange(file, range: NSMakeRange(loc, len), encoding: book.encoding)
 
-			if chapters.count > 0 && self.range.loc > 0 && chapters.first!.title == NO_TITLE {
-				chapters.removeFirst()
-			}
+            if chapters.count > 0 && self.range.loc > 0 && chapters.first!.title == NO_TITLE {
+                chapters.removeFirst()
+            }
 
-			if chapters.count >= 2 || (reverse && loc == 0) || len == book.size - loc {
-				break
+            if chapters.count >= 2 || (reverse && loc == 0) || len == book.size - loc {
+                break
             } else {
                 scale += 1
             }
 
-			if reverse {
-				loc = max(range.loc - CHAPTER_SIZE * scale, 0)
-				len = range.end - loc + readerMgr.currSelection.range.len / 2
-			} else {
-				loc = range.loc
-				len = min(CHAPTER_SIZE * scale, book.size - loc)
-			}
-		} while true
+            if reverse {
+                loc = max(range.loc - CHAPTER_SIZE * scale, 0)
+                len = range.end - loc + readerMgr.currSelection.range.len / 2
+            } else {
+                loc = range.loc
+                len = min(CHAPTER_SIZE * scale, book.size - loc)
+            }
+        } while true
 
         var ready = chapters.count > 0
         
@@ -170,18 +170,18 @@ class Chapter: BookMark {
 
         // Get chapter
         if ready {
-			if reverse {
-				for (i, c) in chapters.enumerate() {
-					if c.title == readerMgr.currSelection.title {
-						range = chapters[i - 1].range
-						title = chapters[i - 1].title
-						break
-					}
-				}
-			} else {
-				range = chapters[0].range
-				title = chapters[0].title
-			}
+            if reverse {
+                for (i, c) in chapters.enumerate() {
+                    if c.title == readerMgr.currSelection.title {
+                        range = chapters[i - 1].range
+                        title = chapters[i - 1].title
+                        break
+                    }
+                }
+            } else {
+                range = chapters[0].range
+                title = chapters[0].title
+            }
 
             let content = reader.fetchRange(file, range, book.encoding).0
 
@@ -209,7 +209,7 @@ class Chapter: BookMark {
      - parameter paperSize: Paper's bounds
      - parameter reverse:   If reverse, locate page to tail
      - parameter book:      The book
-     - parameter fuzzy:     If fuzzy, need to reget content from file
+     - parameter fuzzy:     If fuzzy, need to fetch content from file
 
      - returns: Status {Failure, Success}
      */
@@ -271,7 +271,7 @@ class Chapter: BookMark {
      - parameter content:   Full content
      - parameter paperSize: Size of pager
 
-     - returns: Tial pages of content
+     - returns: Tail pages of content
      */
     class func pagingTailCache(content: String, paperSize: CGSize) -> [Paper] {
         let reverse = String(content.characters.reverse())
@@ -290,6 +290,7 @@ class Chapter: BookMark {
 
      - parameter index:     Start offset
      - parameter flit:      First line is Title?
+     - parameter lewl:      Last page end with new line?
      - parameter content:   String
      - parameter paperSize: Size of paper
      - parameter limit:     Max page count
@@ -311,7 +312,7 @@ class Chapter: BookMark {
             let paper = Paper(size: paperSize), flit = flit && offset == 0
             let tmpStr = content.substringFromIndex(content.startIndex.advancedBy(offset))
 
-            paper.writtingLineByLine(tmpStr, firstLineIsTitle: flit, startWithNewLine: lastEndWithNewLine)
+            paper.writingLineByLine(tmpStr, firstLineIsTitle: flit, startWithNewLine: lastEndWithNewLine)
 
             // Skip empty paper
             if paper.realLen == 0 {
@@ -372,20 +373,20 @@ class Chapter: BookMark {
         return self
     }
     
-	func locateTo(location: Int) -> Chapter? {
-		var sum = 0
+    func locateTo(location: Int) -> Chapter? {
+        var sum = 0
 
-		for (i, p) in _papers.enumerate() {
-			if range.loc + sum + p.realLen > location {
-				_offset = i
-				return self
-			}
+        for (i, p) in _papers.enumerate() {
+            if range.loc + sum + p.realLen > location {
+                _offset = i
+                return self
+            }
 
-			sum += p.realLen
-		}
+            sum += p.realLen
+        }
 
-		return nil
-	}
+        return nil
+    }
     
     func originalOffset() -> Int {
         if !self._papers.isEmpty && _offset > 0 {
