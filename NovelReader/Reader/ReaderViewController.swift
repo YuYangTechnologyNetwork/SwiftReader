@@ -120,7 +120,7 @@ UIPageViewControllerDelegate, UIScrollViewDelegate {
     func snapToPrevPage() {
         if !head {
             if let currVCtrl = pageViewCtrl.viewControllers?[0] as? PageViewController {
-                readerMgr.swipToPrev()
+                readerMgr.swipeToPrev()
                 currVCtrl.bindPaper(readerMgr.currPaper, doAnimation: true)
                 refreshPages()
             }
@@ -211,7 +211,7 @@ UIPageViewControllerDelegate, UIScrollViewDelegate {
                     if lastIndex == prevIndex(currIndex) {
                         self.readerMgr.swipeToNext()
                     } else if lastIndex == nextIndex(currIndex) {
-                        self.readerMgr.swipToPrev()
+                        self.readerMgr.swipeToPrev()
                     }
                 }
 

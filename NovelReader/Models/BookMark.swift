@@ -9,6 +9,13 @@
 import Foundation
 
 class BookMark: NSObject, Rowable {
+    final class Columns {
+        static let Title     = "Title"
+        static let Location  = "Location"
+        static let Length    = "Length"
+        static let UniqueId  = "UniqueId"
+    }
+    
     var title: String = NO_TITLE
     var range: NSRange = EMPTY_RANGE
 
@@ -23,30 +30,30 @@ class BookMark: NSObject, Rowable {
 
     override func isEqual(object: AnyObject?) -> Bool {
         if ((object as? BookMark) != nil) {
-            return self.hash == object?.hash
+            return self.uniqueId == object?.uniqueId
         }
 
         return false
     }
 
-    override var hash: Int {
-        return "\(title)\(range.desc)".hash
+    var uniqueId: String {
+        return "\(title)\(range.desc)".md5()
     }
 
     var rowId: Int = 0
 
     var fields: [Db.Field] {
-        return [.TEXT(name: "Title", value: title),
-                .INTEGER(name: "Location", value: range.loc),
-                .INTEGER(name: "Length", value: range.len),
-                .INTEGER(name: "Hash", value: hash)]
+        return [.TEXT(name: Columns.Title, value: title),
+                .INTEGER(name: Columns.Location, value: range.loc),
+                .INTEGER(name: Columns.Length, value: range.len),
+                .TEXT(name: Columns.UniqueId, value: uniqueId)]
     }
 
     var table: String {
         return "Catalog"
     }
 
-    func parse(row: [AnyObject]) -> Rowable {
+    func parse(row: [AnyObject]) -> Rowable? {
         return BookMark(
             title: row[0] as? String ?? NO_TITLE,
             range: NSMakeRange(row[1] as? Int ?? 0, row[2] as? Int ?? 0)

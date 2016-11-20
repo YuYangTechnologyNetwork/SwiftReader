@@ -4,3 +4,5 @@ Pods/
 Podfile.lock
 NovelReader.xcworkspace/
 .idea/
+NovelReader.xcscheme
+Build/

@@ -81,11 +81,19 @@ class ReaderManager: NSObject {
     func updateBookMark() {
         if let cp = currPaper {
             book.bookMark = BookMark(
-                title: cp.firstLineText?.pickFirst(5) ?? NO_TITLE,
+                title: cp.firstLineText?.pickFirst(50) ?? NO_TITLE,
                 range: NSMakeRange(currChapter.originalOffset(), cp.realLen)
             )
 
             Utils.Log(book.bookMark)
+            
+            Db(db: Config.Db.DefaultDB, rowable: self.book).open { db in
+                if !db.update(self.book, conditions: "where `\(Book.Columns.UniqueId)` = '\(self.book.uniqueId)'") {
+                    Utils.Log(db.lastExecuteInfo)
+                    
+                    db.insert(self.book)
+                }
+            }
         }
     }
 
@@ -171,6 +179,9 @@ class ReaderManager: NSObject {
         }) { lazy in
             Utils.Log(self)
             callback(self.currChapter)
+            
+            // Update book mark
+            self.updateBookMark()
 
             if lazy.left || lazy.right {
                 Utils.asyncTask({
@@ -260,7 +271,7 @@ class ReaderManager: NSObject {
         }
     }
 
-    func swipToPrev() {
+    func swipeToPrev() {
         if !isHead {
             if currChapter.isHead {
                 nextChapter.trash()

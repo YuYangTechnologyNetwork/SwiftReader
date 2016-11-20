@@ -19,7 +19,7 @@ class MainViewController: UIViewController {
 
         Utils.asyncTask({ () -> Paper in
             let filePath = NSBundle.mainBundle().pathForResource("jy_gbk", ofType: "txt")
-            let book = Book(fullFilePath: filePath!)!
+            let book = Book(fullFilePath: filePath!, getInfo: true)!
             let file = fopen(filePath!, "r")
             let reader = FileReader()
 

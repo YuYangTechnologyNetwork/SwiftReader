@@ -150,7 +150,12 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     private func locatingBookMark(finish: (() -> Void)? = nil) {
         if self.cursor != nil && self.currChapter != nil && self.cursor.count() > 0 {
-            let rows = cursor.db.query(true, conditions: "where `Hash`=\(currChapter.hash)")
+            let rows = cursor.db.query(
+                true,
+                conditions: "`\(BookMark.Columns.UniqueId)`='\(currChapter.uniqueId)'",
+                tail: ""
+            )
+            
             let rowId = (rows[0] as? BookMark)?.rowId ?? 0
 
             cursor.moveTo(rowId)
@@ -219,7 +224,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
         let bm = cursor.getRow() as? BookMark
         cell.textLabel!.text = (bm?.title ?? "Loading")
 
-        if bm != nil && bm?.hash == currChapter?.hash {
+        if bm != nil && bm?.uniqueId == currChapter?.uniqueId {
             cell.textLabel!.textColor = Typesetter.Ins.theme.highlightColor.newAlpha(1)
         } else {
             cell.textLabel!.textColor = Typesetter.Ins.theme.foregroundColor.newAlpha(0.8)

@@ -116,20 +116,46 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewWillAppear(animated: Bool) {
         // Start loading
         self.loadingIndicator.startAnimating()
-        
+    
         Utils.asyncTask({ () -> Book? in
-            return Book(fullFilePath: NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")!)
+            let bookPath   = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")!
+            var book:Book = Book(fullFilePath: bookPath, getInfo: true)!
+            
+            Utils.Log(bookPath)
+            Utils.Log(book.description)
+            
+            // Fetch history
+            Db(db: Config.Db.DefaultDB, rowable: book).open { db in
+                let books =  db.query(
+                    false,
+                    conditions: "`\(Book.Columns.UniqueId)`='\(book.uniqueId)'",
+                    tail: ""
+                )
+                
+                let savedBook = books.count > 0 ? books[0] as? Book : nil
+                
+                if let sb = savedBook {
+                    book = Book(otherBook: sb)
+                }
+                
+                Utils.Log(db.lastExecuteInfo)
+            }
+            
+            // Record lastest opening time
+            book.lastOpenTime = (Int)(NSDate().timeIntervalSince1970 * 1000)
+            
+            return book
         }) { book in
             if let b = book {
                 self.readerMgr = ReaderManager(b: b, size: self.view.frame.size)
-
+                
                 self.readerMgr.addListener("MenuTitle", forMonitor: .ChapterChanged) { chapter in
                     // Set top title
                     self.chapterTitle.text = chapter.title
                     // Sync catalog list
                     self.catalogVC.syncReaderStatus(b, currentChapter: chapter)
                 }
-
+                
                 self.readerMgr.asyncLoading { chapter in
                     self.attachReaderView(chapter)
                     // Set top title
@@ -206,7 +232,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     private func attachReaderView(currChapter: Chapter) {
-        chapterTitle.text           = currChapter.title
+        chapterTitle.text   = currChapter.title
         readerVC            = ReaderViewController(nibName: "ReaderViewController", bundle: nil)
         readerVC.readerMgr  = self.readerMgr
         readerVC.view.frame = self.view.frame

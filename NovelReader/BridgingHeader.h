@@ -14,5 +14,6 @@
 #import "FMDB/FMDB.h"
 
 #import <YYText/YYText.h>
+#import <CommonCrypto/CommonDigest.h>
 
 #endif /* BridgingHeader_h */

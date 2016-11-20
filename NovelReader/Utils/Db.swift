@@ -25,7 +25,7 @@ protocol Rowable {
      
      - returns: A Rowable type object
      */
-    func parse(row: [AnyObject]) -> Rowable
+    func parse(row: [AnyObject]) -> Rowable?
 }
 
 /// FMDB Manager class
@@ -123,7 +123,7 @@ final class Db {
         case Create(Rowable)
         case Insert(Rowable)
         case Update(Rowable, conditions: String?)
-        case Query(Rowable, conditions: String?)
+        case Query(Rowable, conditions: String?, tail: String?)
         case Delete(Rowable, conditions: String?)
         case Count(Rowable, conditions: String?)
         case Clear(Rowable)
@@ -139,20 +139,30 @@ final class Db {
                 var sql = ""
                 for i in 0 ..< r.fields.count {
                     let f = r.fields[i]
-                    sql += "\(f.associated.name) = `\(f.associated.value)`"
+                    sql += "\(f.associated.name) = '\(f.associated.value)'"
                     if i < r.fields.count - 1 {
                         sql += ", "
                     }
                 }
-                return "UPDATE \(r.table) SET " + sql + " " + (c ?? "")
-            case .Query(let r, let c):
-                return "SELECT * FROM \(r.table) " + (c ?? "")
+                return "UPDATE \(r.table) SET " + sql + " " + self.processCondition(c)
+            case .Query(let r, let c, let t):
+                return "SELECT * FROM \(r.table) " + self.processCondition(c) + (t ?? "")
             case .Delete(let r, let c):
-                return "DELETE FROM \(r.table) " + (c ?? "")
+                return "DELETE FROM \(r.table) " + self.processCondition(c)
             case .Count(let r, let c):
-                return "SELECT COUNT(*) FROM \(r.table) " + (c ?? "")
+                return "SELECT COUNT(*) FROM \(r.table) " + self.processCondition(c)
             case .Clear(let r):
                 return "DROP TABLE IF EXISTS \(r.table)"
+            }
+        }
+        
+        private func processCondition(condistion: String?) -> String {
+            if condistion != nil && !condistion!.isEmpty {
+                var c = condistion!.stringByReplacingOccurrencesOfString("where", withString: "")
+                c = c.stringByReplacingOccurrencesOfString("WHERE", withString: "")
+                return "where " + c
+            } else {
+                return ""
             }
         }
     }
@@ -220,7 +230,7 @@ final class Db {
                 } else {
                     let index = max(0, requiredPos - self.mBufferSize)
                     let length = min(requiredPos - index + self.mBufferSize * 2, self.mRowsCount - index)
-                    self.mBuffer = db.query(false, conditions: "limit \(index), \(length)")
+                    self.mBuffer = db.query(false, conditions: "", tail: "limit \(index), \(length)")
                     self.mStartPosition = self.mBuffer[0].rowId - 1
                 }
             }
@@ -236,7 +246,11 @@ final class Db {
                         self.mRowsCount = self.db.count()
                     }
                     
-                    rows = self.db.query(false, conditions: "limit \(self.mStartPosition), \(self.mBufferSize * 3)")
+                    rows = self.db.query(
+                        false,
+                        conditions: "",
+                        tail:  "limit \(self.mStartPosition), \(self.mBufferSize * 3)"
+                    )
                 }
                 
                 return rows
@@ -260,6 +274,7 @@ final class Db {
     private var fmDb: FMDatabase
     private var rowable: Rowable!
     private var database: String
+    private var executeError: [String]? = nil
     
     /**
      Init db
@@ -302,6 +317,22 @@ final class Db {
         return "\(database)/\(rowable.table)[\(Field.split(rowable.fields).c)]"
     }
     
+    private func setExecuteInfo(sql: String? = nil) {
+        if executeError == nil {
+            executeError = [];
+        }
+        
+        executeError!.append("DB Execute Info: Sql: \(sql) Error: \(fmDb.lastError())")
+    }
+    
+    var lastExecuteInfo: String {
+        if let _ = executeError {
+            return executeError?.last ?? ""
+        }
+        
+        return ""
+    }
+    
     /**
      Open sqlite db
      
@@ -335,11 +366,16 @@ final class Db {
             fmDb.open()
         }
         
-        fmDb.executeStatements(Operator.Clear(rowable).sql)
+        var sql = Operator.Clear(rowable).sql
+        fmDb.executeStatements(sql)
+        setExecuteInfo(sql)
         
-        if !fmDb.executeStatements(Operator.Create(rowable).sql) {
+        sql = Operator.Create(rowable).sql
+        if !fmDb.executeStatements(sql) {
             Utils.Log("Error: \(fmDb.lastErrorMessage())")
         }
+        
+        setExecuteInfo(sql)
         
         if reopen {
             fmDb.close()
@@ -355,12 +391,14 @@ final class Db {
      
      - returns: Count of rows or -1 if count exception
      */
-    func count(reopen: Bool = false) -> Int {
+    func count(reopen: Bool = false, conditions: String? = nil) -> Int {
         if reopen {
             fmDb.open()
         }
         
-        let res = fmDb.executeQuery(Operator.Count(rowable, conditions: nil).sql, withArgumentsInArray: nil)
+        let sql = Operator.Count(rowable, conditions: conditions).sql
+        let res = fmDb.executeQuery(sql, withArgumentsInArray: nil)
+        setExecuteInfo(sql)
         var count = -1
         
         if let r = res {
@@ -391,7 +429,37 @@ final class Db {
             fmDb.open()
         }
         
-        let res = fmDb.executeUpdate(Operator.Insert(row).sql, withArgumentsInArray: Field.split(row.fields).v)
+        let sql = Operator.Insert(row).sql
+        let res = fmDb.executeUpdate(sql, withArgumentsInArray: Field.split(row.fields).v)
+        setExecuteInfo(sql)
+        
+        if reopen {
+            fmDb.close()
+        }
+        
+        return res
+    }
+    
+    /// Update
+    ///
+    /// - Parameters:
+    ///   - row: Rowable
+    ///   - conditions: conform to statndard SQL syntax. eg where `column1` = 123
+    ///   - reopen: need open db?
+    /// - Returns: Result [Rowable]
+    func update(row: Rowable, conditions: String? = nil, reopen: Bool = false) -> Bool {
+        if reopen {
+            fmDb.open()
+        }
+        
+        let count = self.count(false, conditions: conditions)
+        var res = false
+        
+        if count > 0 {
+            let sql = Operator.Update(row, conditions: conditions).sql
+            res = fmDb.executeUpdate(sql, withArgumentsInArray: Field.split(row.fields).v)
+            setExecuteInfo(sql)
+        }
         
         if reopen {
             fmDb.close()
@@ -408,12 +476,14 @@ final class Db {
      
      - returns: Result [Rowable]
      */
-    func query(reopen: Bool = false, conditions: String? = nil) -> [Rowable] {
+    func query(reopen: Bool = false, conditions: String? = nil, tail: String?) -> [Rowable] {
         if reopen {
             fmDb.open()
         }
         
-        let res = fmDb.executeQuery(Operator.Query(rowable, conditions: conditions).sql, withArgumentsInArray: nil)
+        let sql = Operator.Query(rowable, conditions: conditions, tail: tail).sql
+        let res = fmDb.executeQuery(sql, withArgumentsInArray: nil)
+        setExecuteInfo(sql)
         var rows: [Rowable] = []
         
         while res != nil && res.next() {
@@ -436,8 +506,10 @@ final class Db {
             }
             
             var r = rowable.parse(row)
-            r.rowId = NSNumber(integer: res.longForColumn("RowId")).integerValue
-            rows.append(r)
+            if let _ = r  {
+                r!.rowId = NSNumber(integer: res.longForColumn("RowId")).integerValue
+                rows.append(r!)
+            }
         }
         
         if reopen {
