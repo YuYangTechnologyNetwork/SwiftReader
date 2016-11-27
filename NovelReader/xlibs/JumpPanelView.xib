@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="JumpPanelView" customModule="NovelReader" customModuleProvider="target">
+            <connections>
+                <outlet property="btnNextChapter" destination="s13-pi-f52" id="e9t-Ms-UAd"/>
+                <outlet property="btnPrevChapter" destination="wm6-yY-E02" id="VI3-8M-heY"/>
+                <outlet property="contentView" destination="iN0-l3-epB" id="GQZ-LT-ie4"/>
+                <outlet property="sliderNowProgress" destination="D9y-Ti-mbb" id="5bX-6p-KLi"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wm6-yY-E02">
+                    <rect key="frame" x="16" y="20" width="46" height="30"/>
+                    <state key="normal" title="上一章"/>
+                    <connections>
+                        <action selector="onPrevChapterBtnClicked:" destination="-1" eventType="touchUpInside" id="vnr-7Y-zkU"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s13-pi-f52">
+                    <rect key="frame" x="313" y="20" width="46" height="30"/>
+                    <state key="normal" title="下一章"/>
+                    <connections>
+                        <action selector="onNextChapterBtnClicked:" destination="-1" eventType="touchUpInside" id="nKh-gy-XTG"/>
+                    </connections>
+                </button>
+                <slider opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="D9y-Ti-mbb">
+                    <rect key="frame" x="74" y="20" width="228" height="31"/>
+                    <connections>
+                        <action selector="onProgressSliderChanged:" destination="-1" eventType="touchUpInside" id="D5b-Ux-GhP"/>
+                        <action selector="onProgressSliderValueChanged:" destination="-1" eventType="valueChanged" id="UvY-os-9c6"/>
+                    </connections>
+                </slider>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="s13-pi-f52" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="3sS-YM-4Ev"/>
+                <constraint firstItem="s13-pi-f52" firstAttribute="leading" secondItem="D9y-Ti-mbb" secondAttribute="trailing" constant="10" id="CRF-o8-rSe"/>
+                <constraint firstItem="D9y-Ti-mbb" firstAttribute="centerY" secondItem="s13-pi-f52" secondAttribute="centerY" id="FsE-fa-Fqk"/>
+                <constraint firstItem="wm6-yY-E02" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="KfE-gY-5Wd"/>
+                <constraint firstItem="wm6-yY-E02" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Wrh-gv-YxW"/>
+                <constraint firstAttribute="trailing" secondItem="s13-pi-f52" secondAttribute="trailing" constant="10" id="lw4-kI-uyb"/>
+                <constraint firstItem="D9y-Ti-mbb" firstAttribute="leading" secondItem="wm6-yY-E02" secondAttribute="trailing" constant="10" id="ntp-Xp-9PG"/>
+            </constraints>
+            <point key="canvasLocation" x="24.5" y="52.5"/>
+        </view>
+    </objects>
+</document>

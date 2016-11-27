@@ -50,6 +50,8 @@
 		3D49C7291C96F53700DD408F /* NovelReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7281C96F53700DD408F /* NovelReaderUITests.swift */; };
 		3D49C7381C96F60900DD408F /* Typesetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D49C7371C96F60900DD408F /* Typesetter.swift */; };
 		3D9B572D1CF49B0A005FFB35 /* LaunchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D9B572C1CF49B0A005FFB35 /* LaunchViewController.xib */; };
+		3DA2F1CE1DE1E9430097DB4A /* JumpPanelView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3DA2F1CD1DE1E9430097DB4A /* JumpPanelView.xib */; };
+		3DA2F1D01DEAD83B0097DB4A /* JumpPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DA2F1CF1DEAD83B0097DB4A /* JumpPanelView.swift */; };
 		3DC6F2A31CF1F56200BD44FE /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6F2A11CF1F56200BD44FE /* PageViewController.swift */; };
 		3DC6F2A41CF1F56200BD44FE /* ReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6F2A21CF1F56200BD44FE /* ReaderViewController.swift */; };
 		3DC6F2A61CF1F57200BD44FE /* BookMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC6F2A51CF1F57200BD44FE /* BookMark.swift */; };
@@ -165,6 +167,8 @@
 		3D49C72A1C96F53700DD408F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D49C7371C96F60900DD408F /* Typesetter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Typesetter.swift; path = Engine/Typesetter.swift; sourceTree = "<group>"; };
 		3D9B572C1CF49B0A005FFB35 /* LaunchViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LaunchViewController.xib; path = xlibs/LaunchViewController.xib; sourceTree = "<group>"; };
+		3DA2F1CD1DE1E9430097DB4A /* JumpPanelView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = JumpPanelView.xib; path = xlibs/JumpPanelView.xib; sourceTree = "<group>"; };
+		3DA2F1CF1DEAD83B0097DB4A /* JumpPanelView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JumpPanelView.swift; path = Views/JumpPanelView.swift; sourceTree = "<group>"; };
 		3DC6F2A11CF1F56200BD44FE /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PageViewController.swift; path = Reader/PageViewController.swift; sourceTree = "<group>"; };
 		3DC6F2A21CF1F56200BD44FE /* ReaderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReaderViewController.swift; path = Reader/ReaderViewController.swift; sourceTree = "<group>"; };
 		3DC6F2A51CF1F57200BD44FE /* BookMark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BookMark.swift; path = Models/BookMark.swift; sourceTree = "<group>"; };
@@ -314,6 +318,7 @@
 		11F32CDA1CD0D78C00543CF3 /* xlibs */ = {
 			isa = PBXGroup;
 			children = (
+				3DA2F1CD1DE1E9430097DB4A /* JumpPanelView.xib */,
 				3D2554B11CD79A5400A4330C /* StylePanelView.xib */,
 				3F5925111D01282B00EBAD87 /* StyleFontsPickerView.xib */,
 				3DC6F2AB1CF1F5F700BD44FE /* MainViewController.xib */,
@@ -330,6 +335,7 @@
 		3D2554AE1CD799AE00A4330C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				3DA2F1CF1DEAD83B0097DB4A /* JumpPanelView.swift */,
 				3D2554AF1CD79A2C00A4330C /* StylePanelView.swift */,
 				3F59250D1D0012CA00EBAD87 /* StyleFontsPickerView.swift */,
 			);
@@ -512,6 +518,7 @@
 					3D49C7091C96F53700DD408F = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = HTS5RJFQNL;
+						ProvisioningStyle = Manual;
 					};
 					3D49C7181C96F53700DD408F = {
 						CreatedOnToolsVersion = 7.2.1;
@@ -555,6 +562,7 @@
 				3F3318921D129A5300BF1A72 /* dldl_utf8.txt in Resources */,
 				112E9CBA1C9FF1B400C5E34C /* LangModels in Resources */,
 				3DC6F2AE1CF1F5F700BD44FE /* MainViewController.xib in Resources */,
+				3DA2F1CE1DE1E9430097DB4A /* JumpPanelView.xib in Resources */,
 				3D9B572D1CF49B0A005FFB35 /* LaunchViewController.xib in Resources */,
 				3F7052F21CF4089400235D48 /* LaunchScreen.storyboard in Resources */,
 				3D49C7101C96F53700DD408F /* Assets.xcassets in Resources */,
@@ -674,6 +682,7 @@
 				112E9CBB1C9FF1B400C5E34C /* CharDistribution.cpp in Sources */,
 				1156F1871CA3BB88006B5848 /* FileReader.swift in Sources */,
 				112E9CCE1C9FF1B400C5E34C /* uchardet.cpp in Sources */,
+				3DA2F1D01DEAD83B0097DB4A /* JumpPanelView.swift in Sources */,
 				112E9CC61C9FF1B400C5E34C /* nsLatin1Prober.cpp in Sources */,
 				3F59F96E1D0565CF009867BE /* Db.swift in Sources */,
 				112E9CC31C9FF1B400C5E34C /* nsEUCTWProber.cpp in Sources */,
@@ -815,6 +824,7 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = HTS5RJFQNL;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = NovelReader/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -823,7 +833,8 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ruikyesoft.app.NovelReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "af484590-63e1-4fe3-addd-d6ea9f030930";
+				PROVISIONING_PROFILE_SPECIFIER = com.ruikye.wildcard;
 				SWIFT_OBJC_BRIDGING_HEADER = NovelReader/BridgingHeader.h;
 				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -841,6 +852,7 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = HTS5RJFQNL;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = NovelReader/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -848,7 +860,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ruikyesoft.app.NovelReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "af484590-63e1-4fe3-addd-d6ea9f030930";
+				PROVISIONING_PROFILE_SPECIFIER = com.ruikye.wildcard;
 				SWIFT_OBJC_BRIDGING_HEADER = NovelReader/BridgingHeader.h;
 				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = 1;

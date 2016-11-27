@@ -13,11 +13,18 @@ class ReaderManager: NSObject {
         case ChapterChanged
         case AsyncLoadFinish
     }
+    
+    enum JumpType {
+        case NextChapter
+        case PrevChapter
+        case NewLocation(precent: CGFloat)
+    }
 
     private(set) var paperSize: CGSize = EMPTY_SIZE
     private var listeners: [MonitorName: [String: (chapter: Chapter) -> Void]] = [:]
 
     private(set) var book: Book!
+    private var mDb: Db!
     private var prevChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var currChapter: Chapter = Chapter.EMPTY_CHAPTER
     private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
@@ -73,6 +80,7 @@ class ReaderManager: NSObject {
     init(b: Book, size: CGSize) {
         book = b
         paperSize = size
+        self.mDb = Db(db: Config.Db.DefaultDB, rowable: self.book)
     }
 
     /**
@@ -87,10 +95,8 @@ class ReaderManager: NSObject {
 
             Utils.Log(book.bookMark)
             
-            Db(db: Config.Db.DefaultDB, rowable: self.book).open { db in
+            self.mDb.open { db in
                 if !db.update(self.book, conditions: "where `\(Book.Columns.UniqueId)` = '\(self.book.uniqueId)'") {
-                    Utils.Log(db.lastExecuteInfo)
-                    
                     db.insert(self.book)
                 }
             }
@@ -139,59 +145,35 @@ class ReaderManager: NSObject {
         }
 
         Utils.asyncTask({ () -> (left: Bool, right: Bool) in
-            // Load current chapter
             self.currChapter.load(paperSize: self.paperSize, reverse: false, book: self.book, limit: limit)
-            var lazy = (true, true)
+            var lazy = (false, false)
 
             if self.currChapter.status == Chapter.Status.Success {
-                // Jump to bookmark
-                if let bm = self.book.bookMark {
+                if let bm = self.book.bookMark { // Jump to bookmark
                     self.currChapter.locateTo(bm.range.loc)
-                } else {
-                    self.currChapter.setHead()
                 }
 
-                // Load prev chapter
-                if self.currChapter.range.loc > 0 {
+                if self.currChapter.range.loc > 0 { // Load prev chapter
                     self.prevChapter = Chapter(range: NSMakeRange(max(self.currChapter.range.loc - 1, 0), 1))
-                    //if !self.currChapter.canLazyLeft {
-                        //self.prevChapter.load(paperSize: self.paperSize, reverse: true, book: self.book, limit: true)
-                    //}
-                } else {
-                    lazy.0 = false
+                    lazy.0 = true
                 }
-
-                // Load next chapter
-                if self.currChapter.range.end < self.book.size {
+                
+                if self.currChapter.range.end < self.book.size { // Load next chapter
                     self.nextChapter = Chapter(range: NSMakeRange(self.currChapter.range.end + 1, 1))
-
-                    //if !self.currChapter.canLazyRight {
-                        //self.nextChapter.load(paperSize: self.paperSize, reverse: false, book: self.book, limit: true)
-                    //}
-                } else {
-                    lazy.1 = false
+                    lazy.1 = true
                 }
-            } else {
-                lazy = (false, false)
             }
 
             return lazy
         }) { lazy in
             Utils.Log(self)
             callback(self.currChapter)
-            
-            // Update book mark
-            self.updateBookMark()
+            self.updateBookMark() // Update book mark
 
             if lazy.left || lazy.right {
                 Utils.asyncTask({
-                    if lazy.left {
-                        self.prevChapter.load(paperSize: self.paperSize, reverse: true, book: self.book)
-                    }
-
-                    if lazy.right {
-                        self.nextChapter.load(paperSize: self.paperSize, reverse: false, book: self.book)
-                    }
+                    if lazy.left { self.prevChapter.load(paperSize: self.paperSize, reverse: true, book: self.book) }
+                    if lazy.right { self.nextChapter.load(paperSize: self.paperSize, reverse: false, book: self.book) }
                 }) {
                     if let ms = self.listeners[.AsyncLoadFinish] {
                         for l in ms.values { l(chapter: self.currChapter) }
@@ -199,38 +181,6 @@ class ReaderManager: NSObject {
                 }
             }
         }
-    }
-
-    /**
-     Paging the content
-
-     - parameter content:          chapter content
-     - parameter firstListIsTitle: Is the first paper?
-
-     - returns: array wrapped chapter's papers
-     */
-    func paging(content: String, firstListIsTitle: Bool = false) -> [Paper] {
-        var index = 0, papers: [Paper] = []
-        var lastEndWithNewLine: Bool = !firstListIsTitle
-
-        repeat {
-            let paper = Paper(size: paperSize), flit = firstListIsTitle && index == 0
-            let tmpStr = content.substringFromIndex(content.startIndex.advancedBy(index))
-
-            paper.writingLineByLine(tmpStr, firstLineIsTitle: flit, startWithNewLine: lastEndWithNewLine)
-
-            // Skip empty paper
-            if paper.realLen == 0 {
-                break
-            }
-
-            lastEndWithNewLine = paper.properties.endedWithNewLine
-            index = paper.realLen + index
-
-            papers.append(paper)
-        } while (index < content.length)
-
-        return papers
     }
 
     func swipeToNext() {
@@ -307,5 +257,29 @@ class ReaderManager: NSObject {
             // Auto record bookmark
             updateBookMark()
         }
+    }
+    
+    
+    /// Jump to the special book position
+    ///
+    /// - Parameters:
+    ///   - type: JumpType
+    /// - Returns: If true, need to async load agian
+    func jumpTo(type: JumpType) -> Bool {
+        switch type {
+        case .PrevChapter:
+            self.currChapter.setHead()
+            swipeToPrev()
+            self.currChapter.setHead()
+        case .NextChapter:
+            self.currChapter.setTail()
+            swipeToNext()
+        case .NewLocation(let p):
+            let newLocation = (Int)(p * (CGFloat)(self.book.size))
+            self.book.bookMark = BookMark(title: NO_TITLE, range: NSRange(location: newLocation, length: CHAPTER_SIZE))
+            return true
+        }
+        
+        return false
     }
 }

@@ -72,7 +72,7 @@ class StylePanelView: UIView {
         self.brightnessSlider.value                 = Float(tp.brightness)
         self.brightnessMinLabel.textColor           = tp.theme.foregroundColor
         self.brightnessMaxLabel.textColor           = tp.theme.foregroundColor
-        self.brightnessSlider.maximumTrackTintColor = tp.theme.foregroundColor.newAlpha(0.1)
+        self.brightnessSlider.maximumTrackTintColor = tp.theme.foregroundColor.newAlpha(0.5)
         self.brightnessSlider.minimumTrackTintColor = tp.theme.foregroundColor
 
         let trackBness: CGFloat                     = tp.theme == Theme.Night ? 0.35 : 0.16

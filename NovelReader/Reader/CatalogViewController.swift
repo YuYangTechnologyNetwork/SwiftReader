@@ -74,7 +74,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.fetchCatalogBtn.alpha = 1
         self.fetchCatalogBtn.hidden = true
 
-        UIView.animateWithDuration(R.Dimension.AnimInterval.Normal) {
+        UIView.animateWithDuration(R.AnimInterval.Normal) {
             self.loadingLabel.alpha = 1
             self.fetchCatalogBtn.alpha = 0
         }
@@ -125,7 +125,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
                         self.tableView.alpha = 0
                         self.tableView.reloadData()
 
-                        UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, animations: {
+                        UIView.animateWithDuration(R.AnimInterval.Normal, animations: {
                             self.emptyTipsView.alpha = 0
                             self.tableView.alpha = 1
                         }) {
@@ -139,7 +139,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
 
             self.fetchCatalogBtn.hidden = false
 
-            UIView.animateWithDuration(R.Dimension.AnimInterval.Normal, animations: {
+            UIView.animateWithDuration(R.AnimInterval.Normal, animations: {
                 self.loadingLabel.alpha = 0
                 self.fetchCatalogBtn.alpha = 1
             }) {
@@ -156,28 +156,30 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
                 tail: ""
             )
             
-            let rowId = (rows[0] as? BookMark)?.rowId ?? 0
-
-            cursor.moveTo(rowId)
-            self.tableView.reloadData()
-
-            if let f = finish {
-                f()
-            } else {
+            if rows.count > 0 {
+                let rowId = (rows[0] as? BookMark)?.rowId ?? 0
+                
+                cursor.moveTo(rowId)
                 self.tableView.reloadData()
-            }
-
-            self.tableView.scrollToRowAtIndexPath(
+                
+                if let f = finish {
+                    f()
+                } else {
+                    self.tableView.reloadData()
+                }
+                
+                self.tableView.scrollToRowAtIndexPath(
                     NSIndexPath(forRow: (rowId ?? 1) - 1, inSection: 0),
                     atScrollPosition: .Middle,
                     animated: false)
+                
+            }
         }
     }
 
     func syncReaderStatus(book: Book, currentChapter c: BookMark) {
         self.book = book
         self.currChapter = c
-
         self.locatingBookMark()
     }
 
@@ -215,7 +217,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("CatalogCell")!
 
-        cell.textLabel!.font = UIFont.systemFontOfSize(R.Dimension.FontSize.Com_Label)
+        cell.textLabel!.font = UIFont.systemFontOfSize(R.FontSize.Com_Label)
         cell.backgroundColor = UIColor.clearColor()
         cell.textLabel?.numberOfLines = 4
         cell.selectedBackgroundView = cellSelectedBg

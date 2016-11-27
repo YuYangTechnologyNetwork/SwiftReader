@@ -344,8 +344,10 @@ extension FileReader {
             let scope = NSMakeRange(loc, len)
             var chapters = fetchChaptersInRange(file, range: scope, encoding: encoding)
             chapters.sortInPlace { $0.0.range.loc > $0.1.range.loc }
-
-            Utils.Log("Loop: \(loop)")
+            
+            if _logOn {
+                Utils.Log("Loop: \(loop)")
+            }
             
             for (i, ch) in chapters.enumerate() {
                 let maybeFound = ch.range.loc <= location && location < ch.range.end

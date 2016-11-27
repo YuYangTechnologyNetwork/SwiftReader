@@ -131,7 +131,7 @@ final class FontManager {
                 s = .Querying
             }
             
-            Utils.Log(StatusMap[state]! + " \(font)")
+            // Utils.Log(StatusMap[state]! + " \(font)")
             runInUIThread(s, font, progress ?? 0)
 
             return !s.completed

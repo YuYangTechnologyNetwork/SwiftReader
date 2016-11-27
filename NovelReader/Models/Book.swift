@@ -20,6 +20,10 @@ class Book: NSObject, Rowable {
         static let UniqueId         = "UniqueId"
     }
     
+    var currentPrecent: CGFloat {
+        return size <= 0 ? 0 : (CGFloat)(bookMark?.range.loc ?? 0) / (CGFloat)(size)
+    }
+    
     /* File name, not include suffix */
     var name: String = ""
 
