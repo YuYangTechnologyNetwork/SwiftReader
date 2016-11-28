@@ -9,24 +9,24 @@
 import UIKit
 import YYText
 
-class Typesetter {
+class Typesetter: NSObject, NSCoding  {
     /*Text draw direction*/
-    enum TextOrientation {
+    enum TextOrientation:String {
         case Horizontal
         case Vertical
     }
-
+    
     enum Observer:String {
         case Font, FontSize, LineSpace, BorderMargin, TextOrientation, Theme, Brightness
     }
     
     private typealias `Self` = Typesetter
-
+    
     static let DEFAULT_THEME = Theme.Parchment
     
     /*Default font size*/
     static let DEFAULT_FONT_SIZE: CGFloat = 18
-
+    
     static let DEFAULT_BRIGHTNESS: CGFloat = 1
     
     static let FontSize_Min:CGFloat    = 12
@@ -48,8 +48,8 @@ class Typesetter {
     static let DEFAULT_FONT = FontManager.SupportFonts.System
     
     /*Singleton*/
-    static let Ins = Typesetter()
-    private init() { }
+    static private(set) var Ins = Typesetter()
+    @objc private override init() { super.init() }
     
     /*Property changed callbacks*/
     private var listeners: [String: (_: Observer, before:Any) -> Void] = [:]
@@ -75,19 +75,19 @@ class Typesetter {
     var margin: UIEdgeInsets = Self.DEFAULT_MARGIN {
         didSet { for l in listeners.values { l(.BorderMargin, before: oldValue) } }
     }
-
+    
     /*Text draw direction, see Typesetter.TextOrientation*/
     var textOrientation: TextOrientation = .Horizontal {
         didSet { for l in listeners.values { l(.TextOrientation, before: oldValue) } }
     }
-
+    
     var theme: Theme = Self.DEFAULT_THEME {
         didSet {
             self.oldTheme = oldValue
             for l in listeners.values { l(.Theme, before: oldValue) }
         }
     }
-
+    
     var brightness: CGFloat = Self.DEFAULT_BRIGHTNESS {
         didSet {
             brightness = min(1, max(0.3, brightness))
@@ -96,7 +96,7 @@ class Typesetter {
     }
     
     private(set) var oldTheme:Theme? = nil
-
+    
     /*
      * Add the listener to observe Typesetter properties changed
      *
@@ -114,7 +114,7 @@ class Typesetter {
     
     /*
      * Remove listener by name
-
+     
      * @param name          The name is setted via addListener func
      **/
     func removeListener(name: String) -> Typesetter {
@@ -142,7 +142,7 @@ class Typesetter {
         
         var start  = 0
         let range  = text.rangeOfString(FileReader.getNewLineCharater(text))
-
+        
         // Set style for chapter title
         if firstLineIsTitle {
             if let r = range {
@@ -151,7 +151,7 @@ class Typesetter {
                 
                 attrt.yy_setFont(titleFont, range: NSMakeRange(0, start))
                 attrt.yy_setAlignment(.Natural, range: NSMakeRange(0, start))
-
+                
                 // Draw title and content split line
                 let line = UIView(frame: CGRectMake(0, 0, paperWidth - margin.left - margin.right, 1))
                 line.backgroundColor = theme.foregroundColor
@@ -165,7 +165,7 @@ class Typesetter {
                 attrt.insertAttributedString(lineStr, atIndex: start)
             }
         }
-
+        
         // Set indent for first line of paragraph
         if startWithNewLine {
             attrt.yy_firstLineHeadIndent = CGFloat(fontSize * 2)
@@ -175,10 +175,10 @@ class Typesetter {
                 attrt.yy_setFirstLineHeadIndent(CGFloat(fontSize * 2), range: NSMakeRange(s, attrt.length - s))
             }
         }
-
+        
         attrt.yy_setFont(yyFont, range: NSMakeRange(start, attrt.length - start))
         attrt.yy_setAlignment(.Justified, range: NSMakeRange(start, attrt.length - start))
-
+        
         // Set noted snippets
         if !notedSnippets.isEmpty {
             let nsStr           = attrt.string as NSString
@@ -226,10 +226,53 @@ class Typesetter {
                 }
             }
         }
-
+        
         attrt.yy_color            = theme.foregroundColor
         attrt.yy_lineSpacing      = line_space
         attrt.yy_paragraphSpacing = line_space * 2
         return attrt
+    }
+    
+    @objc func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(self.font.rawValue, forKey: Observer.Font.rawValue)
+        aCoder.encodeDouble((Double)(self.fontSize), forKey: Observer.FontSize.rawValue)
+        aCoder.encodeDouble((Double)(self.line_space), forKey: Observer.LineSpace.rawValue)
+        aCoder.encodeUIEdgeInsets(self.margin, forKey: Observer.BorderMargin.rawValue)
+        aCoder.encodeObject(self.textOrientation.rawValue, forKey: Observer.TextOrientation.rawValue)
+        aCoder.encodeInteger(self.theme.rawValue, forKey: Observer.Theme.rawValue)
+        aCoder.encodeDouble((Double)(self.brightness), forKey: Observer.Brightness.rawValue)
+    }
+    
+    @objc required init?(coder aDecoder: NSCoder) {
+        super.init()
+
+        self.font = FontManager.SupportFonts(
+            rawValue: aDecoder.decodeObjectForKey(Observer.Font.rawValue) as? String ?? Self.DEFAULT_FONT.rawValue)!
+        self.fontSize = (CGFloat)(aDecoder.decodeDoubleForKey(Observer.FontSize.rawValue))
+        self.line_space = (CGFloat)(aDecoder.decodeDoubleForKey(Observer.LineSpace.rawValue))
+        self.margin = aDecoder.decodeUIEdgeInsetsForKey(Observer.BorderMargin.rawValue)
+        self.textOrientation = TextOrientation(
+            rawValue: aDecoder.decodeObjectForKey(Observer.TextOrientation.rawValue) as? String ??
+                TextOrientation.Horizontal.rawValue)!
+        self.theme = Theme(rawValue: aDecoder.decodeIntegerForKey(Observer.Theme.rawValue))!
+        self.brightness = (CGFloat)(aDecoder.decodeDoubleForKey(Observer.Brightness.rawValue))
+    }
+    
+    func save() {
+        let user = NSUserDefaults.standardUserDefaults()
+        user.setObject(NSKeyedArchiver.archivedDataWithRootObject(self), forKey: "Typesetter")
+    }
+    
+    static func restore() {
+        let user = NSUserDefaults.standardUserDefaults()
+        let nsdt = user.objectForKey("Typesetter") as? NSData
+        
+        if let nd = nsdt {
+            let tp = NSKeyedUnarchiver.unarchiveObjectWithData(nd) as? Typesetter
+            
+            if let t = tp {
+                Typesetter.Ins = t
+            }
+        }
     }
 }

@@ -17,6 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
 
         if !CODE_TEST {
+            // Restore save reader style
+            Typesetter.restore();
+            
             self.window?.rootViewController = LaunchViewController(
                 mainController: MenuViewController(nibName: "MenuViewController", bundle: nil)) { splash in
                     // Download font
@@ -57,11 +60,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // its current state in case it is terminated later.
         // If your application supports background execution,
         // this method is called instead of applicationWillTerminate: when the user quits.
+        Typesetter.Ins.save()
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
         // Called as part of the transition from the background to the inactive state;
         // here you can undo many of the changes made on entering the background.
+        Typesetter.restore()
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
