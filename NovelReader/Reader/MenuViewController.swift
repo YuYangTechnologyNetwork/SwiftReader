@@ -406,14 +406,14 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.bottomBar.alpha                = 1
             self.btmSubContainer.alpha          = 0
         }) { finish  in
-            
-            self.topBar.hidden             = true
-            self.bottomBar.hidden          = true
-            self.maskPanel.hidden          = true
-            self.stylePanelView.hidden     = true
-            self.btmSubContainer.hidden    = true
-            self.styleFontsListView.hidden = true
-            self.jumpPanelView.hidden      = true
+            self.stylePanelView.frame.origin.x  = 0
+            self.topBar.hidden                  = true
+            self.bottomBar.hidden               = true
+            self.maskPanel.hidden               = true
+            self.stylePanelView.hidden          = true
+            self.btmSubContainer.hidden         = true
+            self.styleFontsListView.hidden      = true
+            self.jumpPanelView.hidden           = true
             
             if let end = animationCompeted { end() }
             
@@ -427,7 +427,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBAction func onStyleBtnClicked(sender: AnyObject) {
         self.stylePanelView.hidden                  = false
         self.btmSubContainer.hidden                 = false
-        self.btmSubContainer.frame.origin.y       = self.size.height
+        self.btmSubContainer.frame.origin.y         = self.size.height
         self.btmSubContainer.userInteractionEnabled = true
         
         self.stylePanelView.applyTheme()
