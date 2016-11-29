@@ -405,56 +405,6 @@
                                 </mask>
                             </variation>
                         </view>
-                        <view hidden="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EPF-FO-5Vi">
-                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                            <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6gY-V8-vqR">
-                                    <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="40" id="U1c-Xy-zxc"/>
-                                        <constraint firstAttribute="width" constant="40" id="sYg-aW-ZOM"/>
-                                    </constraints>
-                                    <state key="normal" image="options"/>
-                                    <variation key="default">
-                                        <mask key="constraints">
-                                            <exclude reference="U1c-Xy-zxc"/>
-                                            <exclude reference="sYg-aW-ZOM"/>
-                                        </mask>
-                                    </variation>
-                                    <variation key="heightClass=regular-widthClass=compact">
-                                        <mask key="constraints">
-                                            <include reference="U1c-Xy-zxc"/>
-                                            <include reference="sYg-aW-ZOM"/>
-                                        </mask>
-                                    </variation>
-                                    <connections>
-                                        <action selector="onSettingsBtnClicked:" destination="-1" eventType="touchUpInside" id="l7j-a2-SyP"/>
-                                    </connections>
-                                </button>
-                            </subviews>
-                            <constraints>
-                                <constraint firstItem="6gY-V8-vqR" firstAttribute="centerX" secondItem="EPF-FO-5Vi" secondAttribute="centerX" id="USo-vX-jzL"/>
-                                <constraint firstItem="6gY-V8-vqR" firstAttribute="centerY" secondItem="EPF-FO-5Vi" secondAttribute="centerY" id="sb6-2C-jZj"/>
-                            </constraints>
-                            <variation key="default">
-                                <mask key="subviews">
-                                    <exclude reference="6gY-V8-vqR"/>
-                                </mask>
-                                <mask key="constraints">
-                                    <exclude reference="USo-vX-jzL"/>
-                                    <exclude reference="sb6-2C-jZj"/>
-                                </mask>
-                            </variation>
-                            <variation key="heightClass=regular-widthClass=compact">
-                                <mask key="subviews">
-                                    <include reference="6gY-V8-vqR"/>
-                                </mask>
-                                <mask key="constraints">
-                                    <include reference="USo-vX-jzL"/>
-                                    <include reference="sb6-2C-jZj"/>
-                                </mask>
-                            </variation>
-                        </view>
                     </subviews>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
@@ -465,9 +415,6 @@
                         <constraint firstItem="tBU-zV-4AK" firstAttribute="leading" secondItem="L3f-qh-6IM" secondAttribute="trailing" constant="8" id="8QS-7J-sMU">
                             <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                         </constraint>
-                        <constraint firstItem="EPF-FO-5Vi" firstAttribute="height" secondItem="qZ7-i4-PC9" secondAttribute="height" id="A17-Ue-rvS"/>
-                        <constraint firstItem="EPF-FO-5Vi" firstAttribute="centerY" secondItem="qZ7-i4-PC9" secondAttribute="centerY" id="Lmc-V8-5E9"/>
-                        <constraint firstItem="tBU-zV-4AK" firstAttribute="width" secondItem="EPF-FO-5Vi" secondAttribute="width" id="UBf-J9-AoK"/>
                         <constraint firstItem="L3f-qh-6IM" firstAttribute="leading" secondItem="Imj-uG-xOW" secondAttribute="trailing" constant="8" id="Y93-a8-aN4">
                             <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                         </constraint>
@@ -480,22 +427,15 @@
                         <constraint firstItem="tBU-zV-4AK" firstAttribute="centerY" secondItem="qZ7-i4-PC9" secondAttribute="centerY" id="lf2-oD-jfc"/>
                         <constraint firstItem="L3f-qh-6IM" firstAttribute="centerY" secondItem="qZ7-i4-PC9" secondAttribute="centerY" id="lmX-bh-gpz"/>
                         <constraint firstItem="Imj-uG-xOW" firstAttribute="height" secondItem="qZ7-i4-PC9" secondAttribute="height" id="lti-Az-YD4"/>
-                        <constraint firstAttribute="trailing" secondItem="EPF-FO-5Vi" secondAttribute="trailing" constant="8" id="rYu-ve-fMY">
-                            <variation key="heightClass=regular-widthClass=compact" constant="24"/>
-                        </constraint>
                     </constraints>
                     <variation key="default">
                         <mask key="subviews">
                             <exclude reference="Imj-uG-xOW"/>
                             <exclude reference="L3f-qh-6IM"/>
                             <exclude reference="tBU-zV-4AK"/>
-                            <exclude reference="EPF-FO-5Vi"/>
                         </mask>
                         <mask key="constraints">
                             <exclude reference="d3X-gM-ODd"/>
-                            <exclude reference="A17-Ue-rvS"/>
-                            <exclude reference="Lmc-V8-5E9"/>
-                            <exclude reference="rYu-ve-fMY"/>
                             <exclude reference="1qr-Xb-54Y"/>
                             <exclude reference="3wC-6i-m9e"/>
                             <exclude reference="ZpZ-Tp-hEe"/>
@@ -505,7 +445,6 @@
                             <exclude reference="ZeD-v8-CeM"/>
                             <exclude reference="lmX-bh-gpz"/>
                             <exclude reference="8QS-7J-sMU"/>
-                            <exclude reference="UBf-J9-AoK"/>
                             <exclude reference="f3D-KM-kPi"/>
                             <exclude reference="lf2-oD-jfc"/>
                         </mask>
@@ -515,13 +454,9 @@
                             <include reference="Imj-uG-xOW"/>
                             <include reference="L3f-qh-6IM"/>
                             <include reference="tBU-zV-4AK"/>
-                            <include reference="EPF-FO-5Vi"/>
                         </mask>
                         <mask key="constraints">
                             <include reference="d3X-gM-ODd"/>
-                            <include reference="A17-Ue-rvS"/>
-                            <include reference="Lmc-V8-5E9"/>
-                            <include reference="rYu-ve-fMY"/>
                             <include reference="1qr-Xb-54Y"/>
                             <include reference="3wC-6i-m9e"/>
                             <include reference="ZpZ-Tp-hEe"/>
@@ -531,7 +466,6 @@
                             <include reference="ZeD-v8-CeM"/>
                             <include reference="lmX-bh-gpz"/>
                             <include reference="8QS-7J-sMU"/>
-                            <include reference="UBf-J9-AoK"/>
                             <include reference="f3D-KM-kPi"/>
                             <include reference="lf2-oD-jfc"/>
                         </mask>
@@ -718,7 +652,6 @@
         <image name="fonts" width="64" height="64"/>
         <image name="jump" width="64" height="64"/>
         <image name="list" width="64" height="64"/>
-        <image name="options" width="64" height="64"/>
         <image name="reading_parchment_border" width="1080" height="1920"/>
     </resources>
 </document>

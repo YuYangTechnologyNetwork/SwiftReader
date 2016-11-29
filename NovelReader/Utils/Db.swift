@@ -476,7 +476,7 @@ final class Db {
      
      - returns: Result [Rowable]
      */
-    func query(reopen: Bool = false, conditions: String? = nil, tail: String?) -> [Rowable] {
+    func query(reopen: Bool = false, conditions: String? = nil, tail: String? = nil) -> [Rowable] {
         if reopen {
             fmDb.open()
         }
@@ -524,13 +524,13 @@ final class Db {
      
      - parameter task: If false return, rollback will be execute
      */
-    func inTransaction(task: () -> Bool) {
+    func inTransaction(task: () -> Bool) -> Bool {
         fmDb.beginTransaction()
         
         if !task() {
-            fmDb.rollback()
+            return fmDb.rollback()
         } else {
-            fmDb.commit()
+            return fmDb.commit()
         }
     }
     

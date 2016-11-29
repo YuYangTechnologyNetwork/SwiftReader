@@ -11,6 +11,7 @@ import Foundation
 enum Error: ErrorType {
     case FileNotExist(String)
     case NotSupportEncoding(String)
+    case ClassInitFailure(String)
 }
 
 let CODE_TEST                  = false

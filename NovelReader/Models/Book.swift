@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Book: NSObject, Rowable {
+class Book: NSObject, Rowable, NSCoding {
     final class Columns {
         static let Name             = "Name"
         static let Path             = "Path"
@@ -58,6 +58,22 @@ class Book: NSObject, Rowable {
             if fetchBookInfo() == nil {
                 return nil
             }
+        }
+    }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(self.fullFilePath, forKey: Columns.Path)
+        aCoder.encodeInteger(self.lastOpenTime, forKey: Columns.LastOpenTime)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init()
+        
+        self.fullFilePath = aDecoder.decodeObjectForKey(Columns.Path) as? String ?? ""
+        self.lastOpenTime = aDecoder.decodeIntegerForKey(Columns.LastOpenTime)
+        
+        if self.fetchBookInfo() == nil {
+            return nil
         }
     }
     
@@ -141,5 +157,22 @@ class Book: NSObject, Rowable {
         }
         
         return newBook
+    }
+    
+    func isFetchedCatalog() -> Bool {
+        let user = NSUserDefaults.standardUserDefaults()
+        let cflt = user.integerForKey(self.fullFilePath.md5() + "CatalogFetch")
+        return cflt > 0
+    }
+    
+    func setCatalogFetched(toClear: Bool = false) {
+        let user = NSUserDefaults.standardUserDefaults()
+        
+        if !toClear {
+            let timestamp = (Int)(NSDate().timeIntervalSince1970 * 1000)
+            user.setInteger(timestamp, forKey: self.fullFilePath.md5() + "CatalogFetch")
+        } else {
+            user.setInteger(0, forKey: self.fullFilePath.md5() + "CatalogFetch")
+        }
     }
 }

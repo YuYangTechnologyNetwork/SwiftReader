@@ -88,10 +88,10 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="xRJ-oc-KaC">
-                            <rect key="frame" x="177" y="260" width="20" height="20"/>
+                            <rect key="frame" x="177" y="259" width="20" height="20"/>
                         </activityIndicatorView>
                     </subviews>
-                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstItem="ahG-eP-R35" firstAttribute="top" secondItem="xRJ-oc-KaC" secondAttribute="bottom" constant="15" id="Qez-Cg-dd0"/>
                         <constraint firstItem="9jF-zj-xTS" firstAttribute="centerX" secondItem="pG4-Fw-dvF" secondAttribute="centerX" id="bnl-Ad-aJ1"/>
