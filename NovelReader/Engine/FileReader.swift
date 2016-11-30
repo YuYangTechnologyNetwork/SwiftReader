@@ -12,10 +12,7 @@ import Foundation
 class FileReader {
     private typealias `Self` = FileReader
 
-    static let BUFFER_SIZE = 65536
-    static let UNKNOWN_ENCODING = "Unknown"
-    static let ENCODING_UTF8 = "UTF-8"
-    static let ENCODING_GB18030 = "GB18030"
+    static let BUFFER_SIZE      = 65536
 
     private var _logOn = false
 
@@ -65,28 +62,6 @@ class FileReader {
      *
      * @return          The encoding name of the file, eg: UTF-8, GB18030.
      */
-    func guessFileEncoding(file: UnsafeMutablePointer<FILE>) -> String {
-        let uchar_handle = uchardet_new()
-        let cache_buffer = UnsafeMutablePointer<Int8>.alloc(Self.BUFFER_SIZE)
-        
-        while feof(file) == 0 {
-            let valid_len = fread(cache_buffer, 1, Self.BUFFER_SIZE, file)
-            let retval = uchardet_handle_data(uchar_handle, cache_buffer, valid_len)
-            
-            if retval != 0 {
-                return Self.UNKNOWN_ENCODING
-            }
-        }
-        
-        uchardet_data_end(uchar_handle)
-        let possible_encoding = String.fromCString(uchardet_get_charset(uchar_handle))
-        uchardet_delete(uchar_handle)
-        
-        free(cache_buffer)
-        
-        return isSupportEncoding(possible_encoding!) ? possible_encoding! : Self.UNKNOWN_ENCODING
-    }
-    
     func guessEncoding(file: UnsafeMutablePointer<FILE>) -> Encoding {
         let uchar_handle = uchardet_new()
         let cache_buffer = UnsafeMutablePointer<Int8>.alloc(Self.BUFFER_SIZE)
@@ -156,8 +131,7 @@ class FileReader {
                 valid_pos = self.detectUTF8Border(buffer, len: valid_len)
             case .GB18030:
                 valid_pos = self.detectGB18030_2000Border(buffer, len: valid_len)
-                // TODO: add new encoding type support
-            default: break
+            default: break // TODO: add new encoding type support
             }
             
             if valid_pos == -1 && feof(file) != 0 {
@@ -479,7 +453,7 @@ extension FileReader {
     }
     
     /*
-     * Merge short and repeated chapter
+     * Merge short and repeated chapter title
      *
      * @param chapters        Chapters generate by chaptersInRange
      *

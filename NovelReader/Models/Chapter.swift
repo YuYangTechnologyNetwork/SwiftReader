@@ -77,8 +77,6 @@ class Chapter: BookMark {
 
     private(set) var status: Status = .Blank
 
-    private var asyncTask: dispatch_block_t? = nil
-
     init(bm: BookMark) {
         super.init(title: bm.title, range: bm.range)
     }
@@ -213,14 +211,7 @@ class Chapter: BookMark {
     }
 
     func trash() {
-        if let t = asyncTask {
-            if dispatch_block_testcancel(t) == 0 {
-                // Logging
-                Utils.Log("Canceled: \(self)")
-                dispatch_block_cancel(t)
-                UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-            }
-        }
+        // Todo clear
     }
 
     func next() {

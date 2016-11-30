@@ -57,7 +57,7 @@ extension String {
     }
 
     /**
-     Calculate the similarity between self and othrer via LD(Levenshtein Distance) arithmetic
+     Calculate the similarity between self and othrer use LD(Levenshtein Distance) arithmetic
      
      - parameter another: Another string
      

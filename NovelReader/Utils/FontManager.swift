@@ -97,7 +97,7 @@ final class FontManager {
      * [Ref]: http://developer.applae.com/.../DownloadFont
      * [Ref]: https://support.apple.com/en-us/HT202771
      *
-     * @param fontName      The font postscript name. What's the postscript name? Searching with Google
+     * @param fontName      The font postscript name.
      *
      * @param callback      The downloading callback, will be called on main-thread
      */
@@ -130,8 +130,7 @@ final class FontManager {
             default:
                 s = .Querying
             }
-            
-            // Utils.Log(StatusMap[state]! + " \(font)")
+
             runInUIThread(s, font, progress ?? 0)
 
             return !s.completed

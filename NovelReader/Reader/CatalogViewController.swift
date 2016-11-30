@@ -120,7 +120,7 @@ class CatalogViewController: UIViewController, UITableViewDelegate, UITableViewD
                             Utils.runUITask {
                                 if self.mShowFetchingAnimation {
                                     let p = CGFloat(c.last!.range.end) * 100 / CGFloat(self.mBook.size)
-                                    self.loadingLabel.text = String(format: "提取中...%.2f", p) + "%"
+                                    self.loadingLabel.text = String(format: "Loading...%.2f", p) + "%"
                                     if !self.loadingIndicator.isAnimating() {
                                         self.loadingIndicator.startAnimating()
                                     }

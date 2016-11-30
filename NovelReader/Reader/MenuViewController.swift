@@ -41,32 +41,33 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     private var mReaderMgr: ReaderManager!
-    private var stylePanelView: StylePanelView!
-    private var jumpPanelView: JumpPanelView!
+    private var mStylePanelView: StylePanelView!
+    private var mJumpPanelView: JumpPanelView!
     private var mVCReader: ReaderViewController!
     private var mVCCatalog: CatalogViewController!
-    private var styleFontsListView: StyleFontsPickerView!
+    private var mStyleFontsListView: StyleFontsPickerView!
     
-    private var menuShow: Bool           = false
-    private var needReload: Bool         = false
-    private var downZone: DownZone       = .None
+    private var mIsMenuShow: Bool   = false
+    private var mIsNeedReload: Bool = false
+    private var mDownZone: DownZone = .None
+    private var mIsBookLoaded: Bool = false
     
-    private let STYLE_PANEL_HEIGHT       = R.MenuView.StylePanelHeight
-    private let JUMP_PANEL_HEIGHT        = R.MenuView.JumpPanelHeight
+    private let STYLE_PANEL_HEIGHT  = R.MenuView.StylePanelHeight
+    private let JUMP_PANEL_HEIGHT   = R.MenuView.JumpPanelHeight
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let styleMenuRect = CGRectMake(0, 0, self.view.bounds.width, STYLE_PANEL_HEIGHT)
-        self.stylePanelView = StylePanelView(frame: styleMenuRect).onShowFontsList {
+        self.mStylePanelView = StylePanelView(frame: styleMenuRect).onShowFontsList {
             self.showFontsList()
         }
 
-        self.styleFontsListView = StyleFontsPickerView(frame: styleMenuRect).onFontsChanged { changed, font in
+        self.mStyleFontsListView = StyleFontsPickerView(frame: styleMenuRect).onFontsChanged { changed, font in
             if changed && Typesetter.Ins.font != font {
                 self.hideMenu {
-                    let shouldReload = self.needReload
-                    self.needReload = false
+                    let shouldReload = self.mIsNeedReload
+                    self.mIsNeedReload = false
                     self.topActivityIndicator.startAnimating()
                     self.topActivityIndicatorContainer.hidden = false
                     FontManager.asyncDownloadFont(font) { s, f, p in
@@ -92,7 +93,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             }
         }
         
-        self.jumpPanelView = JumpPanelView(frame: CGRectMake(0, 0, self.view.bounds.width, JUMP_PANEL_HEIGHT))
+        self.mJumpPanelView = JumpPanelView(frame: CGRectMake(0, 0, self.view.bounds.width, JUMP_PANEL_HEIGHT))
             .setJumpActionListener { type in
                 self.showCenterTips(nil)
                 if self.mReaderMgr.jumpTo(type) {
@@ -113,13 +114,13 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.centerTipsLabel.textColor                = UIColor.whiteColor()
         self.centerTipsLabel.font                     = UIFont.systemFontOfSize(15)
         
-        self.btmSubContainer.addSubview(styleFontsListView)
-        self.btmSubContainer.addSubview(stylePanelView)
-        self.btmSubContainer.addSubview(jumpPanelView)
+        self.btmSubContainer.addSubview(mStyleFontsListView)
+        self.btmSubContainer.addSubview(mStylePanelView)
+        self.btmSubContainer.addSubview(mJumpPanelView)
 
-        self.stylePanelView.hidden          = true
-        self.styleFontsListView.hidden      = true
-        self.jumpPanelView.hidden           = true
+        self.mStylePanelView.hidden          = true
+        self.mStyleFontsListView.hidden      = true
+        self.mJumpPanelView.hidden           = true
         self.loadingBoardMask.hidden        = !Typesetter.Ins.theme.boardMaskNeeded
         self.topActivityIndicator.transform = CGAffineTransformMakeScale(0.5, 0.5)
 
@@ -136,7 +137,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                 if let reader = self.mVCReader {
                     reader.applyFormat()
                 }
-                self.needReload = true
+                self.mIsNeedReload = true
                 break
             }
         }
@@ -147,35 +148,32 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.loadingIndicator.startAnimating()
     
         Utils.asyncTask({ () -> Book? in
-            let bookPath   = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")!
-            var book:Book = Book(fullFilePath: bookPath, getInfo: true)!
+            let bookPath   = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
             
-            Utils.Log(bookPath)
-            Utils.Log(book.description)
-            
-            // Fetch history
-            Db(db: Config.Db.DefaultDB, rowable: book).open { db in
-                let books =  db.query(
-                    false,
-                    conditions: "`\(Book.Columns.UniqueId)`='\(book.uniqueId)'",
-                    tail: ""
-                )
+            if let bPath = bookPath {
+                var book = Book(fullFilePath: bPath, getInfo: true)
                 
-                let savedBook = books.count > 0 ? books[0] as? Book : nil
-                
-                if let sb = savedBook {
-                    book = Book(otherBook: sb)
+                if let b = book {
+                    Utils.Log(b.description)
+                    Db(db: Config.Db.DefaultDB, rowable: b).open { db in
+                        let books     =  db.query(false,  conditions: "`\(Book.Columns.UniqueId)`='\(b.uniqueId)'")
+                        let savedBook = books.count > 0 ? books[0] as? Book : nil
+                        
+                        if let sb = savedBook {
+                            book = Book(otherBook: sb)
+                        }
+                        
+                        Utils.Log(db.lastExecuteInfo)
+                    }
+                    
+                    return book!
                 }
-                
-                Utils.Log(db.lastExecuteInfo)
             }
             
-            // Record lastest opening time
-            book.lastOpenTime = (Int)(NSDate().timeIntervalSince1970 * 1000)
-            
-            return book
+            return nil
         }) { book in
             if let b = book {
+                self.mIsBookLoaded = true
                 self.mReaderMgr = ReaderManager(b: b, size: self.view.frame.size)
                 
                 self.mReaderMgr.addListener("MenuTitle", forMonitor: .ChapterChanged) { chapter in
@@ -188,42 +186,38 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                     self.chapterTitle.text = chapter.title
                     self.mVCCatalog.syncReaderStatus(currentChapter: chapter)
                 }
+            } else {
+                self.loadingIndicator.stopAnimating()
+                self.showCenterTips("Open book failure!")
             }
         }
 
-        self.stylePanelView.snp_makeConstraints { make in
+        self.mStylePanelView.snp_makeConstraints { make in
             make.height.equalTo(self.STYLE_PANEL_HEIGHT)
             make.top.equalTo(self.btmSubContainer.snp_top)
             make.left.equalTo(self.btmSubContainer.snp_left)
             make.width.equalTo(self.btmSubContainer.snp_width)
         }
 
-        self.styleFontsListView.snp_makeConstraints { make in
+        self.mStyleFontsListView.snp_makeConstraints { make in
             make.height.equalTo(self.STYLE_PANEL_HEIGHT)
             make.top.equalTo(self.btmSubContainer.snp_top)
             make.left.equalTo(self.btmSubContainer.snp_left)
             make.width.equalTo(self.btmSubContainer.snp_width)
         }
         
-        self.jumpPanelView.snp_makeConstraints { make in
+        self.mJumpPanelView.snp_makeConstraints { make in
             make.height.equalTo(self.JUMP_PANEL_HEIGHT)
             make.left.equalTo(self.btmSubContainer.snp_left)
             make.width.equalTo(self.btmSubContainer.snp_width)
             make.bottom.equalTo(self.btmSubContainer.snp_bottom)
-        }
-        
-        self.mCenterTipsContainer.snp_makeConstraints { make in
-            make.centerX.equalTo(self.view.snp_centerX)
-            make.centerY.equalTo(self.view.snp_centerY)
-            make.width.equalTo(64)
-            make.height.equalTo(48)
         }
 
         self.applyTheme()
     }
 
     override func prefersStatusBarHidden() -> Bool {
-        return !menuShow
+        return !mIsMenuShow
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -303,7 +297,6 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         }
 
         mVCCatalog = CatalogViewController(book: self.mReaderMgr.book)
-        // catalogVC.syncReaderStatus(self.readerMgr.book, currentChapter: self.readerMgr.currentChapter)
         mVCCatalog.view.frame = catalogContainer.frame
         mVCCatalog.onDismiss { selected, bm in
             self.dismissCatalog {
@@ -320,7 +313,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         }
         
         catalogContainer.onClick { v in
-            if self.menuShow {
+            if self.mIsMenuShow {
                 self.hideMenu()
             } else {
                 self.dismissCatalog()
@@ -339,9 +332,14 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     func maskTaped(recognizer: UITapGestureRecognizer) {
+        if !self.mIsBookLoaded {
+            Utils.Log("Bool load failure!")
+            return
+        }
+        
         let point = recognizer.locationInView(maskPanel)
 
-        if !menuShow && self.catalogContainer.hidden {
+        if !mIsMenuShow && self.catalogContainer.hidden {
             if inMenuRegion(point) {
                 showMenu()
             } else if inNextRegion(point) {
@@ -350,7 +348,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                 mVCReader.snapToPrevPage()
             }
         } else {
-            if menuShow {
+            if mIsMenuShow {
                 hideMenu()
             } else {
                 dismissCatalog()
@@ -376,7 +374,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.maskPanel.alpha          = 0.0
         self.topSubContainer.alpha    = 0.0
 
-        self.menuShow                 = true
+        self.mIsMenuShow                 = true
         self.topBar.hidden            = false
         self.bottomBar.hidden         = false
         self.maskPanel.hidden         = false
@@ -392,7 +390,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     private func hideMenu(animationCompeted:(()->Void)? = nil ) {
-        self.menuShow = false
+        self.mIsMenuShow = false
         self.btmSubContainer.userInteractionEnabled = false
         
         UIView.animateWithDuration(R.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
@@ -406,32 +404,32 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.bottomBar.alpha                = 1
             self.btmSubContainer.alpha          = 0
         }) { finish  in
-            self.stylePanelView.frame.origin.x  = 0
+            self.mStylePanelView.frame.origin.x  = 0
             self.topBar.hidden                  = true
             self.bottomBar.hidden               = true
             self.maskPanel.hidden               = true
-            self.stylePanelView.hidden          = true
+            self.mStylePanelView.hidden          = true
             self.btmSubContainer.hidden         = true
-            self.styleFontsListView.hidden      = true
-            self.jumpPanelView.hidden           = true
+            self.mStyleFontsListView.hidden      = true
+            self.mJumpPanelView.hidden           = true
             
             if let end = animationCompeted { end() }
             
-            if self.needReload {
-                self.needReload = false
+            if self.mIsNeedReload {
+                self.mIsNeedReload = false
                 self.reloadReader()
             }
         }
     }
     
     @IBAction func onStyleBtnClicked(sender: AnyObject) {
-        self.stylePanelView.hidden                  = false
+        self.mStylePanelView.hidden                  = false
         self.btmSubContainer.hidden                 = false
         self.btmSubContainer.frame.origin.y         = self.size.height
         self.btmSubContainer.userInteractionEnabled = true
         
-        self.stylePanelView.applyTheme()
-        self.styleFontsListView.applyTheme()
+        self.mStylePanelView.applyTheme()
+        self.mStyleFontsListView.applyTheme()
         
         UIView.animateWithDuration(R.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
@@ -447,13 +445,13 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     @IBAction func onJumpBtnClicked(sender: AnyObject) {
-        self.jumpPanelView.hidden                 = false
+        self.mJumpPanelView.hidden                 = false
         self.btmSubContainer.hidden               = false
         self.btmSubContainer.frame.origin.y       = self.size.height
         self.btmSubContainer.userInteractionEnabled = true
         
-        self.jumpPanelView.applyTheme()
-        self.jumpPanelView.setNowProgress(mReaderMgr.book.currentPrecent)
+        self.mJumpPanelView.applyTheme()
+        self.mJumpPanelView.setNowProgress(mReaderMgr.book.currentPrecent)
         
         UIView.animateWithDuration(R.AnimInterval.Normal, delay: 0, options: .CurveEaseOut, animations: {
             UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: .Fade)
@@ -468,12 +466,12 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     private func showFontsList() {
-        self.styleFontsListView.frame.origin.x = self.size.width
-        self.styleFontsListView.hidden = false
+        self.mStyleFontsListView.frame.origin.x = self.size.width
+        self.mStyleFontsListView.hidden = false
         
         UIView.animateWithDuration(R.AnimInterval.Normal, animations: {
-            self.stylePanelView.frame.origin.x = -self.size.width
-            self.styleFontsListView.frame.origin.x = 0
+            self.mStylePanelView.frame.origin.x = -self.size.width
+            self.mStyleFontsListView.frame.origin.x = 0
         }) { finish in }
     }
 

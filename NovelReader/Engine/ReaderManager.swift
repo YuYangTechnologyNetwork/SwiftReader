@@ -78,9 +78,10 @@ class ReaderManager: NSObject {
     }
 
     init(b: Book, size: CGSize) {
-        book = b
-        paperSize = size
+        self.book = b
+        self.paperSize = size
         self.mDb = Db(db: Config.Db.DefaultDB, rowable: self.book)
+        self.book.lastOpenTime = (Int)(NSDate().timeIntervalSince1970 * 1000)
     }
 
     /**
