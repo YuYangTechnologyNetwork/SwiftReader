@@ -288,9 +288,10 @@ final class Db {
         let filemgr = NSFileManager.defaultManager()
         let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
         let databasePath = dirPath.stringByAppendingString("/" + db + ".sqlite")
-        
-        Utils.Log("Db Path: " + databasePath)
         if !filemgr.fileExistsAtPath(databasePath) {
+            
+            Utils.Log("New Db Path: " + databasePath)
+            
             if let db = FMDatabase(path: databasePath) {
                 if db.open() {
                     if !db.executeStatements(Operator.Create(r).sql) {
@@ -306,6 +307,8 @@ final class Db {
                 Utils.Log("Error: init db for path[\(databasePath)] failed")
                 return nil
             }
+        } else {
+            Utils.Log("Use old db Path: " + databasePath)
         }
         
         fmDb = FMDatabase(path: databasePath)

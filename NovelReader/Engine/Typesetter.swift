@@ -51,6 +51,16 @@ class Typesetter: NSObject, NSCoding  {
     static private(set) var Ins = Typesetter()
     @objc private override init() { super.init() }
     
+    private func sameAs(tysetter: Typesetter) {
+        self.font            = tysetter.font
+        self.fontSize        = tysetter.fontSize
+        self.line_space      = tysetter.line_space
+        self.margin          = tysetter.margin
+        self.textOrientation = tysetter.textOrientation
+        self.theme           = tysetter.theme
+        self.brightness      = tysetter.brightness
+    }
+    
     /*Property changed callbacks*/
     private var listeners: [String: (_: Observer, before:Any) -> Void] = [:]
     
@@ -271,7 +281,7 @@ class Typesetter: NSObject, NSCoding  {
             let tp = NSKeyedUnarchiver.unarchiveObjectWithData(nd) as? Typesetter
             
             if let t = tp {
-                Typesetter.Ins = t
+                Typesetter.Ins.sameAs(t)
             }
         }
     }

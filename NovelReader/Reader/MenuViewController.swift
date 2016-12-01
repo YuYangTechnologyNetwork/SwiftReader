@@ -148,8 +148,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
         self.loadingIndicator.startAnimating()
     
         Utils.asyncTask({ () -> Book? in
-            let bookPath   = NSBundle.mainBundle().pathForResource(BUILD_BOOK, ofType: "txt")
-            
+            let bookPath = NSBundle.mainBundle().pathForResource(Config.BuiltInBook, ofType: "txt")
             if let bPath = bookPath {
                 var book = Book(fullFilePath: bPath, getInfo: true)
                 
@@ -160,10 +159,15 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
                         let savedBook = books.count > 0 ? books[0] as? Book : nil
                         
                         if let sb = savedBook {
-                            book = Book(otherBook: sb)
+                            if !b.mIsBunltIn {
+                                book = Book(otherBook: sb)
+                            } else {
+                                book!.bookMark     = sb.bookMark
+                                book!.lastOpenTime = sb.lastOpenTime
+                            }
+                        } else {
+                            Utils.Log(db.lastExecuteInfo)
                         }
-                        
-                        Utils.Log(db.lastExecuteInfo)
                     }
                     
                     return book!
@@ -221,7 +225,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .Default
+        return Typesetter.Ins.theme == Theme.Night ? UIStatusBarStyle.LightContent : UIStatusBarStyle.Default
     }
     
     private func refreshReaderStatus(c: BookMark, withBlink: Bool = true) {
@@ -423,7 +427,7 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @IBAction func onStyleBtnClicked(sender: AnyObject) {
-        self.mStylePanelView.hidden                  = false
+        self.mStylePanelView.hidden                 = false
         self.btmSubContainer.hidden                 = false
         self.btmSubContainer.frame.origin.y         = self.size.height
         self.btmSubContainer.userInteractionEnabled = true

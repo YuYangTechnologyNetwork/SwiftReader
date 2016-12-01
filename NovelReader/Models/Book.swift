@@ -43,6 +43,8 @@ class Book: NSObject, Rowable, NSCoding {
     var size: Int = 0
     
     var bookMark: BookMark? = nil //BookMark(range: NSMakeRange(764027, CHAPTER_SIZE))
+    
+    private(set) var mIsBunltIn = false
 
     /*!
      * @param fullFilePath  Full file path
@@ -53,6 +55,7 @@ class Book: NSObject, Rowable, NSCoding {
         super.init()
         
         self.fullFilePath = fullFilePath
+        self.mIsBunltIn = Utils.pathInBundle(self.fullFilePath)
         
         if getInfo {
             if fetchBookInfo() == nil {
@@ -126,6 +129,10 @@ class Book: NSObject, Rowable, NSCoding {
     }
 
     var uniqueId: String {
+        if self.mIsBunltIn {
+            return "\(self.name).\(self.type)".md5()
+        }
+        
         return description.md5()
     }
     
@@ -149,7 +156,8 @@ class Book: NSObject, Rowable, NSCoding {
     func parse(row: [AnyObject]) -> Rowable? {
         Utils.Log(row)
         
-        let newBook = Book(fullFilePath: row[1] as! String, getInfo: true)
+        let path = row[1] as! String
+        let newBook = Book(fullFilePath: path, getInfo: !Utils.pathInBundle(path))
         
         if newBook != nil {
             newBook!.bookMark = BookMark(title: row[5] as! String, range: NSMakeRange(row[6] as! Int, CHAPTER_SIZE))
@@ -159,9 +167,17 @@ class Book: NSObject, Rowable, NSCoding {
         return newBook
     }
     
+    private func getUserDefaultPrefix() -> String {
+        if mIsBunltIn {
+            return "\(self.name).\(self.type)".md5()
+        }
+        
+        return self.fullFilePath.md5()
+    }
+    
     func isFetchedCatalog() -> Bool {
         let user = NSUserDefaults.standardUserDefaults()
-        let cflt = user.integerForKey(self.fullFilePath.md5() + "CatalogFetch")
+        let cflt = user.integerForKey("CatalogFetch_" + self.getUserDefaultPrefix())
         return cflt > 0
     }
     
@@ -170,9 +186,9 @@ class Book: NSObject, Rowable, NSCoding {
         
         if !toClear {
             let timestamp = (Int)(NSDate().timeIntervalSince1970 * 1000)
-            user.setInteger(timestamp, forKey: self.fullFilePath.md5() + "CatalogFetch")
+            user.setInteger(timestamp, forKey: "CatalogFetch_" + self.getUserDefaultPrefix())
         } else {
-            user.setInteger(0, forKey: self.fullFilePath.md5() + "CatalogFetch")
+            user.setInteger(0, forKey: "CatalogFetch_" + self.getUserDefaultPrefix())
         }
     }
 }

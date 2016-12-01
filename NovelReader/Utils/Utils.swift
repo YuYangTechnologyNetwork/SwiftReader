@@ -81,4 +81,8 @@ final class Utils {
             task()
         }
     }
+    
+    static func pathInBundle(path: String) -> Bool {
+        return path.pickFirst(BUNDLE_PATH_PREFIX.length) == BUNDLE_PATH_PREFIX
+    }
 }
