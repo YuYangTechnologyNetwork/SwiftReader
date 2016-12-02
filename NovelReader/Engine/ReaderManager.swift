@@ -30,7 +30,7 @@ class ReaderManager: NSObject {
     private var nextChapter: Chapter = Chapter.EMPTY_CHAPTER
 
     var currPaper: Paper? {
-        return currChapter.currPage!
+        return currChapter.currPage
     }
 
     var nextPaper: Paper? {
