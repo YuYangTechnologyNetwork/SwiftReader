@@ -1,5 +1,4 @@
-### NovelReader
-Swift 编写的 iPhone 小说阅读器。
+## Swift 编写的 iPhone 小说阅读器。
 
 ### 功能
 - 自动目录提取
@@ -13,3 +12,7 @@ Swift 编写的 iPhone 小说阅读器。
 
 ### 截图
 ![nr1](./Snapshots/nr1.png) ![nr2](./Snapshots/nr2.png) ![nr3](./Snapshots/nr3.png) ![nr4](./Snapshots/nr4.png)
+
+### 编译环境
+- Xcode 8.0
+- Swift 2.3
