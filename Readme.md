@@ -14,5 +14,10 @@
 ![nr1](./Snapshots/nr1.png) ![nr2](./Snapshots/nr2.png) ![nr3](./Snapshots/nr3.png) ![nr4](./Snapshots/nr4.png)
 
 ### 编译环境
-- Xcode 8.0
+- Xcode 8.1
 - Swift 2.3
+
+### 依赖开源库
+- YYText
+- SnapKit
+- FMDB
