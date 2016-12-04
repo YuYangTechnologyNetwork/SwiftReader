@@ -26,8 +26,8 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var centerTipsLabel: UILabel!
     @IBOutlet weak var mCenterTipsContainer: UIView!
 
-    @IBAction func onBackBtnClicked(sender: AnyObject) {
-    }
+    //    @IBAction func onBackBtnClicked(sender: AnyObject) {
+    //    }
 
     private var size: CGSize {
         return self.view.bounds.size
@@ -464,9 +464,6 @@ class MenuViewController: UIViewController, UIGestureRecognizerDelegate {
             self.btmSubContainer.alpha          = 1
             self.btmSubContainer.frame.origin.y = self.size.height - self.JUMP_PANEL_HEIGHT
         }) { finish in }
-    }
-
-    @IBAction func onSettingsBtnClicked(sender: AnyObject) {
     }
 
     private func showFontsList() {

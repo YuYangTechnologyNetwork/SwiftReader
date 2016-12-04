@@ -307,8 +307,8 @@
 			isa = PBXGroup;
 			children = (
 				3DC6F2A11CF1F56200BD44FE /* PageViewController.swift */,
-				3DC6F2A21CF1F56200BD44FE /* ReaderViewController.swift */,
 				11F32CD61CD0D68000543CF3 /* MenuViewController.swift */,
+				3DC6F2A21CF1F56200BD44FE /* ReaderViewController.swift */,
 				3F7052F31CF4753800235D48 /* LaunchViewController.swift */,
 				3F5925131D012D3600EBAD87 /* CatalogViewController.swift */,
 			);
@@ -320,13 +320,13 @@
 			children = (
 				3DA2F1CD1DE1E9430097DB4A /* JumpPanelView.xib */,
 				3D2554B11CD79A5400A4330C /* StylePanelView.xib */,
-				3F5925111D01282B00EBAD87 /* StyleFontsPickerView.xib */,
 				3DC6F2AB1CF1F5F700BD44FE /* MainViewController.xib */,
 				3DC6F2AD1CF1F5F700BD44FE /* PageViewController.xib */,
 				3DC6F2AC1CF1F5F700BD44FE /* MenuViewController.xib */,
+				3F5925111D01282B00EBAD87 /* StyleFontsPickerView.xib */,
 				3DC6F2A91CF1F59800BD44FE /* ReaderViewController.xib */,
-				3F5925171D012D8200EBAD87 /* CatalogViewController.xib */,
 				3D9B572C1CF49B0A005FFB35 /* LaunchViewController.xib */,
+				3F5925171D012D8200EBAD87 /* CatalogViewController.xib */,
 				3F7052F11CF4089400235D48 /* LaunchScreen.storyboard */,
 			);
 			name = xlibs;
@@ -405,11 +405,11 @@
 		3D49C7361C96F5BF00DD408F /* Engine */ = {
 			isa = PBXGroup;
 			children = (
-				3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */,
 				112B9D781CAD4AF200D0F9AB /* Paper.swift */,
-				3D49C7371C96F60900DD408F /* Typesetter.swift */,
-				1156F1861CA3BB88006B5848 /* FileReader.swift */,
 				3F7052EF1CF2F74C00235D48 /* Themes.swift */,
+				1156F1861CA3BB88006B5848 /* FileReader.swift */,
+				3D49C7371C96F60900DD408F /* Typesetter.swift */,
+				3DC6F2B11CF1F64A00BD44FE /* ReaderManager.swift */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
